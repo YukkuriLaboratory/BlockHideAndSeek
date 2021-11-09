@@ -1,7 +1,11 @@
 package com.iduki.blockhideandseekmod;
 
 
+import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.effect.HideEffect;
+import com.terraformersmc.modmenu.util.mod.Mod;
+import me.lortseam.completeconfig.api.ConfigContainer;
+import me.lortseam.completeconfig.api.ConfigGroup;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
@@ -29,13 +33,17 @@ public class BlockHideAndSeekMod implements ModInitializer {
 
 	public static final StatusEffect EXP = new HideEffect();
 
-
+	public static ModConfig CONFIG;
 
 	@Override
 	public void onInitialize() {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
+
+		//initialize config
+		CONFIG = new ModConfig();
+        CONFIG.load();
 
 		//ブロック登録
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "sample_block"), SAMPLEBLOCK);
