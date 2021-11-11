@@ -22,12 +22,6 @@ public class TeamBlocks {
                                         .then(literal("teamblocks")
                                                 .executes(context -> giveTeamblocks(context))
                                         )
-                        )
-        );
-        CommandRegistrationCallback.EVENT.register(
-                (dispatcher, dedicated) ->
-                        dispatcher.register(
-                                literal("bhas")
                                         .then(literal("tb")
                                                 .executes(context -> giveTeamblocks(context))
                                         )
