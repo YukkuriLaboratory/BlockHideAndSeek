@@ -7,6 +7,7 @@ import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.effect.HideEffect;
 import com.iduki.blockhideandseekmod.item.BhasItems;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
@@ -14,6 +15,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +29,7 @@ public class BlockHideAndSeekMod implements ModInitializer {
 	public static final String MOD_ID = "blockhideandseekmod";
 	public static final Logger LOGGER = LogManager.getLogger("modid");
 
+	public static MinecraftServer SERVER;
 
 	public static final Block SAMPLEBLOCK = new SampleBlock(FabricBlockSettings.of(Material.METAL).strength(0f));
 
@@ -56,6 +59,6 @@ public class BlockHideAndSeekMod implements ModInitializer {
 		Start.registerCommands();
 
 
-		LOGGER.info("Hello Fabric world!");
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> SERVER = server);
 	}
 }
