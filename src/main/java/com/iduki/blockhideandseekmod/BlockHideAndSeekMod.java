@@ -5,6 +5,7 @@ import com.iduki.blockhideandseekmod.command.Start;
 import com.iduki.blockhideandseekmod.command.TeamBlocks;
 import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.effect.HideEffect;
+import com.iduki.blockhideandseekmod.item.BhasItems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -43,6 +44,7 @@ public class BlockHideAndSeekMod implements ModInitializer {
 		CONFIG = new ModConfig();
 		CONFIG.load();
 
+		BhasItems.init();
 		//ブロック登録
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "sample_block"), SAMPLEBLOCK);
 		//ブロックアイテムの登録

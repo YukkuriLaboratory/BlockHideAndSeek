@@ -36,6 +36,10 @@ dependencies {
 	// You may need to force-disable transitiveness on them.
 }
 
+loom {
+	accessWidenerPath.set(file('src/main/resources/blockhideandseekmod.accesswidener'))
+}
+
 processResources {
 	inputs.property "version", project.version
 
