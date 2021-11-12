@@ -21,7 +21,6 @@ public class HideController {
      */
     private static final Map<UUID, BlockPos> hidingPlayers = Maps.newHashMap();
 
-    //TODO call on player was just sneaking
     public static void tryHide(PlayerEntity player) {
         if (!canHide(player)) {
             return;
