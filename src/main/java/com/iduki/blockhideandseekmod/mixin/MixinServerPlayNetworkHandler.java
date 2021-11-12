@@ -1,7 +1,7 @@
 package com.iduki.blockhideandseekmod.mixin;
 
 import com.iduki.blockhideandseekmod.item.ServerSideItem;
-import com.iduki.blockhideandseekmod.mixin.interfaces.UUIDHolder;
+import com.iduki.blockhideandseekmod.util.UUIDHolder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.item.ItemStack;

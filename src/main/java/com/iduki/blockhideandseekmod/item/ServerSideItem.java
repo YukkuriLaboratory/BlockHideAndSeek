@@ -1,7 +1,7 @@
 package com.iduki.blockhideandseekmod.item;
 
 import com.google.common.collect.Maps;
-import com.iduki.blockhideandseekmod.mixin.interfaces.UUIDHolder;
+import com.iduki.blockhideandseekmod.util.UUIDHolder;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;

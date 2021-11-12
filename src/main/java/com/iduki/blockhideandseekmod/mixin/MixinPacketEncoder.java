@@ -1,6 +1,6 @@
 package com.iduki.blockhideandseekmod.mixin;
 
-import com.iduki.blockhideandseekmod.mixin.interfaces.UUIDHolder;
+import com.iduki.blockhideandseekmod.util.UUIDHolder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.PacketByteBuf;

@@ -1,4 +1,4 @@
-package com.iduki.blockhideandseekmod.mixin.interfaces;
+package com.iduki.blockhideandseekmod.util;
 
 import org.jetbrains.annotations.Nullable;
 

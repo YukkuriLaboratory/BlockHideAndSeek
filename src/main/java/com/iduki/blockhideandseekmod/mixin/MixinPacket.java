@@ -1,7 +1,7 @@
 package com.iduki.blockhideandseekmod.mixin;
 
 import com.iduki.blockhideandseekmod.item.ServerSideItem;
-import com.iduki.blockhideandseekmod.mixin.interfaces.UUIDHolder;
+import com.iduki.blockhideandseekmod.util.UUIDHolder;
 import net.minecraft.network.Packet;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
