@@ -4,6 +4,13 @@
   "package": "com.iduki.blockhideandseekmod.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "MixinClientConnection",
+    "MixinEntityTrackerUpdateS2CPacket",
+    "MixinPacket",
+    "MixinPacketByteBuf",
+    "MixinPacketEncoder",
+    "MixinPlayerManager",
+    "MixinServerPlayNetworkHandler"
   ],
   "client": [
     "BlockHideAndSeekMixin"

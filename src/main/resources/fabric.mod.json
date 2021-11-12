@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "blockhideandseekmod",
   "version": "${version}",
-
   "name": "BlockHideAndSeekMod",
   "description": "This is an example description! Tell everyone what your mod is about!",
   "authors": [
@@ -12,10 +11,9 @@
     "homepage": "https://fabricmc.net/",
     "sources": "https://github.com/FabricMC/fabric-example-mod"
   },
-
   "license": "CC0-1.0",
   "icon": "assets/modid/icon.png",
-
+  "accessWidener": "blockhideandseekmod.accesswidener",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -25,7 +23,6 @@
   "mixins": [
     "modid.mixins.json"
   ],
-
   "depends": {
     "fabricloader": ">=0.11.3",
     "fabric": "*",
