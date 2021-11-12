@@ -28,7 +28,6 @@ public class SampleBlock extends Block
 
     public static final BooleanProperty CHARGED = BooleanProperty.of("charged");
 
-
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!world.isClient) {
@@ -60,6 +59,6 @@ public class SampleBlock extends Block
 
     //VoxelShapeで当たり判定なくそうと思ったけどそれだと他プレイヤーが当たった時に判定ないしパケット偽装とか色々めんどいのでやめます
     //特殊なエフェクト効果を作りスペクテイターで攻撃判定を残したままブロックに擬態できるようにする
-    //このブロックはプレイヤーが選択したブロックのテクスチャに切り替えられるようにする
+    //ブロックはプレイヤーが選択したブロックのテクスチャに切り替えられるようにする
 }
 

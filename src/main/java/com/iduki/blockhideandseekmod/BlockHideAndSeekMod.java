@@ -1,24 +1,22 @@
 package com.iduki.blockhideandseekmod;
 
-
+import com.iduki.blockhideandseekmod.block.SampleBlock;
+import com.iduki.blockhideandseekmod.command.Start;
+import com.iduki.blockhideandseekmod.command.TeamBlocks;
 import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.effect.HideEffect;
-import com.terraformersmc.modmenu.util.mod.Mod;
-import me.lortseam.completeconfig.api.ConfigContainer;
-import me.lortseam.completeconfig.api.ConfigGroup;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.item.Item;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.iduki.blockhideandseekmod.block.SampleBlock;
 
 
 public class BlockHideAndSeekMod implements ModInitializer {
@@ -43,14 +41,18 @@ public class BlockHideAndSeekMod implements ModInitializer {
 
 		//initialize config
 		CONFIG = new ModConfig();
-        CONFIG.load();
+		CONFIG.load();
 
 		//ブロック登録
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "sample_block"), SAMPLEBLOCK);
 		//ブロックアイテムの登録
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "sample_block"), new BlockItem(SAMPLEBLOCK, new Item.Settings().group(ItemGroup.MISC)));
-        //ステータスエフェクト登録
+		//ステータスエフェクト登録
 		Registry.register(Registry.STATUS_EFFECT, new Identifier(MOD_ID, "hideeffect"), EXP);
+		//コマンド登録
+		TeamBlocks.registerCommands();
+		Start.registerCommands();
+
 
 		LOGGER.info("Hello Fabric world!");
 	}
