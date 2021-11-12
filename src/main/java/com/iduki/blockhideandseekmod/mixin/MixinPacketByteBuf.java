@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import java.util.UUID;
 
 @Mixin(PacketByteBuf.class)
-public class MixinPacketByteBuf implements UUIDHolder {
+public abstract class MixinPacketByteBuf implements UUIDHolder {
     private UUID bhas$uuid;
 
     @ModifyVariable(
