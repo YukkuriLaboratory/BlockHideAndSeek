@@ -11,7 +11,8 @@
     "MixinPacketByteBuf",
     "MixinPacketEncoder",
     "MixinPlayerManager",
-    "MixinServerPlayNetworkHandler"
+    "MixinServerPlayNetworkHandler",
+    "MixinServerWorld"
   ],
   "client": [
     "BlockHideAndSeekMixin"

@@ -1,5 +1,6 @@
 package com.iduki.blockhideandseekmod.mixin;
 
+import com.iduki.blockhideandseekmod.game.HideController;
 import com.iduki.blockhideandseekmod.item.ServerSideItem;
 import com.iduki.blockhideandseekmod.util.UUIDHolder;
 import io.netty.util.concurrent.Future;
@@ -8,7 +9,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.spongepowered.asm.mixin.Final;
@@ -25,6 +30,43 @@ public class MixinServerPlayNetworkHandler {
     @Shadow
     @Final
     public ClientConnection connection;
+
+    @Shadow
+    public ServerPlayerEntity player;
+
+    @Inject(
+            method = "onHandSwing",
+            at = @At("RETURN")
+    )
+    private void callCancelHiding(HandSwingC2SPacket packet, CallbackInfo ci) {
+        HideController.cancelHiding(player);
+    }
+
+    @Redirect(
+            method = "onPlayerInteractBlock",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;sendPacket(Lnet/minecraft/network/Packet;)V"
+            )
+    )
+    private void cancelHidingBlockUpdate(ServerPlayNetworkHandler instance, Packet<?> packet) {
+        var blockPacket = ((BlockUpdateS2CPacket) packet);
+        var pos = blockPacket.getPos();
+        var fakeBlock = HideController.getHidingBlock(pos);
+        if (fakeBlock != null) {
+            instance.sendPacket(new BlockUpdateS2CPacket(pos, fakeBlock));
+        } else {
+            instance.sendPacket(packet);
+        }
+    }
+
+    @Inject(
+            method = "onDisconnected",
+            at = @At("HEAD")
+    )
+    private void cancelHiding(Text reason, CallbackInfo ci) {
+        HideController.cancelHiding(player);
+    }
 
     @Inject(
             method = "sendPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V",
