@@ -2,3 +2,5 @@ accessWidener v1 named
 
 accessible    field    net/minecraft/item/ItemStack    item    Lnet/minecraft/item/Item;
 mutable       field    net/minecraft/item/ItemStack    item    Lnet/minecraft/item/Item;
+
+accessible    field    net/minecraft/entity/Entity    passengerList    Lcom/google/common/collect/ImmutableList;
