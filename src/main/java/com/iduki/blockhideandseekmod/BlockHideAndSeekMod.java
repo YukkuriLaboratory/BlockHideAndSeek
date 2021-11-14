@@ -1,7 +1,9 @@
 package com.iduki.blockhideandseekmod;
 
 import com.iduki.blockhideandseekmod.block.SampleBlock;
+import com.iduki.blockhideandseekmod.command.Settings;
 import com.iduki.blockhideandseekmod.command.Start;
+import com.iduki.blockhideandseekmod.command.Stop;
 import com.iduki.blockhideandseekmod.command.TeamBlocks;
 import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.effect.HideEffect;
@@ -57,6 +59,8 @@ public class BlockHideAndSeekMod implements ModInitializer {
 		//コマンド登録
 		TeamBlocks.registerCommands();
 		Start.registerCommands();
+		Stop.registerCommands();
+		Settings.registerCommands();
 
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> SERVER = server);
