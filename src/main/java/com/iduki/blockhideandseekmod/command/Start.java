@@ -1,5 +1,6 @@
 package com.iduki.blockhideandseekmod.command;
 
+import com.iduki.blockhideandseekmod.game.TeamCreateandDelete;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -14,7 +15,7 @@ public class Start {
                         dispatcher.register(
                                 literal("bhas")
                                         .then(literal("start")
-                                                .executes(context -> startGame(context))
+                                                .executes(Start::startGame)
                                         )
                         )
         );
@@ -22,7 +23,9 @@ public class Start {
 
     public static int startGame(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         final ServerCommandSource source = context.getSource();
-
+        TeamCreateandDelete.addSeeker(source.getPlayer());
+        TeamCreateandDelete.addHider(source.getPlayer());
+        TeamCreateandDelete.addObserver(source.getPlayer());
         return 1;
     }
 }
