@@ -20,10 +20,10 @@ public class TeamBlocks {
                         dispatcher.register(
                                 literal("bhas")
                                         .then(literal("teamblocks")
-                                                .executes(context -> giveTeamblocks(context))
+                                                .executes(TeamBlocks::giveTeamblocks)
                                         )
                                         .then(literal("tb")
-                                                .executes(context -> giveTeamblocks(context))
+                                                .executes(TeamBlocks::giveTeamblocks)
                                         )
                         )
         );
