@@ -1,6 +1,7 @@
 package com.iduki.blockhideandseekmod.game;
 
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -9,7 +10,9 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Pair;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class HudDisplay {
@@ -87,6 +90,7 @@ public class HudDisplay {
     static {
         ServerTickEvents.START_SERVER_TICK.register(server -> {
             var playerManager = server.getPlayerManager();
+            ArrayList<Pair<UUID, String>> removeTargets = Lists.newArrayList();
             actionBarTable.rowMap().forEach(((uuid, stringTextMap) -> {
                 var player = playerManager.getPlayer(uuid);
                 if (player != null) {
@@ -103,7 +107,7 @@ public class HudDisplay {
                                     return true;
                                 } else {
                                     shotTimeTable.remove(uuid, key);
-                                    actionBarTable.remove(uuid, key);
+                                    removeTargets.add(new Pair<>(uuid, key));
                                     return false;
                                 }
                             })
@@ -111,6 +115,9 @@ public class HudDisplay {
                     player.sendMessage(message, true);
                 }
             }));
+            for (Pair<UUID, String> removeTarget : removeTargets) {
+                actionBarTable.remove(removeTarget.getLeft(), removeTarget.getRight());
+            }
         });
     }
 }
