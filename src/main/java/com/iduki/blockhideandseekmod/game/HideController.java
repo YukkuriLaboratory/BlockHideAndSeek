@@ -12,6 +12,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -102,14 +105,35 @@ public class HideController {
         }
     }
 
+    private static String HIDE_ERROR = "hideerror";
+
     private static boolean canHide(PlayerEntity player) {
         //TODO check player joined hiding team and game started
         var uuid = player.getUuid();
+
+        if (hidingPlayers.containsKey(uuid) || tryingPlayers.containsKey(uuid)) {
+            return false;
+        }
         var blockPos = player.getBlockPos();
         var world = player.world;
+        var standingBlock = world.getBlockState(blockPos);
         var floorBlock = world.getBlockState(blockPos.down());
-        return world.getBlockState(blockPos).isAir() && !floorBlock.isAir() && !floorBlock.getMaterial().isLiquid()
-                && !hidingPlayers.containsKey(uuid) && !tryingPlayers.containsKey(uuid);
+
+        var redText = new LiteralText("").setStyle(Style.EMPTY.withColor(Formatting.RED));
+        var showTextTime = 30L;
+        if (floorBlock.getMaterial().isLiquid() || standingBlock.getMaterial().isLiquid()) {
+            HudDisplay.setActionBarText(uuid, HIDE_ERROR, redText.append(Text.of("水中では擬態できません")), showTextTime);
+            return false;
+        }
+        if (!standingBlock.isAir()) {
+            HudDisplay.setActionBarText(uuid, HIDE_ERROR, redText.append(Text.of("ブロックに重なった状態では擬態できません")), showTextTime);
+            return false;
+        }
+        if (floorBlock.isAir()) {
+            HudDisplay.setActionBarText(uuid, HIDE_ERROR, redText.append(Text.of("空中では擬態できません")), showTextTime);
+            return false;
+        }
+        return true;
     }
 
     private static void setHide(UUID uuid) {
