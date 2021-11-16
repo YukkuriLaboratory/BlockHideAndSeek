@@ -15,6 +15,7 @@ import java.util.UUID;
 public class HudDisplay {
 
     private static final Table<UUID, String, Text> actionBarTable = HashBasedTable.create();
+    private static final Table<UUID, String, Long> shotTimeTable = HashBasedTable.create();
 
     /**
      * アクションバーに表示する内容を設定します
@@ -26,6 +27,20 @@ public class HudDisplay {
      */
     public static void setActionBarText(UUID playerUuid, String id, Text message) {
         actionBarTable.put(playerUuid, id, message);
+    }
+
+    /**
+     * アクションバーに表示する内容を設定します
+     * 注意: このシステムでは各システムごとにidを用いてメッセージを設定し，出力時にidのアルファベット順に整列されます
+     *
+     * @param playerUuid 対象のplayerのUUID
+     * @param id         設定するメッセージの識別id
+     * @param message    出力するメッセージ
+     * @param showTick   出力する時間(Tick)
+     */
+    public static void setActionBarText(UUID playerUuid, String id, Text message, Long showTick) {
+        setActionBarText(playerUuid, id, message);
+        shotTimeTable.put(playerUuid, id, showTick);
     }
 
     /**
@@ -76,7 +91,23 @@ public class HudDisplay {
                 var player = playerManager.getPlayer(uuid);
                 if (player != null) {
                     var message = new LiteralText("");
-                    stringTextMap.keySet().stream().sorted().map(stringTextMap::get).map(HudDisplay::appendBlank).forEach(message::append);
+                    stringTextMap.keySet()
+                            .stream()
+                            .filter(key -> {
+                                var time = shotTimeTable.get(uuid, key);
+                                if (time == null) {
+                                    return true;
+                                }
+                                if (--time >= 0) {
+                                    shotTimeTable.put(uuid, key, time);
+                                    return true;
+                                } else {
+                                    shotTimeTable.remove(uuid, key);
+                                    actionBarTable.remove(uuid, key);
+                                    return false;
+                                }
+                            })
+                            .sorted().map(stringTextMap::get).map(HudDisplay::appendBlank).forEach(message::append);
                     player.sendMessage(message, true);
                 }
             }));
