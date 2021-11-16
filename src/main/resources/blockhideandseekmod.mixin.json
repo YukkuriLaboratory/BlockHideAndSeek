@@ -11,6 +11,7 @@
     "MixinPacket",
     "MixinPacketByteBuf",
     "MixinPacketEncoder",
+    "MixinPlayerEntity",
     "MixinPlayerManager",
     "MixinServerPlayNetworkHandler",
     "MixinServerWorld"
