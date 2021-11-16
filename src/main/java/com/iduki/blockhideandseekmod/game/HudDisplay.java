@@ -1,6 +1,7 @@
 package com.iduki.blockhideandseekmod.game;
 
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -9,12 +10,15 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Pair;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class HudDisplay {
 
     private static final Table<UUID, String, Text> actionBarTable = HashBasedTable.create();
+    private static final Table<UUID, String, Long> shotTimeTable = HashBasedTable.create();
 
     /**
      * アクションバーに表示する内容を設定します
@@ -26,6 +30,20 @@ public class HudDisplay {
      */
     public static void setActionBarText(UUID playerUuid, String id, Text message) {
         actionBarTable.put(playerUuid, id, message);
+    }
+
+    /**
+     * アクションバーに表示する内容を設定します
+     * 注意: このシステムでは各システムごとにidを用いてメッセージを設定し，出力時にidのアルファベット順に整列されます
+     *
+     * @param playerUuid 対象のplayerのUUID
+     * @param id         設定するメッセージの識別id
+     * @param message    出力するメッセージ
+     * @param showTick   出力する時間(Tick)
+     */
+    public static void setActionBarText(UUID playerUuid, String id, Text message, Long showTick) {
+        setActionBarText(playerUuid, id, message);
+        shotTimeTable.put(playerUuid, id, showTick);
     }
 
     /**
@@ -61,12 +79,6 @@ public class HudDisplay {
         return text;
     }
 
-    /**
-     * for static initialization
-     */
-    public static void prepare() {
-    }
-
     private static Text appendBlank(Text text) {
         if (text instanceof MutableText mutableText) {
 //            return new LiteralText("").append(mutableText).append(new LiteralText(""));
@@ -78,14 +90,34 @@ public class HudDisplay {
     static {
         ServerTickEvents.START_SERVER_TICK.register(server -> {
             var playerManager = server.getPlayerManager();
+            ArrayList<Pair<UUID, String>> removeTargets = Lists.newArrayList();
             actionBarTable.rowMap().forEach(((uuid, stringTextMap) -> {
                 var player = playerManager.getPlayer(uuid);
                 if (player != null) {
                     var message = new LiteralText("");
-                    stringTextMap.keySet().stream().sorted().map(stringTextMap::get).map(HudDisplay::appendBlank).forEach(message::append);
+                    stringTextMap.keySet()
+                            .stream()
+                            .filter(key -> {
+                                var time = shotTimeTable.get(uuid, key);
+                                if (time == null) {
+                                    return true;
+                                }
+                                if (--time >= 0) {
+                                    shotTimeTable.put(uuid, key, time);
+                                    return true;
+                                } else {
+                                    shotTimeTable.remove(uuid, key);
+                                    removeTargets.add(new Pair<>(uuid, key));
+                                    return false;
+                                }
+                            })
+                            .sorted().map(stringTextMap::get).map(HudDisplay::appendBlank).forEach(message::append);
                     player.sendMessage(message, true);
                 }
             }));
+            for (Pair<UUID, String> removeTarget : removeTargets) {
+                actionBarTable.remove(removeTarget.getLeft(), removeTarget.getRight());
+            }
         });
     }
 }

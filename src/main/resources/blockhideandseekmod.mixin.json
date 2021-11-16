@@ -7,9 +7,11 @@
     "MixinClientConnection",
     "MixinEntity",
     "MixinEntityTrackerUpdateS2CPacket",
+    "MixinMinecraftDedicatedServer",
     "MixinPacket",
     "MixinPacketByteBuf",
     "MixinPacketEncoder",
+    "MixinPlayerEntity",
     "MixinPlayerManager",
     "MixinServerPlayNetworkHandler",
     "MixinServerWorld"
