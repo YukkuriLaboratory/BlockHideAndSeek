@@ -3,6 +3,7 @@ package com.iduki.blockhideandseekmod.mixin;
 import com.iduki.blockhideandseekmod.util.UUIDHolder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.PacketEncoder;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,10 +20,10 @@ public class MixinPacketEncoder {
     private UUID bhas$uuid;
 
     @Inject(
-            method = "encode(Lio/netty/channel/ChannelHandlerContext;Ljava/lang/Object;Lio/netty/buffer/ByteBuf;)V",
+            method = "encode(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/Packet;Lio/netty/buffer/ByteBuf;)V",
             at = @At("HEAD")
     )
-    private void getUUID(ChannelHandlerContext ctx, Object packet, ByteBuf out, CallbackInfo ci) {
+    private void getUUID(ChannelHandlerContext channelHandlerContext, Packet<?> packet, ByteBuf byteBuf, CallbackInfo ci) {
         bhas$uuid = ((UUIDHolder) packet).getUUID();
     }
 
