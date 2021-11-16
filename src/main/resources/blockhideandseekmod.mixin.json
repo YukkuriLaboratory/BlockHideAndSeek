@@ -7,6 +7,7 @@
     "MixinClientConnection",
     "MixinEntity",
     "MixinEntityTrackerUpdateS2CPacket",
+    "MixinMinecraftDedicatedServer",
     "MixinPacket",
     "MixinPacketByteBuf",
     "MixinPacketEncoder",
