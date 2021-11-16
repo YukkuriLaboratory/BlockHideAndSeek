@@ -61,12 +61,6 @@ public class HudDisplay {
         return text;
     }
 
-    /**
-     * for static initialization
-     */
-    public static void prepare() {
-    }
-
     private static Text appendBlank(Text text) {
         if (text instanceof MutableText mutableText) {
 //            return new LiteralText("").append(mutableText).append(new LiteralText(""));
