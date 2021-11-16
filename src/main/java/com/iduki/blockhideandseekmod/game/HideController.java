@@ -101,7 +101,11 @@ public class HideController {
     private static boolean canHide(PlayerEntity player) {
         //TODO check player joined hiding team and game started
         var uuid = player.getUuid();
-        return !hidingPlayers.containsKey(uuid) && !tryingPlayers.containsKey(uuid);
+        var blockPos = player.getBlockPos();
+        var world = player.world;
+        var floorBlock = world.getBlockState(blockPos.down());
+        return world.getBlockState(blockPos).isAir() && !floorBlock.isAir() && !floorBlock.getMaterial().isLiquid()
+                && !hidingPlayers.containsKey(uuid) && !tryingPlayers.containsKey(uuid);
     }
 
     private static void setHide(UUID uuid) {
