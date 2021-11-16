@@ -68,7 +68,11 @@ public class HideController {
 
     public static void cancelHiding(ServerPlayerEntity player) {
         var uuid = player.getUuid();
-        if (hidingPlayers.containsKey(uuid)) {
+        if (tryingPlayers.containsKey(uuid)) {
+            tryingPlayers.remove(uuid);
+            tryingTimes.remove(uuid);
+            HudDisplay.removeActionbarText(uuid, HIDE_PROGRESS);
+        } else if (hidingPlayers.containsKey(uuid)) {
             hidingPlayers.remove(uuid);
             hidingBlocks.remove(player.getBlockPos());
             var riding = ridingTarget.get(uuid);
