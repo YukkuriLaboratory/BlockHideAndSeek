@@ -18,7 +18,7 @@ import java.util.UUID;
 public class HudDisplay {
 
     private static final Table<UUID, String, Text> actionBarTable = HashBasedTable.create();
-    private static final Table<UUID, String, Long> shotTimeTable = HashBasedTable.create();
+    private static final Table<UUID, String, Long> showTimeTable = HashBasedTable.create();
 
     /**
      * アクションバーに表示する内容を設定します
@@ -30,7 +30,7 @@ public class HudDisplay {
      */
     public static void setActionBarText(UUID playerUuid, String id, Text message) {
         actionBarTable.put(playerUuid, id, message);
-        shotTimeTable.remove(playerUuid, id);
+        showTimeTable.remove(playerUuid, id);
     }
 
     /**
@@ -44,7 +44,7 @@ public class HudDisplay {
      */
     public static void setActionBarText(UUID playerUuid, String id, Text message, Long showTick) {
         actionBarTable.put(playerUuid, id, message);
-        shotTimeTable.put(playerUuid, id, showTick);
+        showTimeTable.put(playerUuid, id, showTick);
     }
 
     /**
@@ -99,15 +99,15 @@ public class HudDisplay {
                     stringTextMap.keySet()
                             .stream()
                             .filter(key -> {
-                                var time = shotTimeTable.get(uuid, key);
+                                var time = showTimeTable.get(uuid, key);
                                 if (time == null) {
                                     return true;
                                 }
                                 if (--time >= 0) {
-                                    shotTimeTable.put(uuid, key, time);
+                                    showTimeTable.put(uuid, key, time);
                                     return true;
                                 } else {
-                                    shotTimeTable.remove(uuid, key);
+                                    showTimeTable.remove(uuid, key);
                                     removeTargets.add(new Pair<>(uuid, key));
                                     return false;
                                 }
