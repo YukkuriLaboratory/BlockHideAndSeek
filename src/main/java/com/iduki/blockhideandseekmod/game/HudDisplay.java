@@ -30,6 +30,7 @@ public class HudDisplay {
      */
     public static void setActionBarText(UUID playerUuid, String id, Text message) {
         actionBarTable.put(playerUuid, id, message);
+        shotTimeTable.remove(playerUuid, id);
     }
 
     /**
@@ -42,7 +43,7 @@ public class HudDisplay {
      * @param showTick   出力する時間(Tick)
      */
     public static void setActionBarText(UUID playerUuid, String id, Text message, Long showTick) {
-        setActionBarText(playerUuid, id, message);
+        actionBarTable.put(playerUuid, id, message);
         shotTimeTable.put(playerUuid, id, showTick);
     }
 
