@@ -105,8 +105,6 @@ public class HideController {
         }
     }
 
-    private static String HIDE_ERROR = "hideerror";
-
     private static boolean canHide(PlayerEntity player) {
         //TODO check player joined hiding team and game started
         var uuid = player.getUuid();
@@ -122,15 +120,15 @@ public class HideController {
         var redText = new LiteralText("").setStyle(Style.EMPTY.withColor(Formatting.RED));
         var showTextTime = 30L;
         if (floorBlock.getMaterial().isLiquid() || standingBlock.getMaterial().isLiquid()) {
-            HudDisplay.setActionBarText(uuid, HIDE_ERROR, redText.append(Text.of("水中では擬態できません")), showTextTime);
+            HudDisplay.setActionBarText(uuid, HIDE_PROGRESS, redText.append(Text.of("水中では擬態できません")), showTextTime);
             return false;
         }
         if (!standingBlock.isAir()) {
-            HudDisplay.setActionBarText(uuid, HIDE_ERROR, redText.append(Text.of("ブロックに重なった状態では擬態できません")), showTextTime);
+            HudDisplay.setActionBarText(uuid, HIDE_PROGRESS, redText.append(Text.of("ブロックに重なった状態では擬態できません")), showTextTime);
             return false;
         }
         if (floorBlock.isAir()) {
-            HudDisplay.setActionBarText(uuid, HIDE_ERROR, redText.append(Text.of("空中では擬態できません")), showTextTime);
+            HudDisplay.setActionBarText(uuid, HIDE_PROGRESS, redText.append(Text.of("空中では擬態できません")), showTextTime);
             return false;
         }
         return true;
