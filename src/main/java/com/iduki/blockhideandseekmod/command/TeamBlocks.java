@@ -39,6 +39,9 @@ public class TeamBlocks {
         if (!self.giveItemStack(new ItemStack(Items.LIGHT_BLUE_CONCRETE, 64))) {
             throw new SimpleCommandExceptionType(new TranslatableText("inventory.isfull")).create();
         }
+        if (!self.giveItemStack(new ItemStack(Items.GRAY_CONCRETE, 64))) {
+            throw new SimpleCommandExceptionType(new TranslatableText("inventory.isfull")).create();
+        }
 
         return 1;
     }

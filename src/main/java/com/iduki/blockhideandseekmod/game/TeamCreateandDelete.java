@@ -8,9 +8,9 @@ import static net.minecraft.util.Formatting.*;
 
 public class TeamCreateandDelete {
 
-    //これ別に引数いらないけどまぁいっか
     public static void addSeeker(ServerPlayerEntity serverPlayerEntity) {
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
+        if (serverPlayerEntity.getName() == null) return;
         Team team = scoreboard.getTeam("Seekers");
         if (team == null) {
             team = scoreboard.addTeam("Seekers");
