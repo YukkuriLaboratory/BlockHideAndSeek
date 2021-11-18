@@ -1,6 +1,7 @@
 package com.iduki.blockhideandseekmod.mixin;
 
 import com.iduki.blockhideandseekmod.game.HideController;
+import com.iduki.blockhideandseekmod.game.TeamSelector;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
@@ -39,5 +40,13 @@ public abstract class MixinServerWorld {
                 .toList();
         var packet = new EntitiesDestroyS2CPacket(new IntArrayList(hidingPlayers));
         player.networkHandler.sendPacket(packet);
+    }
+
+    @Inject(
+            method = "addPlayer",
+            at = @At("TAIL")
+    )
+    private void addBossBarTarget(ServerPlayerEntity player, CallbackInfo ci) {
+        TeamSelector.addBossBarTarget(player);
     }
 }
