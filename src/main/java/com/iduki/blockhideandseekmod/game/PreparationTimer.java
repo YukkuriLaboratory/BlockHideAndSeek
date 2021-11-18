@@ -4,8 +4,12 @@ import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.CommandBossBar;
+import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
+
+import java.util.List;
 
 
 /**
@@ -16,11 +20,14 @@ import net.minecraft.util.Identifier;
 public class PreparationTimer {
 //準備時間
 
-    static int PreparationTime = 0;
+    static int PreparationTime = 1200;
+    static PlayerManager playerManager = BlockHideAndSeekMod.SERVER.getPlayerManager();
+    static List<ServerPlayerEntity> players = playerManager.getPlayerList();
 
     public static void Preparationtime() {
         //startコマンドが呼び出されたタイミングで準備時間を初期化する
         PreparationTime = 1200;
+
     }
 
 
@@ -28,11 +35,9 @@ public class PreparationTimer {
 
     }
 
-    static {
-        var playerManager = BlockHideAndSeekMod.SERVER.getPlayerManager();
-        var players = playerManager.getPlayerList();
-        var bossBar = new CommandBossBar(new Identifier(BlockHideAndSeekMod.MOD_ID), new LiteralText("準備時間"));
 
+    static {
+        var bossBar = new CommandBossBar(new Identifier(BlockHideAndSeekMod.MOD_ID), new LiteralText("準備時間"));
         bossBar.setMaxValue(PreparationTime);
         bossBar.setStyle(BossBar.Style.NOTCHED_20);
 
@@ -42,7 +47,7 @@ public class PreparationTimer {
 
             if (PreparationTime > 0) {
                 bossBar.setVisible(true);
-                PreparationTime = PreparationTime - 1;
+                PreparationTime = --PreparationTime;
                 bossBar.setValue(PreparationTime);
             } else {
                 bossBar.setVisible(false);
