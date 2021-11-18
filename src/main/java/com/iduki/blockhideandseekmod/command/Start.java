@@ -1,5 +1,6 @@
 package com.iduki.blockhideandseekmod.command;
 
+import com.iduki.blockhideandseekmod.game.PreparationTimer;
 import com.iduki.blockhideandseekmod.game.TeamCreateandDelete;
 import com.iduki.blockhideandseekmod.game.TeamSelector;
 import com.mojang.brigadier.Command;
@@ -29,9 +30,18 @@ public class Start {
 
     public static int startGame(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         final ServerCommandSource source = context.getSource();
+
+        //こいつらはチームの作成のみ
         TeamCreateandDelete.addSeeker(source.getPlayer());
         TeamCreateandDelete.addHider(source.getPlayer());
         TeamCreateandDelete.addObserver(source.getPlayer());
+
+        //次の処理でチーム分けブロックの上に乗っているプレイヤーをチームに入れる
+
+        //準備時間の表示と計測
+        PreparationTimer.Preparationtime();
+
+
         return 1;
     }
 }
