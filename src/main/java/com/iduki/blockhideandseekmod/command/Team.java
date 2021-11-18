@@ -35,12 +35,18 @@ public class Team {
                                                     var player = source.getPlayer();
                                                     switch (arg) {
                                                         case "seeker" -> {
-                                                            TeamSelector.addSeeker(player);
-                                                            source.sendFeedback(new LiteralText("鬼陣営に投票しました"), false);
+                                                            if (TeamSelector.addSeeker(player)) {
+                                                                source.sendFeedback(new LiteralText("鬼陣営に投票しました"), false);
+                                                            } else {
+                                                                source.sendError(Text.of("投票時間中のみ有効です"));
+                                                            }
                                                         }
                                                         case "hider" -> {
-                                                            TeamSelector.addHider(player);
-                                                            source.sendFeedback(new LiteralText("ミミック陣営に投票しました"), false);
+                                                            if (TeamSelector.addHider(player)) {
+                                                                source.sendFeedback(new LiteralText("ミミック陣営に投票しました"), false);
+                                                            } else {
+                                                                source.sendError(Text.of("投票時間中のみ有効です"));
+                                                            }
                                                         }
                                                         default -> source.sendError(Text.of("不正な文字列です"));
                                                     }
