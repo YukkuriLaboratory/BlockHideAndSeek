@@ -1,6 +1,8 @@
 package com.iduki.blockhideandseekmod.command;
 
 import com.iduki.blockhideandseekmod.game.TeamCreateandDelete;
+import com.iduki.blockhideandseekmod.game.TeamSelector;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -15,7 +17,11 @@ public class Start {
                         dispatcher.register(
                                 literal("bhas")
                                         .then(literal("start")
-                                                .executes(Start::startGame)
+//                                                .executes(Start::startGame)
+                                                        .executes(context -> {
+                                                            TeamSelector.startVote();
+                                                            return Command.SINGLE_SUCCESS;
+                                                        })
                                         )
                         )
         );
