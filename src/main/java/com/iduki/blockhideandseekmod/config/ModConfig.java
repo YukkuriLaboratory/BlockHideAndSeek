@@ -3,6 +3,7 @@ package com.iduki.blockhideandseekmod.config;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import me.lortseam.completeconfig.api.ConfigContainer;
 import me.lortseam.completeconfig.api.ConfigEntries;
+import me.lortseam.completeconfig.api.ConfigEntry;
 import me.lortseam.completeconfig.api.ConfigGroup;
 import me.lortseam.completeconfig.data.Config;
 
@@ -15,30 +16,39 @@ public class ModConfig extends Config implements ConfigContainer {
     @Transitive
     @ConfigEntries
     public static class SystemConfig implements ConfigGroup {
-        /**
-         * 準備時間
-         * 単位: 秒
-         */
-        public static int prepareTime;
+        @ConfigEntry(comment = "鬼の最大人数")
+        public static int seekerLimit = 1;
 
-        /**
-         * 制限時間
-         * 単位: 秒
-         */
-        public static int playTime;
+        @Transitive
+        @ConfigEntries
+        public static class Times implements ConfigGroup {
+            @ConfigEntry(comment = "陣営の投票時間(単位:秒)")
+            public static int voteTime = 30;
+            /**
+             * 準備時間
+             * 単位: 秒
+             */
+            public static int prepareTime;
 
-        /**
-         * 擬態にかかる時間
-         * 単位: 秒
-         */
-        public static int hideWaitTime;
+            /**
+             * 制限時間
+             * 単位: 秒
+             */
+            public static int playTime;
+
+            /**
+             * 擬態にかかる時間
+             * 単位: 秒
+             */
+            public static int hideWaitTime;
+        }
     }
 
     @Transitive
     @ConfigEntries
     public static class ItemConfig implements ConfigGroup {
         /**
-         *  鬼が持つ探知用アイテム
+         * 鬼が持つ探知用アイテム
          */
         @Transitive
         @ConfigEntries

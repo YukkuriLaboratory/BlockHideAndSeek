@@ -1,10 +1,7 @@
 package com.iduki.blockhideandseekmod;
 
 import com.iduki.blockhideandseekmod.block.SampleBlock;
-import com.iduki.blockhideandseekmod.command.Settings;
-import com.iduki.blockhideandseekmod.command.Start;
-import com.iduki.blockhideandseekmod.command.Stop;
-import com.iduki.blockhideandseekmod.command.TeamBlocks;
+import com.iduki.blockhideandseekmod.command.*;
 import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.effect.HideEffect;
 import com.iduki.blockhideandseekmod.item.BhasItems;
@@ -60,6 +57,7 @@ public class BlockHideAndSeekMod implements ModInitializer {
 		TeamBlocks.registerCommands();
 		Start.registerCommands();
 		Stop.registerCommands();
+		Team.registerCommands();
 		Settings.registerCommands();
 
 
