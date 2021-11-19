@@ -31,9 +31,6 @@ public class Start {
         TeamCreateandDelete.addHider(source.getPlayer());
         TeamCreateandDelete.addObserver(source.getPlayer());
 
-        //次の処理でチーム分けブロックの上に乗っているプレイヤーをチームに入れる
-        //TeamJoin.joinSeeker();
-
         //準備時間の表示と計測
         PreparationTimer.Preparationtime();
 
