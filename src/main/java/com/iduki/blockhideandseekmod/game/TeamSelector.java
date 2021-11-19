@@ -1,6 +1,7 @@
 package com.iduki.blockhideandseekmod.game;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
 import net.minecraft.entity.boss.BossBar;
@@ -16,6 +17,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -202,10 +204,23 @@ public class TeamSelector {
             //アクションバーのメッセージを非表示にする
             playerManager.getPlayerList().forEach(player -> HudDisplay.removeActionbarText(player.getUuid(), VOTE_PROGRESS));
             //鬼側が上限を超えていた際にミミック側に移動させる
+            //鬼からミミック陣営に移動した人のUUIDを集める用
+            Set<UUID> notificationTargets = Sets.newHashSet();
+            //鬼が上限より多い限り実行し続ける
             while (seekers.size() > ModConfig.SystemConfig.seekerLimit) {
                 var random = new Random();
+                //鬼からランダムに一人を選出して削除
                 var uuid = seekers.remove(random.nextInt(seekers.size() - 1));
+                //ミミック陣営に追加
                 hiders.add(uuid);
+                //通知対象に追加
+                notificationTargets.add(uuid);
+            }
+            if (!notificationTargets.isEmpty()) {
+                var notifyText = new LiteralText("鬼の人数が上限を上回っていたため，ミミック陣営に移動しました")
+                        .setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+                //鬼から移動した人に通知(3秒間)
+                notificationTargets.forEach(uuid -> HudDisplay.setActionBarText(uuid, "teamNotify", notifyText, 60L));
             }
             //タイトルバーにSTARTと表示
             var startMessage = new TitleS2CPacket(new LiteralText("START").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
