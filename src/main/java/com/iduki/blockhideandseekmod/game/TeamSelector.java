@@ -164,7 +164,7 @@ public class TeamSelector {
      * ワールドから退出したタイミングで呼び出されています
      * <p>
      * この処理がなかった場合，
-     * プレイヤーが死亡，ワールド間の移動，サーバーの出入りを繰り返すたびにplayerのインスタンスが変更されてServerBossBarのplayersが無限に肥大化してしまう
+     * プレイヤーが死亡，ワールド間の移動，サーバーの出入りを繰り返すたびにplayerのインスタンスが変更されて新たなplayerとして追加され，ServerBossBarのplayersが無限に肥大化してしまう
      *
      * @param player 退出したプレイヤー
      */
