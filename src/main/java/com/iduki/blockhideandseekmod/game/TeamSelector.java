@@ -277,6 +277,7 @@ public class TeamSelector {
     /**
      * 投票を受け付けている間，陣営の人数表示を毎秒更新し続けます
      */
+    //Thread.sleepは多くの場合で冗長とされてwaringの対象となっているが，今回の場合は正しい使用方法と判断できるため警告を抑制している
     @SuppressWarnings("BusyWait")
     private static void registerMessage() {
         isVoteTime = true;
@@ -286,12 +287,14 @@ public class TeamSelector {
         EXECUTOR.execute(() -> {
             //投票時間中常に実行
             while (isVoteTime) {
-                //マインクラフトの実行スレッドの呼び出し
+                //現在の時間の取得
+                var startTime = Instant.now();
+                //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
                 //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
-                server.execute(TeamSelector::update);
+                server.submitAndJoin(TeamSelector::update);
                 try {
-                    //0.5秒間待つ
-                    Thread.sleep(500);
+                    //0.5 - (作業時間)秒間待つ
+                    Thread.sleep(Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now())).toMillis());
                 } catch (InterruptedException ignore) {
                 }
             }
