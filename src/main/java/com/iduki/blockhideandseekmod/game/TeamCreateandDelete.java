@@ -2,15 +2,13 @@ package com.iduki.blockhideandseekmod.game;
 
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 import static net.minecraft.util.Formatting.*;
 
 public class TeamCreateandDelete {
 
-    public static void addSeeker(ServerPlayerEntity serverPlayerEntity) {
+    public static void addSeeker() {
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
-        if (serverPlayerEntity.getName() == null) return;
         Team team = scoreboard.getTeam("Seekers");
         if (team == null) {
             team = scoreboard.addTeam("Seekers");
@@ -19,20 +17,18 @@ public class TeamCreateandDelete {
         }
     }
 
-    public static void addHider(ServerPlayerEntity serverPlayerEntity) {
+    public static void addHider() {
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
-        if (serverPlayerEntity.getName() == null) return;
         Team team = scoreboard.getTeam("Hiders");
         if (team == null) {
             team = scoreboard.addTeam("Hiders");
-            team.setColor(BLUE);
+            team.setColor(GREEN);
             team.setFriendlyFireAllowed(false);
         }
     }
 
-    public static void addObserver(ServerPlayerEntity serverPlayerEntity) {
+    public static void addObserver() {
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
-        if (serverPlayerEntity.getName() == null) return;
         Team team = scoreboard.getTeam("Observers");
         if (team == null) {
             team = scoreboard.addTeam("Observers");

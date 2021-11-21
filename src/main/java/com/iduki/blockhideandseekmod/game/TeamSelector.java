@@ -6,7 +6,9 @@ import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
@@ -15,10 +17,7 @@ import net.minecraft.util.math.MathHelper;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -114,6 +113,7 @@ public class TeamSelector {
                 .append(Text.of(" / "))
                 .append(new LiteralText("ミミック陣営に参加する").setStyle(Style.EMPTY.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bhas team hider")).withHoverEvent(hoverEvent)));
         server.getPlayerManager().getPlayerList().forEach(p -> p.sendMessage(text, false));
+
     }
 
     /**
@@ -265,6 +265,36 @@ public class TeamSelector {
             playerManager.getPlayerList().forEach(player -> player.sendMessage(message, false));
 
             //TODO call game start method
+
+            //冗長になって申しわないグニャ～
+            //あとObserverチームはチームに所属してないプレイヤーをリスト化して入れたほうがいいのだろうか
+
+            //集計したListをList<String>に変換
+            List<String> seekerNames = seekers.stream()
+                    .map(playerManager::getPlayer)
+                    .filter(Objects::nonNull)
+                    .map(PlayerEntity::getEntityName)
+                    .toList();
+            List<String> hiderNames = hiders.stream()
+                    .map(playerManager::getPlayer)
+                    .filter(Objects::nonNull)
+                    .map(PlayerEntity::getEntityName)
+                    .toList();
+            //各チームの作成
+            var scoreboard = server.getScoreboard();
+            TeamCreateandDelete.addSeeker();
+            TeamCreateandDelete.addHider();
+            TeamCreateandDelete.addObserver();
+            Team seekersteam = scoreboard.getTeam("Seekers");
+            Team hidersteam = scoreboard.getTeam("Hiders");
+            Team observersteam = scoreboard.getTeam("Observers");
+            //各チームにプレイヤーを振り分けする
+            seekerNames.forEach(player -> scoreboard.addPlayerToTeam(player, seekersteam));
+            hiderNames.forEach(player -> scoreboard.addPlayerToTeam(player, hidersteam));
+
+            //ゲーム開始フェーズ(準備時間)への移行
+            PreparationTime.startPreparation();
+
             return;
         }
 
@@ -334,6 +364,7 @@ public class TeamSelector {
             }
         });
     }
+
 
     static {
         //最初は非表示にしておく

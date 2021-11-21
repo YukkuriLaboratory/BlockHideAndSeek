@@ -28,7 +28,8 @@ public class ModConfig extends Config implements ConfigContainer {
              * 準備時間
              * 単位: 秒
              */
-            public static int prepareTime;
+            @ConfigEntry(comment = "準備時間(単位:秒)")
+            public static int prepareTime = 60;
 
             /**
              * 制限時間
