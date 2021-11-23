@@ -29,13 +29,13 @@ public class ModConfig extends Config implements ConfigContainer {
              * 単位: 秒
              */
             @ConfigEntry(comment = "準備時間(単位:秒)")
-            public static int prepareTime = 60;
+            public static int prepareTime = 10;
 
             /**
              * 制限時間
              * 単位: 秒
              */
-            public static int playTime;
+            public static int playTime = 10;
 
             /**
              * 擬態にかかる時間
