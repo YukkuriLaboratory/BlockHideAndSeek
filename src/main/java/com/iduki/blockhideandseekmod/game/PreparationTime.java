@@ -10,6 +10,8 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -57,37 +59,48 @@ public class PreparationTime {
     //毎回クラス名入力するのがダルいので定数として扱う
     private static final MinecraftServer server = BlockHideAndSeekMod.SERVER;
 
-    //下のメッセージを一回送るためだけ
-    public static volatile boolean isSendTeamMessage = true;
-
-
     //準備時間開始時にチーム別にタイトル表示
     public static void teamMessage() {
         var playerManager = server.getPlayerManager();
         var scoreboard = server.getScoreboard();
 
         Team seekers = scoreboard.getTeam("Seekers");
-        var startSeekerMessage = new TitleS2CPacket(new LiteralText("[鬼はスタートしたらミミックを探そう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+        var startSeekerMessage = new LiteralText("[鬼はスタートしたらミミックを探そう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
         List<ServerPlayerEntity> seekersList = seekers.getPlayerList()
                 .stream().map(player -> seekers.getName())
-                .filter(uuid -> uuid != null)
                 .map(uuid -> playerManager.getPlayer(uuid))
                 .toList();
-        seekersList.forEach(player -> player.networkHandler.sendPacket(startSeekerMessage));
+        seekersList.forEach(player -> player.sendMessage(startSeekerMessage, false));
 
         Team hiders = scoreboard.getTeam("Hiders");
-        var startHiderMessage = new TitleS2CPacket(new LiteralText("[ミミックは準備時間終了までに隠れよう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+        var startHiderMessage = new LiteralText("[ミミックは準備時間終了までに隠れよう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
         List<ServerPlayerEntity> hidersList = hiders.getPlayerList()
                 .stream().map(player -> hiders.getName())
-                .filter(uuid -> uuid != null)
                 .map(uuid -> playerManager.getPlayer(uuid))
                 .toList();
-        hidersList.forEach(player -> player.networkHandler.sendPacket(startHiderMessage));
-        isSendTeamMessage = false;
+        hidersList.forEach(player -> player.sendMessage(startHiderMessage, false));
     }
 
 
-    public static volatile boolean isTeamnull = true;
+    public static boolean checkTeamcount() {
+        var playerManager = server.getPlayerManager();
+        var scoreboard = server.getScoreboard();
+
+        Team seekersteam = scoreboard.getTeam("Seekers");
+        Team hidersteam = scoreboard.getTeam("Hiders");
+        if (seekersteam.getPlayerList().isEmpty() || hidersteam.getPlayerList().isEmpty()) {
+            var message = new LiteralText("")
+                    .append(new LiteralText("プレイヤーがいないためゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+            var startMessage = new TitleS2CPacket(new LiteralText("ゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+            playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
+            playerManager.getPlayerList().forEach(allplayer -> allplayer.sendMessage(message, false));
+            isPreparationTime = false;
+            preparationtimeProgress.setVisible(false);
+            TeamCreateandDelete.deleteTeam();
+            return false;
+        }
+        return true;
+    }
 
     /**
      * 準備時間のカウントを開始します．
@@ -97,10 +110,9 @@ public class PreparationTime {
 
         //各種変数の初期化
         preparationTime = Instant.now();
-        checkTeamcount();
-        if (isTeamnull) {
-            registerMessage();
-        }
+
+
+        registerMessage();
 
 
     }
@@ -144,35 +156,7 @@ public class PreparationTime {
         });
     }
 
-    public static void checkTeamcount() {
-        var playerManager = server.getPlayerManager();
-        var scoreboard = server.getScoreboard();
 
-        Team seekersteam = scoreboard.getTeam("Seekers");
-        if (seekersteam.getPlayerList().size() == 0) {
-            var message = new LiteralText("")
-                    .append(new LiteralText("鬼陣営のプレイヤーがいないためゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.RED)));
-            playerManager.getPlayerList().forEach(allplayer -> allplayer.sendMessage(message, false));
-            isPreparationTime = false;
-            preparationtimeProgress.setVisible(false);
-            TeamCreateandDelete.deleteTeam();
-            isSendTeamMessage = false;
-            isTeamnull = false;
-        }
-
-
-        Team hidersteam = scoreboard.getTeam("Hiders");
-        if (hidersteam.getPlayerList().size() == 0) {
-            var message = new LiteralText("")
-                    .append(new LiteralText("ミミック陣営のプレイヤーがいないためゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.RED)));
-            playerManager.getPlayerList().forEach(allplayer -> allplayer.sendMessage(message, false));
-            isPreparationTime = false;
-            preparationtimeProgress.setVisible(false);
-            TeamCreateandDelete.deleteTeam();
-            isSendTeamMessage = false;
-            isTeamnull = false;
-        }
-    }
 
 
     /**
@@ -180,12 +164,6 @@ public class PreparationTime {
      */
     public static void update() {
         var playerManager = server.getPlayerManager();
-
-
-        if (isSendTeamMessage) {
-            teamMessage();
-        }
-
 
         SlownessSeekers();
 
@@ -208,11 +186,14 @@ public class PreparationTime {
             //ボスバーを非表示にする
             preparationtimeProgress.setVisible(false);
             //タイトルバーにSTARTと表示
-            var startMessage = new TitleS2CPacket(new LiteralText("START").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+            var startMessage = new TitleS2CPacket(new LiteralText("-GAME-START-").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
 
-            //ゲーム開始フェーズへの移行
+            playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.PLAYERS, 1.0f, 1.0f));
 
+            //ゲーム開始フェーズへの移行
+            TeamCreateandDelete.deathCount();
+            GameStart.startGame();
             return;
         }
 
@@ -223,11 +204,15 @@ public class PreparationTime {
         preparationtimeProgress.setPercent(MathHelper.clamp(remainsTime.toSeconds() / ((float) prepareTime), 0, 1));
 
 
+        var isDisplayTime = Math.floor(currentTime.toMillis() / 100f / 5) % 2 == 0;
+
+        if (currentTime.toSeconds() >= prepareTime - 4 && isDisplayTime) {
+            playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_HAT, SoundCategory.PLAYERS, 1.0f, 1.0f));
+        }
+
+
     }
 
-    /**
-     * 投票を受け付けている間，陣営の人数表示を毎秒更新し続けます
-     */
     //Thread.sleepは多くの場合で冗長とされてwaringの対象となっているが，今回の場合は正しい使用方法と判断できるため警告を抑制している
     @SuppressWarnings("BusyWait")
     private static void registerMessage() {
@@ -235,6 +220,13 @@ public class PreparationTime {
 
         //ボスバーを表示
         preparationtimeProgress.setVisible(true);
+
+        if (!checkTeamcount()) {
+            return;
+        }
+        //うごかないよ
+        //teamMessage();
+
         //非同期スレッドの呼び出し
         EXECUTOR.execute(() -> {
             //準備時間中常に実行
