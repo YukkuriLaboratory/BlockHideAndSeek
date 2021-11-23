@@ -38,6 +38,10 @@ public class GameStart {
      */
     private static volatile boolean isInGameTime = false;
 
+    public static boolean getisInGameTime() {
+        return isInGameTime;
+    }
+
     /**
      * 時間計測用
      * 準備時間
@@ -115,9 +119,6 @@ public class GameStart {
     }
 
 
-    /**
-     *
-     */
     public static void update() {
         var playerManager = server.getPlayerManager();
         var scoreboard = server.getScoreboard();
@@ -184,6 +185,18 @@ public class GameStart {
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_HAT, SoundCategory.PLAYERS, 1.0f, 1.0f));
         }
 
+    }
+
+    private static void suspendGame() {
+        isInGameTime = false;
+        ingametimeProgress.setVisible(false);
+        TeamCreateandDelete.deleteTeam();
+        var text = new LiteralText("ゲームが中断されました");
+        server.getPlayerManager().getPlayerList().forEach(p -> p.sendMessage(text, false));
+    }
+
+    public static void stopGame() {
+        suspendGame();
     }
 
 

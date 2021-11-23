@@ -68,7 +68,7 @@ public class PreparationTime {
         var startSeekerMessage = new LiteralText("[鬼はスタートしたらミミックを探そう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
         List<ServerPlayerEntity> seekersList = seekers.getPlayerList()
                 .stream().map(player -> seekers.getName())
-                .map(uuid -> playerManager.getPlayer(uuid))
+                .map(playerManager::getPlayer)
                 .toList();
         seekersList.forEach(player -> player.sendMessage(startSeekerMessage, false));
 
@@ -76,7 +76,7 @@ public class PreparationTime {
         var startHiderMessage = new LiteralText("[ミミックは準備時間終了までに隠れよう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
         List<ServerPlayerEntity> hidersList = hiders.getPlayerList()
                 .stream().map(player -> hiders.getName())
-                .map(uuid -> playerManager.getPlayer(uuid))
+                .map(playerManager::getPlayer)
                 .toList();
         hidersList.forEach(player -> player.sendMessage(startHiderMessage, false));
     }
@@ -157,11 +157,6 @@ public class PreparationTime {
     }
 
 
-
-
-    /**
-     *
-     */
     public static void update() {
         var playerManager = server.getPlayerManager();
 
@@ -210,6 +205,15 @@ public class PreparationTime {
         }
 
 
+    }
+
+    private static void suspendGame() {
+        isPreparationTime = false;
+        preparationtimeProgress.setVisible(false);
+    }
+
+    public static void stopGame() {
+        suspendGame();
     }
 
     //Thread.sleepは多くの場合で冗長とされてwaringの対象となっているが，今回の場合は正しい使用方法と判断できるため警告を抑制している

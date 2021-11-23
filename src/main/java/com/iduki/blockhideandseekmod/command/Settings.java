@@ -1,5 +1,6 @@
 package com.iduki.blockhideandseekmod.command;
 
+import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -14,7 +15,7 @@ public class Settings {
                 (dispatcher, dedicated) ->
                         dispatcher.register(
                                 literal("bhas")
-                                        .requires(source -> source.hasPermissionLevel(4))
+                                        .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                         .then(literal("settings")
                                                 .executes(Settings::settings)
                                         )

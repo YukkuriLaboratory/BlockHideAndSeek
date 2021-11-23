@@ -1,5 +1,6 @@
 package com.iduki.blockhideandseekmod.command;
 
+import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.game.TeamSelector;
 import com.mojang.brigadier.Command;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -12,7 +13,7 @@ public class Start {
                 (dispatcher, dedicated) ->
                         dispatcher.register(
                                 literal("bhas")
-                                        .requires(source -> source.hasPermissionLevel(4))
+                                        .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                         .then(literal("start")
                                                 .executes(context -> {
                                                     TeamSelector.startVote();
