@@ -44,6 +44,5 @@ public class TeamCreateandDelete {
         scoreboard.removeTeam(scoreboard.getTeam("Observers"));
     }
 
-
 }
 
