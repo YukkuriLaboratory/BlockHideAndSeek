@@ -14,6 +14,7 @@ public class Settings {
                 (dispatcher, dedicated) ->
                         dispatcher.register(
                                 literal("bhas")
+                                        .requires(source -> source.hasPermissionLevel(4))
                                         .then(literal("settings")
                                                 .executes(Settings::settings)
                                         )

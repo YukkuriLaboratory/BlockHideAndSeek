@@ -12,11 +12,12 @@ public class Start {
                 (dispatcher, dedicated) ->
                         dispatcher.register(
                                 literal("bhas")
+                                        .requires(source -> source.hasPermissionLevel(4))
                                         .then(literal("start")
-                                                        .executes(context -> {
-                                                            TeamSelector.startVote();
-                                                            return Command.SINGLE_SUCCESS;
-                                                        })
+                                                .executes(context -> {
+                                                    TeamSelector.startVote();
+                                                    return Command.SINGLE_SUCCESS;
+                                                })
                                         )
                         )
         );

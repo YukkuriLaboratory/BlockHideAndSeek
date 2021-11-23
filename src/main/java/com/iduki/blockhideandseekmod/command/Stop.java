@@ -14,6 +14,7 @@ public class Stop {
                 (dispatcher, dedicated) ->
                         dispatcher.register(
                                 literal("bhas")
+                                        .requires(source -> source.hasPermissionLevel(4))
                                         .then(literal("stop")
                                                 .executes(Stop::stopGame)
                                         )
@@ -23,6 +24,7 @@ public class Stop {
 
     public static int stopGame(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         final ServerCommandSource source = context.getSource();
+
 
         TeamCreateandDelete.deleteTeam();
         return 1;
