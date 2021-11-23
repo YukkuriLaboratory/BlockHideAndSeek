@@ -192,7 +192,6 @@ public class PreparationTime {
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.PLAYERS, 1.0f, 1.0f));
 
             //ゲーム開始フェーズへの移行
-            TeamCreateandDelete.deathCount();
             GameStart.startGame();
             return;
         }
