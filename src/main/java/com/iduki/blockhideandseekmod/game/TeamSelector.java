@@ -11,6 +11,8 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
@@ -223,8 +225,10 @@ public class TeamSelector {
                 notificationTargets.forEach(uuid -> HudDisplay.setActionBarText(uuid, "teamNotify", notifyText, 60L));
             }
             //タイトルバーにSTARTと表示
-            var startMessage = new TitleS2CPacket(new LiteralText("START").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+            var startMessage = new TitleS2CPacket(new LiteralText("READY").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
+
+            playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 1.0f));
             /*
             各陣営のメンバー通知用メッセージ.表示は以下のような感じ
             """
@@ -285,10 +289,9 @@ public class TeamSelector {
             TeamCreateandDelete.addSeeker();
             TeamCreateandDelete.addHider();
             TeamCreateandDelete.addObserver();
+            //各チームにプレイヤーを振り分けする
             Team seekersteam = scoreboard.getTeam("Seekers");
             Team hidersteam = scoreboard.getTeam("Hiders");
-            Team observersteam = scoreboard.getTeam("Observers");
-            //各チームにプレイヤーを振り分けする
             seekerNames.forEach(player -> scoreboard.addPlayerToTeam(player, seekersteam));
             hiderNames.forEach(player -> scoreboard.addPlayerToTeam(player, hidersteam));
 
