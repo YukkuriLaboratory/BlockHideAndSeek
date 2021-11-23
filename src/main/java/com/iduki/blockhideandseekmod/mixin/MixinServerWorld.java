@@ -1,5 +1,6 @@
 package com.iduki.blockhideandseekmod.mixin;
 
+import com.iduki.blockhideandseekmod.game.GameStart;
 import com.iduki.blockhideandseekmod.game.HideController;
 import com.iduki.blockhideandseekmod.game.PreparationTime;
 import com.iduki.blockhideandseekmod.game.TeamSelector;
@@ -61,6 +62,7 @@ public abstract class MixinServerWorld {
     private void addBossBarTarget(ServerPlayerEntity player, CallbackInfo ci) {
         TeamSelector.addBossBarTarget(player);
         PreparationTime.addBossBarTarget(player);
+        GameStart.addBossBarTarget(player);
     }
 
     @Inject(
@@ -70,5 +72,6 @@ public abstract class MixinServerWorld {
     private void removeBossBarTarget(ServerPlayerEntity player, Entity.RemovalReason reason, CallbackInfo ci) {
         TeamSelector.removeBossBarTarget(player);
         PreparationTime.removeBossBarTarget(player);
+        GameStart.removeBossBarTarget(player);
     }
 }
