@@ -178,9 +178,7 @@ public class PreparationTime {
 
         //残り時間が０以下のとき
         if (remainsTime.isNegative()) {
-            isPreparationTime = false;
-            //ボスバーを非表示にする
-            preparationtimeProgress.setVisible(false);
+            suspendGame();
             //タイトルバーにSTARTと表示
             var startMessage = new TitleS2CPacket(new LiteralText("-GAME-START-").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
@@ -238,12 +236,14 @@ public class PreparationTime {
         EXECUTOR.execute(() -> {
             //準備時間中常に実行
             while (isPreparationTime) {
-                TeamSelector.addobserver();
                 //現在の時間の取得
                 var startTime = Instant.now();
                 //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
                 //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
-                server.submitAndJoin(PreparationTime::update);
+                server.submitAndJoin(() -> {
+                    TeamSelector.addobserver();
+                    update();
+                });
                 try {
                     //0.5 - (作業時間)秒間待つ
                     Thread.sleep(Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now())).toMillis());

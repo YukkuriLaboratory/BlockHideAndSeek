@@ -141,12 +141,12 @@ public class GameStart {
 
         //ミミック陣営の人数が0のとき
         if (mimicEmpty) {
-            isInGameTime = false;
-            //ボスバーを非表示にする
-            ingametimeProgress.setVisible(false);
+            suspendGame();
             //タイトルバーにGAMEOVERと表示
             var endMessage = new TitleS2CPacket(new LiteralText("-鬼陣営の勝利!-").setStyle(Style.EMPTY.withColor(Formatting.RED)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(endMessage));
+
+            playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 1.0f, 1.0f));
 
             //ゲーム終了フェーズへの移行
             //TODO ゲームの終了.ゲームの勝敗を表示する(人数0なので鬼側の)
@@ -158,9 +158,7 @@ public class GameStart {
 
         //残り時間が０以下のとき
         if (remainsTime.isNegative()) {
-            isInGameTime = false;
-            //ボスバーを非表示にする
-            ingametimeProgress.setVisible(false);
+            suspendGame();
             //タイトルバーにGAMEOVERと表示
             var endMessage = new TitleS2CPacket(new LiteralText("-ミミック陣営の勝利!-").setStyle(Style.EMPTY.withColor(Formatting.RED)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(endMessage));
@@ -190,18 +188,20 @@ public class GameStart {
 
     }
 
+    //ゲーム終了処理
     private static void suspendGame() {
         var playerManager = server.getPlayerManager();
         isInGameTime = false;
         ingametimeProgress.setVisible(false);
         playerManager.getPlayerList().forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
         TeamCreateandDelete.deleteTeam();
-        var text = new LiteralText("ゲームが中断されました");
-        server.getPlayerManager().getPlayerList().forEach(p -> p.sendMessage(text, false));
     }
 
+    //stopコマンドの処理
     public static void stopGame() {
         suspendGame();
+        var text = new LiteralText("ゲームが中断されました");
+        server.getPlayerManager().getPlayerList().forEach(p -> p.sendMessage(text, false));
     }
 
 
@@ -216,12 +216,14 @@ public class GameStart {
         EXECUTOR.execute(() -> {
             //準備時間中常に実行
             while (isInGameTime) {
-                TeamSelector.addobserver();
                 //現在の時間の取得
                 var startTime = Instant.now();
                 //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
                 //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
-                server.submitAndJoin(GameStart::update);
+                server.submitAndJoin(() -> {
+                    TeamSelector.addobserver();
+                    update();
+                });
                 try {
                     //0.5 - (作業時間)秒間待つ
                     Thread.sleep(Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now())).toMillis());
