@@ -67,7 +67,8 @@ public class PreparationTime {
         Team seekers = scoreboard.getTeam("Seekers");
         var startSeekerMessage = new LiteralText("[鬼はスタートしたらミミックを探そう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
         List<ServerPlayerEntity> seekersList = seekers.getPlayerList()
-                .stream().map(player -> seekers.getName())
+                .stream()
+                .map(player -> seekers.getName())
                 .map(playerManager::getPlayer)
                 .toList();
         seekersList.forEach(player -> player.sendMessage(startSeekerMessage, false));
@@ -224,9 +225,12 @@ public class PreparationTime {
         //ボスバーを表示
         preparationtimeProgress.setVisible(true);
 
+        /* デバッグのため一時的にコメントアウト
         if (!checkTeamcount()) {
             return;
         }
+        */
+
         //うごかないよ
         //teamMessage();
 
@@ -234,6 +238,7 @@ public class PreparationTime {
         EXECUTOR.execute(() -> {
             //準備時間中常に実行
             while (isPreparationTime) {
+                TeamSelector.addobserver();
                 //現在の時間の取得
                 var startTime = Instant.now();
                 //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる

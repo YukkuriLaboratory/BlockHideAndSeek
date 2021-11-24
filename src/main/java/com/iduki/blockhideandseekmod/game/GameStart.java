@@ -16,6 +16,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.GameMode;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -144,11 +145,12 @@ public class GameStart {
             //ボスバーを非表示にする
             ingametimeProgress.setVisible(false);
             //タイトルバーにGAMEOVERと表示
-            var startMessage = new TitleS2CPacket(new LiteralText("-鬼陣営の勝利!-").setStyle(Style.EMPTY.withColor(Formatting.RED)));
-            playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
+            var endMessage = new TitleS2CPacket(new LiteralText("-鬼陣営の勝利!-").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+            playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(endMessage));
 
             //ゲーム終了フェーズへの移行
             //TODO ゲームの終了.ゲームの勝敗を表示する(人数0なので鬼側の)
+            playerManager.getPlayerList().forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
             TeamCreateandDelete.deleteTeam();
 
             return;
@@ -160,13 +162,14 @@ public class GameStart {
             //ボスバーを非表示にする
             ingametimeProgress.setVisible(false);
             //タイトルバーにGAMEOVERと表示
-            var startMessage = new TitleS2CPacket(new LiteralText("-ミミック陣営の勝利!-").setStyle(Style.EMPTY.withColor(Formatting.RED)));
-            playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
+            var endMessage = new TitleS2CPacket(new LiteralText("-ミミック陣営の勝利!-").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+            playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(endMessage));
 
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 1.0f, 1.0f));
 
             //ゲーム終了フェーズへの移行
             //TODO ゲームの終了.ゲームの勝敗を表示する(時間切れなのでミミック側の)
+            playerManager.getPlayerList().forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
             TeamCreateandDelete.deleteTeam();
 
 
@@ -188,8 +191,10 @@ public class GameStart {
     }
 
     private static void suspendGame() {
+        var playerManager = server.getPlayerManager();
         isInGameTime = false;
         ingametimeProgress.setVisible(false);
+        playerManager.getPlayerList().forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
         TeamCreateandDelete.deleteTeam();
         var text = new LiteralText("ゲームが中断されました");
         server.getPlayerManager().getPlayerList().forEach(p -> p.sendMessage(text, false));
@@ -211,6 +216,7 @@ public class GameStart {
         EXECUTOR.execute(() -> {
             //準備時間中常に実行
             while (isInGameTime) {
+                TeamSelector.addobserver();
                 //現在の時間の取得
                 var startTime = Instant.now();
                 //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
