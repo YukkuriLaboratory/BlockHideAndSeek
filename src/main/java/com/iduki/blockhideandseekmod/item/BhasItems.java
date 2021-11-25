@@ -7,8 +7,8 @@ import net.minecraft.util.registry.Registry;
 
 public class BhasItems {
 
-    public static ItemDetector DETECTOR = register("detector", new ItemDetector(new Item.Settings()));
-    public static ItemScanner SCANNER = register("scanner", new ItemScanner(new Item.Settings()));
+    public static ItemDetector DETECTOR = register("detector", new ItemDetector());
+    public static ItemScanner SCANNER = register("scanner", new ItemScanner());
 
     private static <T extends Item> T register(String id, T item) {
         return Registry.register(Registry.ITEM, new Identifier(BlockHideAndSeekMod.MOD_ID, id), item);

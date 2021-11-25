@@ -28,8 +28,10 @@ public class ItemDetector extends LoreItem implements ServerSideItem {
 
     private final static String DETECT_MESSAGE = "detectMessage";
 
-    public ItemDetector(Settings settings) {
-        super(settings);
+    private final static Settings SETTINGS = new Settings();
+
+    public ItemDetector() {
+        super(SETTINGS);
     }
 
     @Override

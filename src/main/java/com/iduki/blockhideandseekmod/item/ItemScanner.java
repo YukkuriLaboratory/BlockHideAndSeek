@@ -30,8 +30,10 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     private final static String SCAN_RESULT = "scanResult";
     private final static String SCAN_NOTIFY = "scanNotify";
 
-    public ItemScanner(Settings settings) {
-        super(settings);
+    private final static Settings SETTINGS = new Settings();
+
+    public ItemScanner() {
+        super(SETTINGS);
     }
 
     @Override
