@@ -16,10 +16,12 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -189,7 +191,16 @@ public class GameStart {
         var playerManager = server.getPlayerManager();
         isInGameTime = false;
         ingametimeProgress.setVisible(false);
-        playerManager.getPlayerList().forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
+        HideController.clearSelectors();
+        //Modアイテムの削除
+        playerManager.getPlayerList().forEach(player -> {
+            player.changeGameMode(GameMode.SURVIVAL);
+            player.getInventory().remove(
+                    itemStack -> Objects.equals(Registry.ITEM.getId(itemStack.getItem()).getNamespace(), BlockHideAndSeekMod.MOD_ID),
+                    64,
+                    player.playerScreenHandler.getCraftingInput()
+            );
+        });
         TeamCreateandDelete.deleteTeam();
     }
 

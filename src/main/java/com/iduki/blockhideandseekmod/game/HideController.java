@@ -1,5 +1,7 @@
 package com.iduki.blockhideandseekmod.game;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
@@ -14,6 +16,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -36,18 +39,30 @@ public class HideController {
     /**
      * 隠れているプレイヤー
      */
-    private static final Map<UUID, BlockPos> hidingPlayers = Maps.newHashMap();
+    private static final Map<UUID, BlockPos> hidingPlayers = HashBiMap.create();
     private static final Map<UUID, Entity> ridingTarget = Maps.newHashMap();
     private static final Map<BlockPos, BlockState> hidingBlocks = Maps.newHashMap();
 
-    //TODO call when game stopped
-    public static void clearSelecters() {
+    public static final String SELECTED_BLOCK = "selectedBlock";
+    private static final String HIDING_MESSAGE = "hidingmessage";
+    private static final String HIDE_PROGRESS = "hidingprogress";
+
+    public static void clearSelectors() {
+        selectingBlocks.keySet().forEach(uuid -> HudDisplay.removeActionbarText(uuid, SELECTED_BLOCK));
         selectingBlocks.clear();
     }
 
-    //TODO call when player selected Blocks
     public static void updateSelectedBlock(PlayerEntity player, BlockState blockState) {
-        selectingBlocks.put(player.getUuid(), blockState);
+        var uuid = player.getUuid();
+        var text = new LiteralText("対象ブロック: ").append(new TranslatableText(blockState.getBlock().getTranslationKey()));
+        HudDisplay.setActionBarText(uuid, SELECTED_BLOCK, text);
+        selectingBlocks.put(uuid, blockState);
+    }
+
+    public static void removeSelectedBlock(PlayerEntity player) {
+        var uuid = player.getUuid();
+        HudDisplay.removeActionbarText(uuid, SELECTED_BLOCK);
+        selectingBlocks.remove(uuid);
     }
 
     public static @Nullable BlockState getHidingBlock(BlockPos pos) {
@@ -56,6 +71,10 @@ public class HideController {
 
     public static Set<Map.Entry<BlockPos, BlockState>> getHidingBlocks() {
         return hidingBlocks.entrySet();
+    }
+
+    public static BiMap<UUID, BlockPos> getHidingPlayerMaps() {
+        return HashBiMap.create(hidingPlayers);
     }
 
     public static Set<UUID> getHidingPlayers() {
@@ -190,9 +209,6 @@ public class HideController {
             return false;
         } else return posOne.getZ() == posTwo.getZ();
     }
-
-    private static final String HIDING_MESSAGE = "hidingmessage";
-    private static final String HIDE_PROGRESS = "hidingprogress";
 
     static {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
