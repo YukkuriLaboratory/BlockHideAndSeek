@@ -13,8 +13,8 @@ public class Start {
                 (dispatcher, dedicated) ->
                         dispatcher.register(
                                 literal("bhas")
-                                        .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                         .then(literal("start")
+                                                .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                                 .executes(context -> {
                                                     TeamSelector.startVote();
                                                     return Command.SINGLE_SUCCESS;

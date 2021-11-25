@@ -15,8 +15,8 @@ public class Settings {
                 (dispatcher, dedicated) ->
                         dispatcher.register(
                                 literal("bhas")
-                                        .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                         .then(literal("settings")
+                                                .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                                 .executes(Settings::settings)
                                         )
                         )

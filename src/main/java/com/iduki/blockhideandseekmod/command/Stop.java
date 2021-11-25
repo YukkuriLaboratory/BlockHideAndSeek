@@ -4,7 +4,6 @@ import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.game.GameStart;
 import com.iduki.blockhideandseekmod.game.PreparationTime;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -16,15 +15,15 @@ public class Stop {
                 (dispatcher, dedicated) ->
                         dispatcher.register(
                                 literal("bhas")
-                                        .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                         .then(literal("stop")
+                                                .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                                 .executes(Stop::stopGame)
                                         )
                         )
         );
     }
 
-    public static int stopGame(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    public static int stopGame(CommandContext<ServerCommandSource> context) {
         PreparationTime.stopGame();
         GameStart.stopGame();
         return 1;
