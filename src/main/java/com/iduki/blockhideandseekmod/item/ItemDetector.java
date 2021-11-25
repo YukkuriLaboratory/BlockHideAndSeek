@@ -5,9 +5,7 @@ import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.game.HideController;
 import com.iduki.blockhideandseekmod.game.HudDisplay;
 import com.iduki.blockhideandseekmod.util.SeekerDamageSource;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
@@ -20,7 +18,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 import java.util.List;
 
@@ -50,11 +47,6 @@ public class ItemDetector extends LoreItem implements ServerSideItem {
     @Override
     public Item getVisualItem() {
         return Items.CLOCK;
-    }
-
-    @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
     }
 
     @Override
