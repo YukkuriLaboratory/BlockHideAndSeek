@@ -7,9 +7,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -22,10 +19,12 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 /**
  * 近くの隠れているBlockを指し示すアイテム
  */
-public class ItemScanner extends Item implements ServerSideItem {
+public class ItemScanner extends LoreItem implements ServerSideItem {
 
     private final static String SCAN_RESULT = "scanResult";
     private final static String SCAN_NOTIFY = "scanNotify";
@@ -45,18 +44,11 @@ public class ItemScanner extends Item implements ServerSideItem {
     }
 
     @Override
-    public void postProcessNbt(NbtCompound nbt) {
-        var compound = new NbtCompound();
-        var lore = new NbtList();
-        lore.add(toNbtData(new LiteralText("右クリック: 近くのミミックの人数を表示します")));
-        lore.add(toNbtData(new LiteralText("捜索範囲: " + getScanLength() + "ブロック")));
-        compound.put(ItemStack.LORE_KEY, lore);
-
-        nbt.put(ItemStack.DISPLAY_KEY, compound);
-    }
-
-    private NbtString toNbtData(Text text) {
-        return NbtString.of(Text.Serializer.toJson(text));
+    List<Text> getLore() {
+        return List.of(
+                new LiteralText("右クリック: 近くのミミックの人数を表示します"),
+                new LiteralText("捜索範囲: " + getScanLength() + "ブロック")
+        );
     }
 
     @Override
@@ -91,6 +83,7 @@ public class ItemScanner extends Item implements ServerSideItem {
         return TypedActionResult.success(stack);
     }
 
+    //以下２つのメソッドは途中で設定が変わってもいいようにメソッド化して毎回元のフィールドを参照してる
     private static double getScanLength() {
         return ModConfig.ItemConfig.ItemScanner.scanLength;
     }
