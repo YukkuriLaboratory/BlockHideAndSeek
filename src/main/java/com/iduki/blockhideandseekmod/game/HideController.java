@@ -1,5 +1,7 @@
 package com.iduki.blockhideandseekmod.game;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
@@ -36,7 +38,7 @@ public class HideController {
     /**
      * 隠れているプレイヤー
      */
-    private static final Map<UUID, BlockPos> hidingPlayers = Maps.newHashMap();
+    private static final Map<UUID, BlockPos> hidingPlayers = HashBiMap.create();
     private static final Map<UUID, Entity> ridingTarget = Maps.newHashMap();
     private static final Map<BlockPos, BlockState> hidingBlocks = Maps.newHashMap();
 
@@ -56,6 +58,10 @@ public class HideController {
 
     public static Set<Map.Entry<BlockPos, BlockState>> getHidingBlocks() {
         return hidingBlocks.entrySet();
+    }
+
+    public static BiMap<UUID, BlockPos> getHidingPlayerMaps() {
+        return HashBiMap.create(hidingPlayers);
     }
 
     public static Set<UUID> getHidingPlayers() {
