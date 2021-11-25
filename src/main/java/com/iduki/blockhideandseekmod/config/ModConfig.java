@@ -54,14 +54,10 @@ public class ModConfig extends Config implements ConfigContainer {
         @Transitive
         @ConfigEntries
         public static class ItemDetecter implements ConfigGroup {
-            /**
-             * 使用クールタイム
-             */
-            public static int coolTime;
-            /**
-             * ダメージ量
-             */
-            public static int damageAmount;
+            @ConfigEntry(comment = "使用クールタイム")
+            public static int coolTime = 200;
+            @ConfigEntry(comment = "ダメージ量")
+            public static int damageAmount = 50;
         }
 
         /**
