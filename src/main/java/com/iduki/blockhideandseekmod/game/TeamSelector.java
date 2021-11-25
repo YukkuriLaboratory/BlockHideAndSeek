@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
+import com.iduki.blockhideandseekmod.item.BhasItems;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * ゲームを開始する前に，プレイヤーに陣営選択をさせるためのクラスです．
@@ -274,41 +276,39 @@ public class TeamSelector {
             //冗長になって申しわないグニャ～
             //あとObserverチームはチームに所属してないプレイヤーをリスト化して入れたほうがいいのだろうか
 
-            //集計したListをList<String>に変換
-            List<String> seekerNames = seekers.stream()
+            var playerSeekers = seekers.stream()
                     .map(playerManager::getPlayer)
                     .filter(Objects::nonNull)
-                    .map(PlayerEntity::getEntityName)
                     .toList();
-            List<String> hiderNames = hiders.stream()
+            var playerHiders = hiders.stream()
                     .map(playerManager::getPlayer)
                     .filter(Objects::nonNull)
-                    .map(PlayerEntity::getEntityName)
                     .toList();
 
-            //List<ServerPlayerEntity>もほしいので変換
-            List<ServerPlayerEntity> seekerEntity = seekers.stream()
-                    .map(playerManager::getPlayer)
-                    .filter(Objects::nonNull)
-                    .toList();
-            List<ServerPlayerEntity> hiderEntity = hiders.stream()
-                    .map(playerManager::getPlayer)
-                    .filter(Objects::nonNull)
-                    .toList();
+            //ゲームモードをサバイバルに
+            Stream.concat(playerHiders.stream(), playerSeekers.stream())
+                    .forEach(player -> player.interactionManager.changeGameMode(GameMode.SURVIVAL));
+
+            //アイテムの付与
+            playerSeekers.forEach(player -> {
+                player.getInventory().insertStack(BhasItems.DETECTOR.getDefaultStack());
+                player.getInventory().insertStack(BhasItems.SCANNER.getDefaultStack());
+            });
 
             //各チームの作成
             var scoreboard = server.getScoreboard();
             TeamCreateandDelete.addSeeker();
             TeamCreateandDelete.addHider();
             TeamCreateandDelete.addObserver();
-            //ゲームモードをアドベンチャーに(正直分ける意味あるのかわからん)
-            seekerEntity.forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
-            hiderEntity.forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
             //各チームにプレイヤーを振り分けする
             Team seekersteam = scoreboard.getTeam("Seekers");
             Team hidersteam = scoreboard.getTeam("Hiders");
-            seekerNames.forEach(player -> scoreboard.addPlayerToTeam(player, seekersteam));
-            hiderNames.forEach(player -> scoreboard.addPlayerToTeam(player, hidersteam));
+            playerSeekers.stream()
+                    .map(PlayerEntity::getEntityName)
+                    .forEach(player -> scoreboard.addPlayerToTeam(player, seekersteam));
+            playerHiders.stream()
+                    .map(PlayerEntity::getEntityName)
+                    .forEach(player -> scoreboard.addPlayerToTeam(player, hidersteam));
 
 
             //ゲーム開始フェーズ(準備時間)への移行
