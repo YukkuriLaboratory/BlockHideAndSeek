@@ -59,7 +59,7 @@ public class BlockHideAndSeekMod implements ModInitializer {
 		Stop.registerCommands();
 		Team.registerCommands();
 		Settings.registerCommands();
-
+		Reload.registerCommands();
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> SERVER = server);
 	}
