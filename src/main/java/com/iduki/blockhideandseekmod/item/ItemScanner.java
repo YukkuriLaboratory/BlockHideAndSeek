@@ -17,6 +17,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -47,7 +48,8 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     List<Text> getLore() {
         return List.of(
                 new LiteralText("右クリック: 近くのミミックの人数を表示します"),
-                new LiteralText("捜索範囲: " + getScanLength() + "ブロック")
+                new LiteralText("捜索範囲: " + getScanLength() + "ブロック"),
+                new LiteralText("クールタイム: " + MathHelper.floor((getCoolTime() / 20.0) * 10) / 10 + "秒")
         );
     }
 
@@ -78,7 +80,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
 
         player.getItemCooldownManager().set(this, getCoolTime());
         //クライアントサイドではコンパスに見えてるのでコンパスにクールダウンを表示する
-        ((ServerPlayerEntity) player).networkHandler.sendPacket(new CooldownUpdateS2CPacket(Items.COMPASS, getCoolTime()));
+        ((ServerPlayerEntity) player).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), getCoolTime()));
 
         return TypedActionResult.success(stack);
     }
