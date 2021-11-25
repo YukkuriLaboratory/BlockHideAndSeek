@@ -8,6 +8,8 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -53,12 +55,16 @@ public class ItemBlockSelector extends LoreItem implements ServerSideItem {
                 return ActionResult.PASS;
             }
             var block = context.getWorld().getBlockState(context.getBlockPos());
+            float pitch;
             if (block.getMaterial().isSolid() && !(block.getBlock() instanceof SlabBlock)) {
                 HideController.updateSelectedBlock(player, block);
+                pitch = 1.5f;
             } else {
                 var text = new LiteralText("このブロックには擬態できません!").setStyle(Style.EMPTY.withColor(Formatting.RED));
                 HudDisplay.setActionBarText(player.getUuid(), SELECT_BLOCK_ERROR, text, 30L);
+                pitch = 0.1f;
             }
+            player.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, SoundCategory.PLAYERS, 75, pitch);
             //連打防止用
             var coolTime = 10;
             player.getItemCooldownManager().set(this, coolTime);
