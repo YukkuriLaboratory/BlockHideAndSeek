@@ -20,18 +20,22 @@ public abstract class LoreItem extends Item {
      */
     abstract List<Text> getLore();
 
-    public LoreItem(Settings settings) {
-        super(settings);
-    }
-
     @Override
-    public void postProcessNbt(NbtCompound nbt) {
+    public ItemStack getDefaultStack() {
+        var itemStack = super.getDefaultStack();
+        var nbt = itemStack.getOrCreateNbt();
+
         var compound = new NbtCompound();
         var lore = new NbtList();
         lore.addAll(getLore().stream().map(this::toNbtData).toList());
         compound.put(ItemStack.LORE_KEY, lore);
-
         nbt.put(ItemStack.DISPLAY_KEY, compound);
+
+        return itemStack;
+    }
+
+    public LoreItem(Settings settings) {
+        super(settings);
     }
 
     private NbtString toNbtData(Text text) {
