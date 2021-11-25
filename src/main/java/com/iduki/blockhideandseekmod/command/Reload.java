@@ -12,6 +12,7 @@ public class Reload {
                 (dispatcher, dedicated) ->
                         dispatcher.register(literal("bhas")
                                 .then(literal("reload")
+                                        .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                         .executes(context -> {
                                             BlockHideAndSeekMod.CONFIG.load();
                                             return Command.SINGLE_SUCCESS;
