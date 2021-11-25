@@ -6,19 +6,21 @@ import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.GameMode;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -114,6 +116,7 @@ public class TeamSelector {
                 .append(Text.of(" / "))
                 .append(new LiteralText("ミミック陣営に参加する").setStyle(Style.EMPTY.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bhas team hider")).withHoverEvent(hoverEvent)));
         server.getPlayerManager().getPlayerList().forEach(p -> p.sendMessage(text, false));
+
     }
 
     /**
@@ -223,8 +226,10 @@ public class TeamSelector {
                 notificationTargets.forEach(uuid -> HudDisplay.setActionBarText(uuid, "teamNotify", notifyText, 60L));
             }
             //タイトルバーにSTARTと表示
-            var startMessage = new TitleS2CPacket(new LiteralText("START").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+            var startMessage = new TitleS2CPacket(new LiteralText("READY").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
+
+            playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 1.0f));
             /*
             各陣営のメンバー通知用メッセージ.表示は以下のような感じ
             """
@@ -265,6 +270,50 @@ public class TeamSelector {
             playerManager.getPlayerList().forEach(player -> player.sendMessage(message, false));
 
             //TODO call game start method
+
+            //冗長になって申しわないグニャ～
+            //あとObserverチームはチームに所属してないプレイヤーをリスト化して入れたほうがいいのだろうか
+
+            //集計したListをList<String>に変換
+            List<String> seekerNames = seekers.stream()
+                    .map(playerManager::getPlayer)
+                    .filter(Objects::nonNull)
+                    .map(PlayerEntity::getEntityName)
+                    .toList();
+            List<String> hiderNames = hiders.stream()
+                    .map(playerManager::getPlayer)
+                    .filter(Objects::nonNull)
+                    .map(PlayerEntity::getEntityName)
+                    .toList();
+
+            //List<ServerPlayerEntity>もほしいので変換
+            List<ServerPlayerEntity> seekerEntity = seekers.stream()
+                    .map(playerManager::getPlayer)
+                    .filter(Objects::nonNull)
+                    .toList();
+            List<ServerPlayerEntity> hiderEntity = hiders.stream()
+                    .map(playerManager::getPlayer)
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            //各チームの作成
+            var scoreboard = server.getScoreboard();
+            TeamCreateandDelete.addSeeker();
+            TeamCreateandDelete.addHider();
+            TeamCreateandDelete.addObserver();
+            //ゲームモードをアドベンチャーに(正直分ける意味あるのかわからん)
+            seekerEntity.forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
+            hiderEntity.forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
+            //各チームにプレイヤーを振り分けする
+            Team seekersteam = scoreboard.getTeam("Seekers");
+            Team hidersteam = scoreboard.getTeam("Hiders");
+            seekerNames.forEach(player -> scoreboard.addPlayerToTeam(player, seekersteam));
+            hiderNames.forEach(player -> scoreboard.addPlayerToTeam(player, hidersteam));
+
+
+            //ゲーム開始フェーズ(準備時間)への移行
+            PreparationTime.startPreparation();
+
             return;
         }
 
@@ -308,6 +357,30 @@ public class TeamSelector {
         }
     }
 
+    private static void joinOB() {
+        var playerManager = server.getPlayerManager();
+        var scoreboard = server.getScoreboard();
+        Team observersteam = scoreboard.getTeam("Observers");
+        var playerlist = playerManager.getPlayerList();
+        //サーバープレイヤーからフィルターしてチーム無所属のプレイヤーを取得
+        List<ServerPlayerEntity> observers = playerlist.stream()
+                .filter(player -> player.getScoreboardTeam() != scoreboard.getTeam("Hiders"))
+                .filter(player -> player.getScoreboardTeam() != scoreboard.getTeam("Seekers"))
+                .toList();
+        //List<ServerPlayerEntity>をList<String>に変換
+        List<String> observerNames = observers.stream()
+                .map(PlayerEntity::getEntityName)
+                .toList();
+        //スぺクにしてobserverチームに入れる
+        observers.forEach(player -> player.changeGameMode(GameMode.SPECTATOR));
+        observerNames.forEach(player -> scoreboard.addPlayerToTeam(player, observersteam));
+
+    }
+
+    public static void addobserver() {
+        joinOB();
+    }
+
     /**
      * 投票を受け付けている間，陣営の人数表示を毎秒更新し続けます
      */
@@ -334,6 +407,7 @@ public class TeamSelector {
             }
         });
     }
+
 
     static {
         //最初は非表示にしておく

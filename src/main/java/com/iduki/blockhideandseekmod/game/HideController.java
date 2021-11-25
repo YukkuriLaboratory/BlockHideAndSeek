@@ -108,10 +108,17 @@ public class HideController {
     private static boolean canHide(PlayerEntity player) {
         //TODO check player joined hiding team and game started
         var uuid = player.getUuid();
+        var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
+        var playerteam = scoreboard.getPlayerTeam(player.getEntityName());
 
         if (hidingPlayers.containsKey(uuid) || tryingPlayers.containsKey(uuid)) {
             return false;
         }
+
+        if (scoreboard.getTeam("Hiders") != playerteam || playerteam == null) {
+            return false;
+        }
+
         var blockPos = player.getBlockPos();
         var world = player.world;
         var standingBlock = world.getBlockState(blockPos);

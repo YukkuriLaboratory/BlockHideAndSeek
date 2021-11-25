@@ -3,15 +3,15 @@
   "id": "blockhideandseekmod",
   "version": "${version}",
   "name": "BlockHideAndSeekMod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "This mod is a server-side mod that allows you to play hide-and-seek with blocks!",
   "authors": [
-    "Me!"
+    "YukkuriLaboratory"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "",
+    "sources": ""
   },
-  "license": "CC0-1.0",
+  "license": "All rights reserved",
   "icon": "assets/blockhideandseekmod/icon.png",
   "accessWidener": "blockhideandseekmod.accesswidener",
   "environment": "*",
