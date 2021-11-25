@@ -191,6 +191,7 @@ public class GameStart {
         var playerManager = server.getPlayerManager();
         isInGameTime = false;
         ingametimeProgress.setVisible(false);
+        HideController.clearSelectors();
         //Modアイテムの削除
         playerManager.getPlayerList().forEach(player -> {
             player.changeGameMode(GameMode.SURVIVAL);

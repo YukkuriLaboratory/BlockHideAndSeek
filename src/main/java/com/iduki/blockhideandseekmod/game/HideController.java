@@ -47,8 +47,7 @@ public class HideController {
     private static final String HIDING_MESSAGE = "hidingmessage";
     private static final String HIDE_PROGRESS = "hidingprogress";
 
-    //TODO call when game stopped
-    public static void clearSelecters() {
+    public static void clearSelectors() {
         selectingBlocks.keySet().forEach(uuid -> HudDisplay.removeActionbarText(uuid, SELECTED_BLOCK));
         selectingBlocks.clear();
     }
