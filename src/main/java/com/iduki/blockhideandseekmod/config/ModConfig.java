@@ -69,14 +69,12 @@ public class ModConfig extends Config implements ConfigContainer {
         @Transitive
         @ConfigEntries
         public static class ItemScanner implements ConfigGroup {
-            /**
-             * 使用クールタイム
-             */
-            public static int coolTime;
-            /**
-             * 捜索半径
-             */
-            public static double scanLength;
+
+            @ConfigEntry(comment = "使用クールタイム")
+            public static int coolTime = 300;
+
+            @ConfigEntry(comment = "捜索半径")
+            public static double scanLength = 15;
         }
     }
 
