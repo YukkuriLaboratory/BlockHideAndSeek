@@ -148,8 +148,6 @@ public class GameStart {
 
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 1.0f, 1.0f));
 
-            //ゲーム終了フェーズへの移行
-            //TODO ゲームの終了.ゲームの勝敗を表示する(人数0なので鬼側の)
             playerManager.getPlayerList().forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
             TeamCreateandDelete.deleteTeam();
 
@@ -165,8 +163,6 @@ public class GameStart {
 
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 1.0f, 1.0f));
 
-            //ゲーム終了フェーズへの移行
-            //TODO ゲームの終了.ゲームの勝敗を表示する(時間切れなのでミミック側の)
             playerManager.getPlayerList().forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
             TeamCreateandDelete.deleteTeam();
 
