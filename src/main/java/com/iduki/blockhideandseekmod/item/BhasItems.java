@@ -10,6 +10,8 @@ public class BhasItems {
     public static ItemDetector DETECTOR = register("detector", new ItemDetector());
     public static ItemScanner SCANNER = register("scanner", new ItemScanner());
 
+    public static ItemBlockSelector SELECTOR = register("selector", new ItemBlockSelector());
+
     private static <T extends Item> T register(String id, T item) {
         return Registry.register(Registry.ITEM, new Identifier(BlockHideAndSeekMod.MOD_ID, id), item);
     }

@@ -1,5 +1,7 @@
 package com.iduki.blockhideandseekmod.util;
 
+import com.iduki.blockhideandseekmod.game.HideController;
+import com.iduki.blockhideandseekmod.game.HudDisplay;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.EntityDamageSource;
@@ -16,6 +18,7 @@ public class SeekerDamageSource extends EntityDamageSource {
 
     @Override
     public Text getDeathMessage(LivingEntity entity) {
+        HudDisplay.removeActionbarText(entity.getUuid(), HideController.SELECTED_BLOCK);
         return new LiteralText("")
                 .append(entity.getDisplayName())
                 .append(new LiteralText("は"))

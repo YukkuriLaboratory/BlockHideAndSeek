@@ -271,8 +271,6 @@ public class TeamSelector {
             //全プレイヤーのチャット欄に送信
             playerManager.getPlayerList().forEach(player -> player.sendMessage(message, false));
 
-            //TODO call game start method
-
             //冗長になって申しわないグニャ～
             //あとObserverチームはチームに所属してないプレイヤーをリスト化して入れたほうがいいのだろうか
 
@@ -287,13 +285,18 @@ public class TeamSelector {
 
             //ゲームモードをサバイバルに
             Stream.concat(playerHiders.stream(), playerSeekers.stream())
-                    .forEach(player -> player.interactionManager.changeGameMode(GameMode.SURVIVAL));
+                    .forEach(player -> {
+                        //こうすることでクライアントサイドではアドベンチャーモードとして扱われるが，実際はサバイバルモードとなる
+                        player.changeGameMode(GameMode.ADVENTURE);
+                        player.interactionManager.changeGameMode(GameMode.SURVIVAL);
+                    });
 
             //アイテムの付与
             playerSeekers.forEach(player -> {
                 player.getInventory().insertStack(BhasItems.DETECTOR.getDefaultStack());
                 player.getInventory().insertStack(BhasItems.SCANNER.getDefaultStack());
             });
+            playerHiders.forEach(player -> player.getInventory().insertStack(BhasItems.SELECTOR.getDefaultStack()));
 
             //各チームの作成
             var scoreboard = server.getScoreboard();
