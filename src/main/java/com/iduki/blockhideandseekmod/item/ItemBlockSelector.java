@@ -3,7 +3,9 @@ package com.iduki.blockhideandseekmod.item;
 import com.iduki.blockhideandseekmod.game.HideController;
 import com.iduki.blockhideandseekmod.game.HudDisplay;
 import net.minecraft.block.SlabBlock;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
@@ -15,6 +17,9 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.world.World;
 
 import java.util.List;
 
@@ -50,8 +55,7 @@ public class ItemBlockSelector extends LoreItem implements ServerSideItem {
     public ActionResult useOnBlock(ItemUsageContext context) {
         var player = context.getPlayer();
         if (player != null) {
-            if (player.isSneaking()) {
-                HideController.removeSelectedBlock(player);
+            if (resetBlock(player)) {
                 return ActionResult.PASS;
             }
             var block = context.getWorld().getBlockState(context.getBlockPos());
@@ -72,5 +76,19 @@ public class ItemBlockSelector extends LoreItem implements ServerSideItem {
             return ActionResult.PASS;
         }
         return ActionResult.FAIL;
+    }
+
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        resetBlock(user);
+        return TypedActionResult.pass(user.getStackInHand(hand));
+    }
+
+    private boolean resetBlock(PlayerEntity player) {
+        if (player.isSneaking()) {
+            HideController.removeSelectedBlock(player);
+            return true;
+        }
+        return false;
     }
 }
