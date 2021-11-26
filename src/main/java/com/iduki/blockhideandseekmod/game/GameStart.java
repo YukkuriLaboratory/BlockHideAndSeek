@@ -70,15 +70,18 @@ public class GameStart {
         var playerManager = server.getPlayerManager();
         var scoreboard = server.getScoreboard();
         //鬼側のエフェクトを解除します
-        Team seekersteam = scoreboard.getTeam("Seekers");
-        seekersteam.getPlayerList().forEach(player -> {
-            var players = playerManager.getPlayer(player);
-            if (players != null) {
-                players.removeStatusEffect(StatusEffects.SLOWNESS);
-                players.removeStatusEffect(StatusEffects.BLINDNESS);
-                players.removeStatusEffect(StatusEffects.JUMP_BOOST);
-            }
-        });
+        Team seekersTeam = scoreboard.getTeam("Seekers");
+        if (seekersTeam != null) {
+            seekersTeam.getPlayerList()
+                    .stream()
+                    .map(playerManager::getPlayer)
+                    .filter(Objects::nonNull)
+                    .forEach(player -> {
+                        player.removeStatusEffect(StatusEffects.SLOWNESS);
+                        player.removeStatusEffect(StatusEffects.BLINDNESS);
+                        player.removeStatusEffect(StatusEffects.JUMP_BOOST);
+                    });
+        }
     }
 
 
@@ -139,8 +142,8 @@ public class GameStart {
         var remainsTime = Duration.ofSeconds(gameTime).minus(currentTime);
 
         //ミミック陣営が0かどうかの確認
-        var mimicEmpty = scoreboard.getTeam("Hiders").getPlayerList().isEmpty();
-
+        var hiderTeam = scoreboard.getTeam("Hiders");
+        var mimicEmpty = hiderTeam == null || hiderTeam.getPlayerList().isEmpty();
         //ミミック陣営の人数が0のとき
         if (mimicEmpty) {
             suspendGame();
