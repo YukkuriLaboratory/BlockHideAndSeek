@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
+import com.iduki.blockhideandseekmod.config.ModConfig;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -222,7 +223,7 @@ public class HideController {
                     tryingPlayers.put(uuid, player.getBlockPos());
                     var time = tryingTimes.getOrDefault(uuid, 0) + 1;
 
-                    var waitTime = 60.0;
+                    var waitTime = (float) ModConfig.SystemConfig.Times.hideWaitTime;
                     if (time > waitTime) {
                         tryingTimes.remove(uuid);
                         tryingPlayers.remove(uuid);

@@ -31,8 +31,8 @@ public class ModConfig extends Config implements ConfigContainer {
             @ConfigEntry(comment = "ゲーム時間(単位:秒)")
             public static int playTime = 10;
 
-            @ConfigEntry(comment = "擬態にかかる時間(単位:秒)")
-            public static int hideWaitTime;
+            @ConfigEntry(comment = "擬態にかかる時間(単位:Tick)")
+            public static int hideWaitTime = 20;
         }
     }
 
