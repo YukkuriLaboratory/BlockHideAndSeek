@@ -357,6 +357,8 @@ public class TeamSelector {
             var remainsTimeText = new LiteralText("" + remainsTime.toSeconds()).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
             var packet = new TitleS2CPacket(remainsTimeText);
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(packet));
+            //カウントダウン時の音
+            playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_HAT, SoundCategory.PLAYERS, 1.0f, 1.0f));
         }
     }
 
