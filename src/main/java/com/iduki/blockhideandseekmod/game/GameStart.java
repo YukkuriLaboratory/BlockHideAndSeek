@@ -192,9 +192,11 @@ public class GameStart {
         isInGameTime = false;
         ingametimeProgress.setVisible(false);
         HideController.clearSelectors();
-        //Modアイテムの削除
         playerManager.getPlayerList().forEach(player -> {
             player.changeGameMode(GameMode.SURVIVAL);
+            //擬態解除(事故ることはないのでここで呼んじゃう)
+            HideController.cancelHiding(player);
+            //Modアイテムの削除
             player.getInventory().remove(
                     itemStack -> Objects.equals(Registry.ITEM.getId(itemStack.getItem()).getNamespace(), BlockHideAndSeekMod.MOD_ID),
                     64,
