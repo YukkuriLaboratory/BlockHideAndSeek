@@ -108,12 +108,12 @@ public class HideController {
                 var playerDataPacket = new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true);
 
                 var blockPacket = new BlockUpdateS2CPacket(player.getBlockPos(), Blocks.AIR.getDefaultState());
-                var showPlayerPacket = new EntitySpawnS2CPacket(player);
-                var playerList = BlockHideAndSeekMod.SERVER
-                        .getPlayerManager()
-                        .getPlayerList();
+                var showPlayerPacket = new PlayerSpawnS2CPacket(player);
 
-                playerList.stream()
+                BlockHideAndSeekMod.SERVER
+                        .getPlayerManager()
+                        .getPlayerList()
+                        .stream()
                         .peek(p -> p.networkHandler.sendPacket(blockPacket))
                         .filter(p -> p.getUuid() != uuid)
                         .map(p -> p.networkHandler)
