@@ -6,7 +6,6 @@ import com.google.common.collect.Table;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -81,10 +80,9 @@ public class HudDisplay {
     }
 
     private static Text appendBlank(Text text) {
-        if (text instanceof MutableText mutableText) {
-            return mutableText.append(Text.of(" "));
-        }
-        return text;
+        return new LiteralText("")
+                .append(text)
+                .append(Text.of(" "));
     }
 
     static {
@@ -111,7 +109,10 @@ public class HudDisplay {
                                     return false;
                                 }
                             })
-                            .sorted().map(stringTextMap::get).map(HudDisplay::appendBlank).forEach(message::append);
+                            .sorted()
+                            .map(stringTextMap::get)
+                            .map(HudDisplay::appendBlank)
+                            .forEach(message::append);
                     player.sendMessage(message, true);
                 }
             }));
