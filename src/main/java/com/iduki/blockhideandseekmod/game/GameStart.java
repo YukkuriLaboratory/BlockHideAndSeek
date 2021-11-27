@@ -130,6 +130,8 @@ public class GameStart {
         var playerManager = server.getPlayerManager();
         var scoreboard = server.getScoreboard();
 
+        TeamPlayerListHeader.TeamList();
+
         //制限時間(毎回入力するのがダルいので定数化．クラス内定数にしないのは途中でConfig変えられたりする可能性を考えているため)
         var gameTime = ModConfig.SystemConfig.Times.playTime;
 
@@ -228,6 +230,7 @@ public class GameStart {
             );
         });
         TeamCreateandDelete.deleteTeam();
+        TeamPlayerListHeader.EmptyList();
     }
 
     //stopコマンドの処理

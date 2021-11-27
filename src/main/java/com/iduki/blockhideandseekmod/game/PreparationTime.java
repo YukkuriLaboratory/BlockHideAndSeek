@@ -163,6 +163,7 @@ public class PreparationTime {
         var playerManager = server.getPlayerManager();
 
         SlownessSeekers();
+        TeamPlayerListHeader.TeamList();
 
         //準備の制限時間(毎回入力するのがダルいので定数化．クラス内定数にしないのは途中でConfig変えられたりする可能性を考えているため)
         var prepareTime = ModConfig.SystemConfig.Times.prepareTime;
