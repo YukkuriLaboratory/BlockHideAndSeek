@@ -7,10 +7,10 @@ name: build
 on:
   pull_request:
     branches:
-      - main
+      - 1.17
   push:
     branches:
-      - main
+      - 1.17
 
 jobs:
   build:
