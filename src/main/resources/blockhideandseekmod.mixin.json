@@ -15,6 +15,7 @@
     "MixinPlayerManager",
     "MixinServerPlayerEntity",
     "MixinServerPlayNetworkHandler",
+    "MixinServerPropertiesHandler",
     "MixinServerWorld"
   ],
   "client": [

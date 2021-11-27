@@ -1,17 +1,15 @@
 package com.iduki.blockhideandseekmod.mixin;
 
-import net.minecraft.entity.player.PlayerEntity;
+import com.iduki.blockhideandseekmod.util.OperatorNotifier;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftDedicatedServer.class)
-public class MixinMinecraftDedicatedServer {
+public abstract class MixinMinecraftDedicatedServer {
+
     @Redirect(
             method = "setupServer",
             at = @At(
@@ -20,15 +18,10 @@ public class MixinMinecraftDedicatedServer {
             )
     )
     private void allowFlight(MinecraftDedicatedServer instance, boolean b) {
+        if (!b) {
+            OperatorNotifier.addNotify(Text.of("Info:AllowFlightをtrueにしています"));
+        }
         instance.setFlightEnabled(true);
     }
 
-    @Inject(
-            method = "isSpawnProtected",
-            at = @At("HEAD"),
-            cancellable = true
-    )
-    private void disableSpawnProtection(ServerWorld world, BlockPos pos, PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(false);
-    }
 }
