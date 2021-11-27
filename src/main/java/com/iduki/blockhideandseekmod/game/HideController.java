@@ -14,6 +14,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -198,6 +200,7 @@ public class HideController {
 
                 var text = new LiteralText("擬態中:左クリックで解除");
                 HudDisplay.setActionBarText(player.getUuid(), HIDING_MESSAGE, text);
+                playerManager.getPlayerList().forEach(pl -> pl.playSound(SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.PLAYERS, 1.0f, 2.0f));
             }
         }
     }

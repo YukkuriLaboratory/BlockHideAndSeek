@@ -6,6 +6,7 @@ import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
@@ -180,8 +181,15 @@ public class PreparationTime {
         if (remainsTime.isNegative()) {
             suspendGame();
             //タイトルバーにSTARTと表示
-            var startMessage = new TitleS2CPacket(new LiteralText("-GAME-START-").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
+            var startMessage = new TitleS2CPacket(new LiteralText("     ").setStyle(Style.EMPTY.withFormatting(Formatting.UNDERLINE))
+                    .append(new LiteralText("Block").setStyle(Style.EMPTY.withColor(Formatting.WHITE).withFormatting(Formatting.UNDERLINE)))
+                    .append(new LiteralText("Hide").setStyle(Style.EMPTY.withColor(Formatting.GREEN).withFormatting(Formatting.UNDERLINE)))
+                    .append(new LiteralText("And").setStyle(Style.EMPTY.withColor(Formatting.YELLOW).withFormatting(Formatting.UNDERLINE)))
+                    .append(new LiteralText("Seek").setStyle(Style.EMPTY.withColor(Formatting.RED).withFormatting(Formatting.UNDERLINE)))
+                    .append(new LiteralText("     ").setStyle(Style.EMPTY.withFormatting(Formatting.UNDERLINE))));
+            var startsubMessage = new SubtitleS2CPacket(new LiteralText("START").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
+            playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startsubMessage));
 
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.PLAYERS, 1.0f, 1.0f));
 
