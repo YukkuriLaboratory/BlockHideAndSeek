@@ -1,12 +1,15 @@
 package com.iduki.blockhideandseekmod.mixin;
 
+import com.iduki.blockhideandseekmod.util.OperatorNotifier;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(MinecraftDedicatedServer.class)
-public class MixinMinecraftDedicatedServer {
+public abstract class MixinMinecraftDedicatedServer {
+
     @Redirect(
             method = "setupServer",
             at = @At(
@@ -15,6 +18,10 @@ public class MixinMinecraftDedicatedServer {
             )
     )
     private void allowFlight(MinecraftDedicatedServer instance, boolean b) {
+        if (!b) {
+            OperatorNotifier.addNotify(Text.of("Info:AllowFlightをtrueにしています"));
+        }
         instance.setFlightEnabled(true);
     }
+
 }

@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
+import com.iduki.blockhideandseekmod.config.ModConfig;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,6 +14,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -107,12 +110,12 @@ public class HideController {
                 var playerDataPacket = new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true);
 
                 var blockPacket = new BlockUpdateS2CPacket(player.getBlockPos(), Blocks.AIR.getDefaultState());
-                var showPlayerPacket = new EntitySpawnS2CPacket(player);
-                var playerList = BlockHideAndSeekMod.SERVER
-                        .getPlayerManager()
-                        .getPlayerList();
+                var showPlayerPacket = new PlayerSpawnS2CPacket(player);
 
-                playerList.stream()
+                BlockHideAndSeekMod.SERVER
+                        .getPlayerManager()
+                        .getPlayerList()
+                        .stream()
                         .peek(p -> p.networkHandler.sendPacket(blockPacket))
                         .filter(p -> p.getUuid() != uuid)
                         .map(p -> p.networkHandler)
@@ -125,7 +128,6 @@ public class HideController {
     }
 
     private static boolean canHide(PlayerEntity player) {
-        //TODO check player joined hiding team and game started
         var uuid = player.getUuid();
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
         var playerteam = scoreboard.getPlayerTeam(player.getEntityName());
@@ -198,6 +200,7 @@ public class HideController {
 
                 var text = new LiteralText("擬態中:左クリックで解除");
                 HudDisplay.setActionBarText(player.getUuid(), HIDING_MESSAGE, text);
+                playerManager.getPlayerList().forEach(pl -> pl.playSound(SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.PLAYERS, 1.0f, 2.0f));
             }
         }
     }
@@ -222,7 +225,7 @@ public class HideController {
                     tryingPlayers.put(uuid, player.getBlockPos());
                     var time = tryingTimes.getOrDefault(uuid, 0) + 1;
 
-                    var waitTime = 60.0;
+                    var waitTime = (float) ModConfig.SystemConfig.Times.hideWaitTime;
                     if (time > waitTime) {
                         tryingTimes.remove(uuid);
                         tryingPlayers.remove(uuid);

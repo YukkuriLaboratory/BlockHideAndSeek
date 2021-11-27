@@ -1,5 +1,6 @@
 package com.iduki.blockhideandseekmod.mixin;
 
+import com.iduki.blockhideandseekmod.util.OperatorNotifier;
 import com.iduki.blockhideandseekmod.util.UUIDHolder;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
@@ -22,5 +23,13 @@ public class MixinPlayerManager {
         if (connection instanceof UUIDHolder holder) {
             holder.setUUID(player.getUuid());
         }
+    }
+
+    @Inject(
+            method = "onPlayerConnect",
+            at = @At("TAIL")
+    )
+    private void sendNotify(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
+        OperatorNotifier.sendNotify(player);
     }
 }

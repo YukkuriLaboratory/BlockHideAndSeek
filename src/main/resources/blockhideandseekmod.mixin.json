@@ -13,7 +13,9 @@
     "MixinPacketEncoder",
     "MixinPlayerEntity",
     "MixinPlayerManager",
+    "MixinServerPlayerEntity",
     "MixinServerPlayNetworkHandler",
+    "MixinServerPropertiesHandler",
     "MixinServerWorld"
   ],
   "client": [

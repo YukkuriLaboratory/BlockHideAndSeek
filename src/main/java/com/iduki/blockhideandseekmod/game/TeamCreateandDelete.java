@@ -3,6 +3,9 @@ package com.iduki.blockhideandseekmod.game;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import net.minecraft.scoreboard.Team;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+
 import static net.minecraft.util.Formatting.*;
 
 public class TeamCreateandDelete {
@@ -39,9 +42,9 @@ public class TeamCreateandDelete {
 
     public static void deleteTeam() {
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
-        scoreboard.removeTeam(scoreboard.getTeam("Seekers"));
-        scoreboard.removeTeam(scoreboard.getTeam("Hiders"));
-        scoreboard.removeTeam(scoreboard.getTeam("Observers"));
+        Stream.of(scoreboard.getTeam("Seekers"), scoreboard.getTeam("Hiders"), scoreboard.getTeam("Observers"))
+                .filter(Objects::nonNull)
+                .forEach(scoreboard::removeTeam);
     }
 
 }

@@ -5,6 +5,7 @@ import com.iduki.blockhideandseekmod.config.ModConfig;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
@@ -70,15 +71,18 @@ public class GameStart {
         var playerManager = server.getPlayerManager();
         var scoreboard = server.getScoreboard();
         //鬼側のエフェクトを解除します
-        Team seekersteam = scoreboard.getTeam("Seekers");
-        seekersteam.getPlayerList().forEach(player -> {
-            var players = playerManager.getPlayer(player);
-            if (players != null) {
-                players.removeStatusEffect(StatusEffects.SLOWNESS);
-                players.removeStatusEffect(StatusEffects.BLINDNESS);
-                players.removeStatusEffect(StatusEffects.JUMP_BOOST);
-            }
-        });
+        Team seekersTeam = scoreboard.getTeam("Seekers");
+        if (seekersTeam != null) {
+            seekersTeam.getPlayerList()
+                    .stream()
+                    .map(playerManager::getPlayer)
+                    .filter(Objects::nonNull)
+                    .forEach(player -> {
+                        player.removeStatusEffect(StatusEffects.SLOWNESS);
+                        player.removeStatusEffect(StatusEffects.BLINDNESS);
+                        player.removeStatusEffect(StatusEffects.JUMP_BOOST);
+                    });
+        }
     }
 
 
@@ -139,16 +143,24 @@ public class GameStart {
         var remainsTime = Duration.ofSeconds(gameTime).minus(currentTime);
 
         //ミミック陣営が0かどうかの確認
-        var mimicEmpty = scoreboard.getTeam("Hiders").getPlayerList().isEmpty();
-
+        var hiderTeam = scoreboard.getTeam("Hiders");
+        var mimicEmpty = hiderTeam == null || hiderTeam.getPlayerList().isEmpty();
         //ミミック陣営の人数が0のとき
         if (mimicEmpty) {
-            suspendGame();
+            var winMessage = new LiteralText("鬼陣営の勝利！").append(Text.of("\n"));
+            playerManager.getPlayerList().forEach(player -> player.sendMessage(winMessage, false));
+
             //タイトルバーにGAMEOVERと表示
-            var endMessage = new TitleS2CPacket(new LiteralText("-鬼陣営の勝利!-").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+            var endMessage = new TitleS2CPacket(new LiteralText("     ").setStyle(Style.EMPTY.withFormatting(Formatting.UNDERLINE))
+                    .append(new LiteralText("GAMEOVER").setStyle(Style.EMPTY.withFormatting(Formatting.UNDERLINE)))
+                    .append(new LiteralText("     ").setStyle(Style.EMPTY.withFormatting(Formatting.UNDERLINE))));
+            var endsubMessage = new SubtitleS2CPacket(new LiteralText("鬼陣営の勝利").setStyle(Style.EMPTY.withColor(Formatting.RED)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(endMessage));
+            playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(endsubMessage));
 
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 1.0f, 1.0f));
+
+            suspendGame();
 
             playerManager.getPlayerList().forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
             TeamCreateandDelete.deleteTeam();
@@ -158,12 +170,24 @@ public class GameStart {
 
         //残り時間が０以下のとき
         if (remainsTime.isNegative()) {
+            var winMessage = new LiteralText("ミミック陣営の勝利！").append(Text.of("\n"));
+            var winPlayers = scoreboard.getTeam("Hiders").getPlayerList();
+            var message = new LiteralText("生き残ったミミック").append(Text.of("\n")).append(new LiteralText(winPlayers.toString()).setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+            playerManager.getPlayerList().forEach(player -> player.sendMessage(winMessage, false));
+            playerManager.getPlayerList().forEach(player -> player.sendMessage(message, false));
+
             suspendGame();
             //タイトルバーにGAMEOVERと表示
-            var endMessage = new TitleS2CPacket(new LiteralText("-ミミック陣営の勝利!-").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+            var endMessage = new TitleS2CPacket(new LiteralText("     ").setStyle(Style.EMPTY.withFormatting(Formatting.UNDERLINE))
+                    .append(new LiteralText("GAMEOVER").setStyle(Style.EMPTY.withFormatting(Formatting.UNDERLINE)))
+                    .append(new LiteralText("     ").setStyle(Style.EMPTY.withFormatting(Formatting.UNDERLINE))));
+            var endsubMessage = new SubtitleS2CPacket(new LiteralText("ミミック陣営の勝利").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(endMessage));
+            playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(endsubMessage));
 
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 1.0f, 1.0f));
+
+            suspendGame();
 
             playerManager.getPlayerList().forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
             TeamCreateandDelete.deleteTeam();
@@ -192,9 +216,11 @@ public class GameStart {
         isInGameTime = false;
         ingametimeProgress.setVisible(false);
         HideController.clearSelectors();
-        //Modアイテムの削除
         playerManager.getPlayerList().forEach(player -> {
             player.changeGameMode(GameMode.SURVIVAL);
+            //擬態解除(事故ることはないのでここで呼んじゃう)
+            HideController.cancelHiding(player);
+            //Modアイテムの削除
             player.getInventory().remove(
                     itemStack -> Objects.equals(Registry.ITEM.getId(itemStack.getItem()).getNamespace(), BlockHideAndSeekMod.MOD_ID),
                     64,

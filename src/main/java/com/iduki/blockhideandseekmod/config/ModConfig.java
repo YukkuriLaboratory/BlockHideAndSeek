@@ -24,24 +24,15 @@ public class ModConfig extends Config implements ConfigContainer {
         public static class Times implements ConfigGroup {
             @ConfigEntry(comment = "陣営の投票時間(単位:秒)")
             public static int voteTime = 30;
-            /**
-             * 準備時間
-             * 単位: 秒
-             */
+
             @ConfigEntry(comment = "準備時間(単位:秒)")
             public static int prepareTime = 10;
 
-            /**
-             * 制限時間
-             * 単位: 秒
-             */
+            @ConfigEntry(comment = "ゲーム時間(単位:秒)")
             public static int playTime = 10;
 
-            /**
-             * 擬態にかかる時間
-             * 単位: 秒
-             */
-            public static int hideWaitTime;
+            @ConfigEntry(comment = "擬態にかかる時間(単位:Tick)")
+            public static int hideWaitTime = 20;
         }
     }
 
@@ -54,7 +45,7 @@ public class ModConfig extends Config implements ConfigContainer {
         @Transitive
         @ConfigEntries
         public static class ItemDetecter implements ConfigGroup {
-            @ConfigEntry(comment = "使用クールタイム")
+            @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
             public static int coolTime = 200;
             @ConfigEntry(comment = "ダメージ量")
             public static int damageAmount = 50;
@@ -67,7 +58,7 @@ public class ModConfig extends Config implements ConfigContainer {
         @ConfigEntries
         public static class ItemScanner implements ConfigGroup {
 
-            @ConfigEntry(comment = "使用クールタイム")
+            @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
             public static int coolTime = 300;
 
             @ConfigEntry(comment = "捜索半径")
