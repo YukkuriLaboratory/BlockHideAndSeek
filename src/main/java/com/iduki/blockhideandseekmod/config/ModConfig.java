@@ -40,6 +40,16 @@ public class ModConfig extends Config implements ConfigContainer {
     @ConfigEntries
     public static class ItemConfig implements ConfigGroup {
         /**
+         * 全員が持つ飛行用アイテム
+         */
+        @Transitive
+        @ConfigEntries
+        public static class ItemFlyer implements ConfigGroup {
+            @ConfigEntry(comment = "最大飛行時間(単位:秒)")
+            public static int flyTime = 3;
+        }
+
+        /**
          * 鬼が持つ探知用アイテム
          */
         @Transitive

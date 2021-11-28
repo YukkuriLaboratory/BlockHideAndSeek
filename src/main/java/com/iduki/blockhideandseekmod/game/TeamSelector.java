@@ -283,20 +283,26 @@ public class TeamSelector {
                     .filter(Objects::nonNull)
                     .toList();
 
-            //ゲームモードをサバイバルに
-            Stream.concat(playerHiders.stream(), playerSeekers.stream())
-                    .forEach(player -> {
-                        //こうすることでクライアントサイドではアドベンチャーモードとして扱われるが，実際はサバイバルモードとなる
-                        player.changeGameMode(GameMode.ADVENTURE);
-                        player.interactionManager.changeGameMode(GameMode.SURVIVAL);
-                    });
-
             //アイテムの付与
             playerSeekers.forEach(player -> {
                 player.getInventory().insertStack(BhasItems.DETECTOR.getDefaultStack());
                 player.getInventory().insertStack(BhasItems.SCANNER.getDefaultStack());
             });
             playerHiders.forEach(player -> player.getInventory().insertStack(BhasItems.SELECTOR.getDefaultStack()));
+
+            //ゲームモードをサバイバルに
+            Stream.concat(playerHiders.stream(), playerSeekers.stream())
+                    .forEach(player -> {
+                        //こうすることでクライアントサイドではアドベンチャーモードとして扱われるが，実際はサバイバルモードとなる
+                        player.changeGameMode(GameMode.ADVENTURE);
+                        player.interactionManager.changeGameMode(GameMode.SURVIVAL);
+                        //飛行を許可し続ける
+                        player.getAbilities().allowFlying = true;
+                        player.sendAbilitiesUpdate();
+
+                        //追加アイテム
+                        player.getInventory().insertStack(BhasItems.FLYER.getDefaultStack());
+                    });
 
             //各チームの作成
             var scoreboard = server.getScoreboard();

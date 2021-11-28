@@ -4,6 +4,7 @@ import com.iduki.blockhideandseekmod.game.GameStart;
 import com.iduki.blockhideandseekmod.game.HideController;
 import com.iduki.blockhideandseekmod.game.PreparationTime;
 import com.iduki.blockhideandseekmod.game.TeamSelector;
+import com.iduki.blockhideandseekmod.util.FlyController;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -49,19 +50,21 @@ public abstract class MixinServerWorld {
             method = "addPlayer",
             at = @At("TAIL")
     )
-    private void addBossBarTarget(ServerPlayerEntity player, CallbackInfo ci) {
+    private void onPlayerJoinWorld(ServerPlayerEntity player, CallbackInfo ci) {
         TeamSelector.addBossBarTarget(player);
         PreparationTime.addBossBarTarget(player);
         GameStart.addBossBarTarget(player);
+        FlyController.registerPlayer(player);
     }
 
     @Inject(
             method = "removePlayer",
             at = @At("TAIL")
     )
-    private void removeBossBarTarget(ServerPlayerEntity player, Entity.RemovalReason reason, CallbackInfo ci) {
+    private void onPlayerLeaveWorld(ServerPlayerEntity player, Entity.RemovalReason reason, CallbackInfo ci) {
         TeamSelector.removeBossBarTarget(player);
         PreparationTime.removeBossBarTarget(player);
         GameStart.removeBossBarTarget(player);
+        FlyController.removePlayer(player);
     }
 }
