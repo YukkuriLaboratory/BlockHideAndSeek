@@ -49,7 +49,7 @@ public abstract class MixinServerWorld {
             method = "addPlayer",
             at = @At("TAIL")
     )
-    private void addBossBarTarget(ServerPlayerEntity player, CallbackInfo ci) {
+    private void onPlayerJoinWorld(ServerPlayerEntity player, CallbackInfo ci) {
         TeamSelector.addBossBarTarget(player);
         PreparationTime.addBossBarTarget(player);
         GameStart.addBossBarTarget(player);
@@ -59,7 +59,7 @@ public abstract class MixinServerWorld {
             method = "removePlayer",
             at = @At("TAIL")
     )
-    private void removeBossBarTarget(ServerPlayerEntity player, Entity.RemovalReason reason, CallbackInfo ci) {
+    private void onPlayerLeaveWorld(ServerPlayerEntity player, Entity.RemovalReason reason, CallbackInfo ci) {
         TeamSelector.removeBossBarTarget(player);
         PreparationTime.removeBossBarTarget(player);
         GameStart.removeBossBarTarget(player);
