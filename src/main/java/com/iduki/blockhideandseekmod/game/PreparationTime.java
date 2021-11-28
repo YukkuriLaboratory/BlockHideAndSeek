@@ -158,11 +158,17 @@ public class PreparationTime {
         });
     }
 
+    public static void maxStamina() {
+        var playerManager = server.getPlayerManager();
+        playerManager.getPlayerList().forEach(player -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.SATURATION, 50, 200, false, false, false)));
+    }
+
 
     public static void update() {
         var playerManager = server.getPlayerManager();
 
         SlownessSeekers();
+        maxStamina();
         TeamPlayerListHeader.TeamList();
 
         //準備の制限時間(毎回入力するのがダルいので定数化．クラス内定数にしないのは途中でConfig変えられたりする可能性を考えているため)
