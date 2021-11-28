@@ -2,7 +2,6 @@ package com.iduki.blockhideandseekmod.command;
 
 import com.google.common.collect.Sets;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
-import com.iduki.blockhideandseekmod.util.StringSuggestionProvider;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -14,6 +13,7 @@ import me.lortseam.completeconfig.data.Entry;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import oshi.util.tuples.Pair;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -39,12 +39,17 @@ public class Settings {
         LiteralArgumentBuilder<ServerCommandSource> settings = LiteralArgumentBuilder.literal("settings");
         settings.requires(source -> source.hasPermissionLevel(source.getServer().getOpPermissionLevel()));
         var config = BlockHideAndSeekMod.CONFIG;
-        Set<Entry> entries = Sets.newHashSet();
+        Set<Pair<Cluster, Entry>> entries = Sets.newHashSet();
         config.getClusters()
                 .forEach(cluster -> entries.addAll(expandEntries(cluster)));
-        for (Entry<Object> entry : entries) {
+        for (Pair<Cluster, Entry> pair : entries) {
+            var cluster = pair.getA();
+            var clusterName = cluster.getId();
+            var entry = pair.getB();
             var fieldName = entry.getId();
             var fieldValue = entry.getValue();
+
+            var targetId = clusterName + "." + fieldName;
 
             ArgumentType<?> argumentType;
             if (fieldValue instanceof Integer) {
@@ -54,30 +59,34 @@ public class Settings {
             } else if (fieldValue instanceof Boolean) {
                 argumentType = BoolArgumentType.bool();
             } else {
-                throw new IllegalArgumentException("config [" + fieldName + "] is not implemented type");
+                throw new IllegalArgumentException("config [" + targetId + "] is not implemented type");
             }
-            settings.then(literal(fieldName)
+            settings.then(literal(targetId)
                     .executes(context -> {
                         Field commentField;
                         try {
                             commentField = entry.getClass().getDeclaredField("comment");
                             commentField.setAccessible(true);
                             var result = commentField.get(entry);
-                            context.getSource().sendFeedback(Text.of(result.toString()), false);
+                            context.getSource().sendFeedback(Text.of("[BHAS] " + targetId + ": " + result.toString()), false);
                         } catch (Throwable throwable) {
                             BlockHideAndSeekMod.LOGGER.throwing(throwable);
                         }
                         return Command.SINGLE_SUCCESS;
                     })
-                    .then(argument(fieldName, argumentType)
-                            .suggests(new StringSuggestionProvider(fieldValue.toString()))
+                    .then(argument(targetId, argumentType)
+                            .suggests((content, builder) -> {
+                                //常に最新の値を取得するためgetValueしてる
+                                builder.suggest(entry.getValue().toString());
+                                return builder.buildFuture();
+                            })
                             .executes(context -> {
                                 try {
-                                    var arg = context.getArgument(fieldName, fieldValue.getClass());
+                                    var arg = context.getArgument(targetId, fieldValue.getClass());
                                     if (arg != null) {
                                         entry.setValue(arg);
                                         BlockHideAndSeekMod.CONFIG.save();
-                                        context.getSource().sendFeedback(Text.of(fieldName + "を" + arg + "に変更しました"), true);
+                                        context.getSource().sendFeedback(Text.of("[BHAS]" + targetId + "を" + arg + "に変更しました"), true);
                                     }
                                 } catch (Throwable throwable) {
                                     BlockHideAndSeekMod.LOGGER.throwing(throwable);
@@ -92,8 +101,9 @@ public class Settings {
     }
 
     @SuppressWarnings("rawtypes")
-    private static Collection<Entry> expandEntries(Cluster cluster) {
-        var entries = Sets.newHashSet(cluster.getEntries());
+    private static Collection<Pair<Cluster, Entry>> expandEntries(Cluster cluster) {
+        Set<Pair<Cluster, Entry>> entries = Sets.newHashSet();
+        cluster.getEntries().forEach(entry -> entries.add(new Pair<>(cluster, entry)));
         for (Cluster internalCluster : cluster.getClusters()) {
             entries.addAll(expandEntries(internalCluster));
         }
