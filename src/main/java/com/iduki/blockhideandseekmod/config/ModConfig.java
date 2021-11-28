@@ -26,10 +26,10 @@ public class ModConfig extends Config implements ConfigContainer {
             public static int voteTime = 30;
 
             @ConfigEntry(comment = "準備時間(単位:秒)")
-            public static int prepareTime = 10;
+            public static int prepareTime = 60;
 
             @ConfigEntry(comment = "ゲーム時間(単位:秒)")
-            public static int playTime = 10;
+            public static int playTime = 300;
 
             @ConfigEntry(comment = "擬態にかかる時間(単位:Tick)")
             public static int hideWaitTime = 20;
