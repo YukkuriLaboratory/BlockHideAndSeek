@@ -81,6 +81,9 @@ public class Settings {
                                 return builder.buildFuture();
                             })
                             .executes(context -> {
+                                if (Start.isGameRunning(context.getSource())) {
+                                    return Command.SINGLE_SUCCESS;
+                                }
                                 try {
                                     var arg = context.getArgument(targetId, fieldValue.getClass());
                                     if (arg != null) {

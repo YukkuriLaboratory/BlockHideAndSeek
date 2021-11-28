@@ -14,6 +14,9 @@ public class Reload {
                                 .then(literal("reload")
                                         .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                         .executes(context -> {
+                                            if (Start.isGameRunning(context.getSource())) {
+                                                return Command.SINGLE_SUCCESS;
+                                            }
                                             BlockHideAndSeekMod.CONFIG.load();
                                             return Command.SINGLE_SUCCESS;
                                         })

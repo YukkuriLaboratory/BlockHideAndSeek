@@ -109,7 +109,7 @@ public class PreparationTime {
      * これのメソッドが呼ばれて以降，このクラスによってゲームの開始まで進行が管理されます
      */
     public static void startPreparation() {
-
+        GameState.setCurrentState(GameState.Phase.PREPARE);
         //各種変数の初期化
         preparationTime = Instant.now();
 
@@ -222,6 +222,7 @@ public class PreparationTime {
 
     public static void stopGame() {
         suspendGame();
+        GameState.setCurrentState(GameState.Phase.IDLE);
     }
 
     //Thread.sleepは多くの場合で冗長とされてwaringの対象となっているが，今回の場合は正しい使用方法と判断できるため警告を抑制している

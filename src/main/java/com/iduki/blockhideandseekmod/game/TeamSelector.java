@@ -97,6 +97,7 @@ public class TeamSelector {
      * これのメソッドが呼ばれて以降，このクラスによってゲームの開始まで進行が管理されます
      */
     public static void startVote() {
+        GameState.setCurrentState(GameState.Phase.SELECT_TEAM);
         //各種変数の初期化
         startedTime = Instant.now();
         seekers.clear();
@@ -119,6 +120,11 @@ public class TeamSelector {
                 .append(new LiteralText("ミミック陣営に参加する").setStyle(Style.EMPTY.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bhas team hider")).withHoverEvent(hoverEvent)));
         server.getPlayerManager().getPlayerList().forEach(p -> p.sendMessage(text, false));
 
+    }
+
+    public static void suspend() {
+        stop();
+        GameState.setCurrentState(GameState.Phase.IDLE);
     }
 
     /**
@@ -203,11 +209,7 @@ public class TeamSelector {
         var remainsTime = Duration.ofSeconds(voteTime).minus(currentTime);
         //残り時間が０以下のとき
         if (remainsTime.isNegative()) {
-            isVoteTime = false;
-            //ボスバーを非表示にする
-            timeProgress.setVisible(false);
-            //アクションバーのメッセージを非表示にする
-            playerManager.getPlayerList().forEach(player -> HudDisplay.removeActionbarText(player.getUuid(), VOTE_PROGRESS));
+            stop();
             //鬼側が上限を超えていた際にミミック側に移動させる
             //鬼からミミック陣営に移動した人のUUIDを集める用
             Set<UUID> notificationTargets = Sets.newHashSet();
@@ -360,6 +362,16 @@ public class TeamSelector {
             //カウントダウン時の音
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_HAT, SoundCategory.PLAYERS, 1.0f, 1.0f));
         }
+    }
+
+    private static void stop() {
+        var playerManager = server.getPlayerManager();
+
+        isVoteTime = false;
+        //ボスバーを非表示にする
+        timeProgress.setVisible(false);
+        //アクションバーのメッセージを非表示にする
+        playerManager.getPlayerList().forEach(player -> HudDisplay.removeActionbarText(player.getUuid(), VOTE_PROGRESS));
     }
 
     private static void joinOB() {
