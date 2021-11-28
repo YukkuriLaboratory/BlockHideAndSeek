@@ -2,6 +2,7 @@ package com.iduki.blockhideandseekmod.mixin;
 
 import com.iduki.blockhideandseekmod.game.HideController;
 import com.iduki.blockhideandseekmod.item.ServerSideItem;
+import com.iduki.blockhideandseekmod.util.FlyController;
 import com.iduki.blockhideandseekmod.util.UUIDHolder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -10,6 +11,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -66,6 +68,28 @@ public class MixinServerPlayNetworkHandler {
     )
     private void cancelHiding(Text reason, CallbackInfo ci) {
         HideController.cancelHiding(player);
+    }
+
+    @Redirect(
+            method = "onPlayerAbilities",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/network/packet/c2s/play/UpdatePlayerAbilitiesC2SPacket;isFlying()Z"
+            )
+    )
+    private boolean checkFlyAble(UpdatePlayerAbilitiesC2SPacket instance) {
+        if (instance.isFlying()) {
+            return !player.interactionManager.getGameMode().isSurvivalLike() || FlyController.canFly(player);
+        }
+        return false;
+    }
+
+    @Inject(
+            method = "onPlayerAbilities",
+            at = @At("TAIL")
+    )
+    private void updateFlying(UpdatePlayerAbilitiesC2SPacket packet, CallbackInfo ci) {
+        player.sendAbilitiesUpdate();
     }
 
     @Inject(

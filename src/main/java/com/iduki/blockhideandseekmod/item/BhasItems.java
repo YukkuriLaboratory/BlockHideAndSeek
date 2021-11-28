@@ -7,6 +7,8 @@ import net.minecraft.util.registry.Registry;
 
 public class BhasItems {
 
+    public static ItemFlyer FLYER = register("flyer", new ItemFlyer());
+
     public static ItemDetector DETECTOR = register("detector", new ItemDetector());
     public static ItemScanner SCANNER = register("scanner", new ItemScanner());
 
