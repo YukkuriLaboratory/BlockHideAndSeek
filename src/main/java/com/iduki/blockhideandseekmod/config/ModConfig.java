@@ -46,7 +46,7 @@ public class ModConfig extends Config implements ConfigContainer {
         @ConfigEntries
         public static class ItemFlyer implements ConfigGroup {
             @ConfigEntry(comment = "最大飛行時間(単位:秒)")
-            public static int flyTime = 5;
+            public static int flyTime = 3;
         }
 
         /**
