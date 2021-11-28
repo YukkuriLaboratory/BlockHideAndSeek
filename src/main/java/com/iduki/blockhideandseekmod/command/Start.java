@@ -1,9 +1,11 @@
 package com.iduki.blockhideandseekmod.command;
 
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
+import com.iduki.blockhideandseekmod.game.GameState;
 import com.iduki.blockhideandseekmod.game.TeamSelector;
 import com.mojang.brigadier.Command;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
 
@@ -18,6 +20,9 @@ public class Start {
                                         .then(literal("start")
                                                 .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                                 .executes(context -> {
+                                                    if (isGameRunning(context.getSource())) {
+                                                        return Command.SINGLE_SUCCESS;
+                                                    }
                                                     var gameRules = context.getSource().getPlayer().world.getGameRules();
                                                     var keepInventory = gameRules.get(GameRules.KEEP_INVENTORY);
                                                     if (!keepInventory.get()) {
@@ -31,6 +36,14 @@ public class Start {
                                         )
                         )
         );
+    }
+
+    public static boolean isGameRunning(ServerCommandSource source) {
+        if (GameState.getCurrentState() != GameState.Phase.IDLE) {
+            source.sendError(Text.of("[BHAS] ゲーム進行中は実行できませsん"));
+            return true;
+        }
+        return false;
     }
 
 }

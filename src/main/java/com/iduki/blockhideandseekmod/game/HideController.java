@@ -132,7 +132,7 @@ public class HideController {
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
         var playerteam = scoreboard.getPlayerTeam(player.getEntityName());
 
-        if (hidingPlayers.containsKey(uuid) || tryingPlayers.containsKey(uuid)) {
+        if (GameState.getCurrentState() == GameState.Phase.IDLE) {
             return false;
         }
 

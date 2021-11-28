@@ -42,10 +42,6 @@ public class GameStart {
      */
     private static volatile boolean isInGameTime = false;
 
-    public static boolean getisInGameTime() {
-        return isInGameTime;
-    }
-
     /**
      * 時間計測用
      * 準備時間
@@ -91,7 +87,7 @@ public class GameStart {
      * これのメソッドが呼ばれて以降，このクラスによってゲームの開始まで進行が管理されます
      */
     public static void startGame() {
-
+        GameState.setCurrentState(GameState.Phase.RUNNING);
         //各種変数の初期化
         ingameTime = Instant.now();
         //鬼側エフェクト削除
@@ -214,6 +210,7 @@ public class GameStart {
 
     //ゲーム終了処理
     private static void suspendGame() {
+        GameState.setCurrentState(GameState.Phase.IDLE);
         var playerManager = server.getPlayerManager();
         isInGameTime = false;
         ingametimeProgress.setVisible(false);
@@ -236,8 +233,7 @@ public class GameStart {
     //stopコマンドの処理
     public static void stopGame() {
         suspendGame();
-        var text = new LiteralText("ゲームが中断されました");
-        server.getPlayerManager().getPlayerList().forEach(p -> p.sendMessage(text, false));
+        GameState.setCurrentState(GameState.Phase.IDLE);
     }
 
 
