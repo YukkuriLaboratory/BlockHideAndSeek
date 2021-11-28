@@ -25,9 +25,15 @@ public class Start {
                                                     }
                                                     var gameRules = context.getSource().getPlayer().world.getGameRules();
                                                     var keepInventory = gameRules.get(GameRules.KEEP_INVENTORY);
+                                                    var naturalRegeneration = gameRules.get(GameRules.NATURAL_REGENERATION);
                                                     if (!keepInventory.get()) {
                                                         keepInventory.set(true, context.getSource().getServer());
                                                         var ruleChangeMessage = Text.of("Info: KeepInventoryを有効化しました");
+                                                        context.getSource().sendFeedback(ruleChangeMessage, true);
+                                                    }
+                                                    if (naturalRegeneration.get()) {
+                                                        naturalRegeneration.set(false, context.getSource().getServer());
+                                                        var ruleChangeMessage = Text.of("Info: naturalRegenerationを無効化しました");
                                                         context.getSource().sendFeedback(ruleChangeMessage, true);
                                                     }
                                                     TeamSelector.startVote();

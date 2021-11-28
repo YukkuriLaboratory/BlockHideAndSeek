@@ -273,8 +273,6 @@ public class TeamSelector {
             //全プレイヤーのチャット欄に送信
             playerManager.getPlayerList().forEach(player -> player.sendMessage(message, false));
 
-            //冗長になって申しわないグニャ～
-            //あとObserverチームはチームに所属してないプレイヤーをリスト化して入れたほうがいいのだろうか
 
             var playerSeekers = seekers.stream()
                     .map(playerManager::getPlayer)
