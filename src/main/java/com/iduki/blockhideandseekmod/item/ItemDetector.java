@@ -5,7 +5,10 @@ import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.game.HideController;
 import com.iduki.blockhideandseekmod.game.HudDisplay;
 import com.iduki.blockhideandseekmod.util.SeekerDamageSource;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
@@ -17,6 +20,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
@@ -47,6 +51,19 @@ public class ItemDetector extends LoreItem implements ServerSideItem {
     @Override
     public Item getVisualItem() {
         return Items.CLOCK;
+    }
+
+    @Override
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        if (entity instanceof PlayerEntity player) {
+            var team = player.getScoreboardTeam();
+            if (team != null && team.getName().equals("Hiders")) {
+                var source = new SeekerDamageSource(user);
+                entity.damage(source, getDamageAmount());
+                return ActionResult.PASS;
+            }
+        }
+        return ActionResult.FAIL;
     }
 
     @Override
