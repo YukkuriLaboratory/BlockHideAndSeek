@@ -41,9 +41,21 @@ public class PreparationTime {
 
     /**
      * 時間計測用
+     * 変数をセットしたときのシステム時間を記録します
+     */
+    private static Instant startedTime;
+
+    /**
+     * 時間計測用
      * 準備時間
      */
     private static Instant preparationTime;
+
+    /**
+     * 時間計測用
+     * 全員が擬態を終えてからの時間
+     */
+    private static Instant lastMimickedTime;
 
     /**
      * 残り時間表示用のボスバー
@@ -112,7 +124,7 @@ public class PreparationTime {
         GameState.setCurrentState(GameState.Phase.PREPARE);
         //各種変数の初期化
         preparationTime = Instant.now();
-
+        startedTime = Instant.now();
 
         registerMessage();
 
@@ -166,6 +178,7 @@ public class PreparationTime {
 
     public static void update() {
         var playerManager = server.getPlayerManager();
+        var scoreboard = server.getScoreboard();
 
         SlownessSeekers();
         maxStamina();
@@ -177,12 +190,18 @@ public class PreparationTime {
         //現在の時間
         var now = Instant.now();
 
+        var hideMimicList = HideController.getHidingPlayers();
+        var isAllPlayerMimicked = scoreboard.getTeam("Hiders").getPlayerList().size() == hideMimicList.size();
+
+        if (isAllPlayerMimicked && (lastMimickedTime == null || Duration.between(lastMimickedTime, now).toSeconds() > 5)) {
+            lastMimickedTime = now;
+        }
+
         //経過時間
-        var currentTime = Duration.between(preparationTime, now);
+        var currentTime = isAllPlayerMimicked ? Duration.ofSeconds(prepareTime - 5).plus(Duration.between(lastMimickedTime, now)) : Duration.between(startedTime, now);
 
         //残り時間
         var remainsTime = Duration.ofSeconds(prepareTime).minus(currentTime);
-
 
         //残り時間が０以下のとき
         if (remainsTime.isNegative()) {
