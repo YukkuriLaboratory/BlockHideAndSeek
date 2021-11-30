@@ -1,4 +1,1 @@
 # BlockHideAndSeek Mod
-
-## License
-
