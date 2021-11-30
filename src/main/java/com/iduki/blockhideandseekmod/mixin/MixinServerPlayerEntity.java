@@ -18,7 +18,9 @@ public abstract class MixinServerPlayerEntity {
         var entity = ((ServerPlayerEntity) (Object) this);
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
         var playerName = entity.getEntityName();
-        var playerTeam = scoreboard.getPlayerTeam(playerName);
-        scoreboard.removePlayerFromTeam(playerName, playerTeam);
+        if (scoreboard.getPlayerTeam(playerName) != null) {
+            var playerTeam = scoreboard.getPlayerTeam(playerName);
+            scoreboard.removePlayerFromTeam(playerName, playerTeam);
+        }
     }
 }
