@@ -78,18 +78,19 @@ public class PreparationTime {
         var scoreboard = server.getScoreboard();
 
         Team seekers = scoreboard.getTeam("Seekers");
-        var startSeekerMessage = new LiteralText("[鬼はスタートしたらミミックを探そう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+        var startSeekerMessage = new LiteralText("").append(Text.of("\n"))
+                .append(new LiteralText("[鬼はスタートしたらミミックを探そう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
         List<ServerPlayerEntity> seekersList = seekers.getPlayerList()
                 .stream()
-                .map(player -> seekers.getName())
                 .map(playerManager::getPlayer)
                 .toList();
         seekersList.forEach(player -> player.sendMessage(startSeekerMessage, false));
 
         Team hiders = scoreboard.getTeam("Hiders");
-        var startHiderMessage = new LiteralText("[ミミックは準備時間終了までに隠れよう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+        var startHiderMessage = new LiteralText("").append(Text.of("\n"))
+                .append(new LiteralText("[ミミックは準備時間終了までに隠れよう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
         List<ServerPlayerEntity> hidersList = hiders.getPlayerList()
-                .stream().map(player -> hiders.getName())
+                .stream()
                 .map(playerManager::getPlayer)
                 .toList();
         hidersList.forEach(player -> player.sendMessage(startHiderMessage, false));
@@ -264,8 +265,7 @@ public class PreparationTime {
         }
         */
 
-        //うごかないよ
-        //teamMessage();
+        teamMessage();
 
         //非同期スレッドの呼び出し
         EXECUTOR.execute(() -> {

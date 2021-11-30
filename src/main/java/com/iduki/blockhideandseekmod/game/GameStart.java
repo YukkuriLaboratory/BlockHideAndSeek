@@ -217,7 +217,7 @@ public class GameStart {
         ingametimeProgress.setVisible(false);
         HideController.clearSelectors();
         playerManager.getPlayerList().forEach(player -> {
-            player.changeGameMode(GameMode.SURVIVAL);
+            player.changeGameMode(GameMode.SPECTATOR);
             //擬態解除(事故ることはないのでここで呼んじゃう)
             HideController.cancelHiding(player);
             //Modアイテムの削除

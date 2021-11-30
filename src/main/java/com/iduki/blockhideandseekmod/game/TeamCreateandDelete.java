@@ -6,6 +6,7 @@ import net.minecraft.scoreboard.Team;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static net.minecraft.scoreboard.AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS;
 import static net.minecraft.util.Formatting.*;
 
 public class TeamCreateandDelete {
@@ -27,6 +28,7 @@ public class TeamCreateandDelete {
             team = scoreboard.addTeam("Hiders");
             team.setColor(GREEN);
             team.setFriendlyFireAllowed(false);
+            team.setNameTagVisibilityRule(HIDE_FOR_OTHER_TEAMS);
         }
     }
 
