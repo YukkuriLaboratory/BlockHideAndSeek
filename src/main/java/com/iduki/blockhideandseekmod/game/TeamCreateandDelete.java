@@ -49,5 +49,17 @@ public class TeamCreateandDelete {
                 .forEach(scoreboard::removeTeam);
     }
 
+    public static Team getSeekersTeam() {
+        return BlockHideAndSeekMod.SERVER.getScoreboard().getTeam("Seekers");
+    }
+
+    public static Team getHidersTeam() {
+        return BlockHideAndSeekMod.SERVER.getScoreboard().getTeam("Hiders");
+    }
+
+    public static Team getObserversTeam() {
+        return BlockHideAndSeekMod.SERVER.getScoreboard().getTeam("Observers");
+    }
+
 }
 

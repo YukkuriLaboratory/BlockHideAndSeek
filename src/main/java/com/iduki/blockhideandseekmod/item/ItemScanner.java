@@ -1,8 +1,8 @@
 package com.iduki.blockhideandseekmod.item;
 
-import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.game.HudDisplay;
+import com.iduki.blockhideandseekmod.game.TeamCreateandDelete;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -61,7 +61,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
         var nearestPlayer = player.world
                 .getPlayers()
                 .stream()
-                .filter(p -> p.isTeamPlayer(BlockHideAndSeekMod.SERVER.getScoreboard().getTeam("Hiders")))
+                .filter(p -> p.isTeamPlayer(TeamCreateandDelete.getHidersTeam()))
                 .filter(p -> p.distanceTo(player) < getScanLength())
                 .toList();
 

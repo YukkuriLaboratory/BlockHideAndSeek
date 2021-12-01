@@ -12,8 +12,8 @@ public class TeamPlayerListHeader {
         var playerManager = BlockHideAndSeekMod.SERVER.getPlayerManager();
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
         var emptyText = LiteralText.EMPTY;
-        var hidersCount = String.valueOf(scoreboard.getTeam("Hiders").getPlayerList().size());
-        var seekersCount = String.valueOf(scoreboard.getTeam("Seekers").getPlayerList().size());
+        var hidersCount = String.valueOf(TeamCreateandDelete.getHidersTeam().getPlayerList().size());
+        var seekersCount = String.valueOf(TeamCreateandDelete.getSeekersTeam().getPlayerList().size());
         var packet = new LiteralText("Seekers:").setStyle(Style.EMPTY.withColor(Formatting.RED))
                 .append(new LiteralText(seekersCount).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
                 .append(new LiteralText("/").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)))

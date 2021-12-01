@@ -67,7 +67,7 @@ public class GameStart {
         var playerManager = server.getPlayerManager();
         var scoreboard = server.getScoreboard();
         //鬼側のエフェクトを解除します
-        Team seekersTeam = scoreboard.getTeam("Seekers");
+        Team seekersTeam = TeamCreateandDelete.getSeekersTeam();
         if (seekersTeam != null) {
             seekersTeam.getPlayerList()
                     .stream()
@@ -142,7 +142,7 @@ public class GameStart {
         var remainsTime = Duration.ofSeconds(gameTime).minus(currentTime);
 
         //ミミック陣営が0かどうかの確認
-        var hiderTeam = scoreboard.getTeam("Hiders");
+        var hiderTeam = TeamCreateandDelete.getHidersTeam();
         var mimicEmpty = hiderTeam == null || hiderTeam.getPlayerList().isEmpty();
         //ミミック陣営の人数が0のとき
         if (mimicEmpty) {
@@ -170,7 +170,7 @@ public class GameStart {
         //残り時間が０以下のとき
         if (remainsTime.isNegative()) {
             var winMessage = new LiteralText("ミミック陣営の勝利！").append(Text.of("\n"));
-            var winPlayers = scoreboard.getTeam("Hiders").getPlayerList();
+            var winPlayers = TeamCreateandDelete.getHidersTeam().getPlayerList();
             var message = new LiteralText("生き残ったミミック").append(Text.of("\n")).append(new LiteralText(winPlayers.toString()).setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
             playerManager.getPlayerList().forEach(player -> player.sendMessage(winMessage, false));
             playerManager.getPlayerList().forEach(player -> player.sendMessage(message, false));
