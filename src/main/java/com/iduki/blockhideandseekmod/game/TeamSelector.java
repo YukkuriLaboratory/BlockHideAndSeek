@@ -317,8 +317,8 @@ public class TeamSelector {
             TeamCreateandDelete.addHider();
             TeamCreateandDelete.addObserver();
             //各チームにプレイヤーを振り分けする
-            Team seekersteam = scoreboard.getTeam("Seekers");
-            Team hidersteam = scoreboard.getTeam("Hiders");
+            Team seekersteam = TeamCreateandDelete.getSeekers();
+            Team hidersteam = TeamCreateandDelete.getHiders();
             playerSeekers.stream()
                     .map(PlayerEntity::getEntityName)
                     .forEach(player -> scoreboard.addPlayerToTeam(player, seekersteam));
@@ -388,12 +388,12 @@ public class TeamSelector {
     private static void joinOB() {
         var playerManager = server.getPlayerManager();
         var scoreboard = server.getScoreboard();
-        Team observersteam = scoreboard.getTeam("Observers");
+        Team observersteam = TeamCreateandDelete.getObservers();
         var playerlist = playerManager.getPlayerList();
         //サーバープレイヤーからフィルターしてチーム無所属のプレイヤーを取得
         List<ServerPlayerEntity> observers = playerlist.stream()
-                .filter(player -> player.getScoreboardTeam() != scoreboard.getTeam("Hiders"))
-                .filter(player -> player.getScoreboardTeam() != scoreboard.getTeam("Seekers"))
+                .filter(player -> player.getScoreboardTeam() != TeamCreateandDelete.getHiders())
+                .filter(player -> player.getScoreboardTeam() != TeamCreateandDelete.getSeekers())
                 .toList();
         //List<ServerPlayerEntity>をList<String>に変換
         List<String> observerNames = observers.stream()

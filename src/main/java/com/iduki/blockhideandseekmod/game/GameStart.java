@@ -67,7 +67,7 @@ public class GameStart {
         var playerManager = server.getPlayerManager();
         var scoreboard = server.getScoreboard();
         //鬼側のエフェクトを解除します
-        Team seekersTeam = scoreboard.getTeam("Seekers");
+        Team seekersTeam = TeamCreateandDelete.getSeekers();
         if (seekersTeam != null) {
             seekersTeam.getPlayerList()
                     .stream()
@@ -142,7 +142,7 @@ public class GameStart {
         var remainsTime = Duration.ofSeconds(gameTime).minus(currentTime);
 
         //ミミック陣営が0かどうかの確認
-        var hiderTeam = scoreboard.getTeam("Hiders");
+        var hiderTeam = TeamCreateandDelete.getHiders();
         var mimicEmpty = hiderTeam == null || hiderTeam.getPlayerList().isEmpty();
         //ミミック陣営の人数が0のとき
         if (mimicEmpty) {

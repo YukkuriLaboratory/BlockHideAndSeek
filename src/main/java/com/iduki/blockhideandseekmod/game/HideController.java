@@ -136,7 +136,7 @@ public class HideController {
             return false;
         }
 
-        if (scoreboard.getTeam("Hiders") != playerteam || playerteam == null) {
+        if (TeamCreateandDelete.getHiders() != playerteam || playerteam == null) {
             return false;
         }
 

@@ -77,7 +77,7 @@ public class PreparationTime {
         var playerManager = server.getPlayerManager();
         var scoreboard = server.getScoreboard();
 
-        Team seekers = scoreboard.getTeam("Seekers");
+        Team seekers = TeamCreateandDelete.getSeekers();
         var startSeekerMessage = new LiteralText("").append(Text.of("\n"))
                 .append(new LiteralText("[鬼はスタートしたらミミックを探そう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
         List<ServerPlayerEntity> seekersList = seekers.getPlayerList()
@@ -86,7 +86,7 @@ public class PreparationTime {
                 .toList();
         seekersList.forEach(player -> player.sendMessage(startSeekerMessage, false));
 
-        Team hiders = scoreboard.getTeam("Hiders");
+        Team hiders = TeamCreateandDelete.getHiders();
         var startHiderMessage = new LiteralText("").append(Text.of("\n"))
                 .append(new LiteralText("[ミミックは準備時間終了までに隠れよう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
         List<ServerPlayerEntity> hidersList = hiders.getPlayerList()
@@ -101,8 +101,8 @@ public class PreparationTime {
         var playerManager = server.getPlayerManager();
         var scoreboard = server.getScoreboard();
 
-        Team seekersteam = scoreboard.getTeam("Seekers");
-        Team hidersteam = scoreboard.getTeam("Hiders");
+        Team seekersteam = TeamCreateandDelete.getSeekers();
+        Team hidersteam = TeamCreateandDelete.getHiders();
         if (seekersteam.getPlayerList().isEmpty() || hidersteam.getPlayerList().isEmpty()) {
             var message = new LiteralText("")
                     .append(new LiteralText("プレイヤーがいないためゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.RED)));
@@ -160,7 +160,7 @@ public class PreparationTime {
         var playerManager = server.getPlayerManager();
         var scoreboard = server.getScoreboard();
         //準備時間中鬼側に移動制限と盲目を設けます
-        Team seekersteam = scoreboard.getTeam("Seekers");
+        Team seekersteam = TeamCreateandDelete.getSeekers();
         seekersteam.getPlayerList().forEach(player -> {
             var players = playerManager.getPlayer(player);
             if (players != null) {
@@ -192,7 +192,7 @@ public class PreparationTime {
         var now = Instant.now();
 
         var hideMimicList = HideController.getHidingPlayers();
-        var isAllPlayerMimicked = scoreboard.getTeam("Hiders").getPlayerList().size() == hideMimicList.size();
+        var isAllPlayerMimicked = TeamCreateandDelete.getHiders().getPlayerList().size() == hideMimicList.size();
 
         if (isAllPlayerMimicked && (lastMimickedTime == null || Duration.between(lastMimickedTime, now).toSeconds() > 5)) {
             lastMimickedTime = now;
