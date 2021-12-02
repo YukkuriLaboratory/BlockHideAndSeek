@@ -378,30 +378,6 @@ public class TeamSelector {
         playerManager.getPlayerList().forEach(player -> HudDisplay.removeActionbarText(player.getUuid(), VOTE_PROGRESS));
     }
 
-    private static void joinOB() {
-        var playerManager = server.getPlayerManager();
-        var scoreboard = server.getScoreboard();
-        Team observersteam = scoreboard.getTeam("Observers");
-        var playerlist = playerManager.getPlayerList();
-        //サーバープレイヤーからフィルターしてチーム無所属のプレイヤーを取得
-        List<ServerPlayerEntity> observers = playerlist.stream()
-                .filter(player -> player.getScoreboardTeam() != scoreboard.getTeam("Hiders"))
-                .filter(player -> player.getScoreboardTeam() != scoreboard.getTeam("Seekers"))
-                .toList();
-        //List<ServerPlayerEntity>をList<String>に変換
-        List<String> observerNames = observers.stream()
-                .map(PlayerEntity::getEntityName)
-                .toList();
-        //スぺクにしてobserverチームに入れる
-        observers.forEach(player -> player.changeGameMode(GameMode.SPECTATOR));
-        observerNames.forEach(player -> scoreboard.addPlayerToTeam(player, observersteam));
-
-    }
-
-    public static void addobserver() {
-        joinOB();
-    }
-
     /**
      * 投票を受け付けている間，陣営の人数表示を毎秒更新し続けます
      */

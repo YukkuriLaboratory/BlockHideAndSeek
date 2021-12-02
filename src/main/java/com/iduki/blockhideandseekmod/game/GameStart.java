@@ -253,10 +253,7 @@ public class GameStart {
                 var startTime = Instant.now();
                 //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
                 //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
-                server.submitAndJoin(() -> {
-                    TeamSelector.addobserver();
-                    update();
-                });
+                server.submitAndJoin(GameStart::update);
                 try {
                     //0.5 - (作業時間)秒間待つ
                     Thread.sleep(Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now())).toMillis());
