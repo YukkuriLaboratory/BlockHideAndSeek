@@ -5,6 +5,7 @@ import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.item.BhasItems;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
@@ -65,7 +66,6 @@ public class GameStart {
 
     public static void ClearSlownessSeekers() {
         var playerManager = server.getPlayerManager();
-        var scoreboard = server.getScoreboard();
         //鬼側のエフェクトを解除します
         Team seekersTeam = TeamCreateandDelete.getSeekers();
         if (seekersTeam != null) {
@@ -124,7 +124,6 @@ public class GameStart {
 
     public static void update() {
         var playerManager = server.getPlayerManager();
-        var scoreboard = server.getScoreboard();
 
         TeamPlayerListHeader.TeamList();
         PreparationTime.maxStamina();
@@ -185,6 +184,17 @@ public class GameStart {
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(endsubMessage));
 
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 1.0f, 1.0f));
+
+            //残ったミミックを光らせたりする
+            hiderTeam.getPlayerList()
+                    .stream()
+                    .map(playerManager::getPlayer)
+                    .filter(Objects::nonNull)
+                    .forEach(player -> {
+                                player.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 200, false, false, false));
+                            }
+                    );
+
 
             suspendGame();
 
