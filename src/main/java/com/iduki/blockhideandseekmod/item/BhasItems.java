@@ -5,6 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class BhasItems {
@@ -25,6 +26,10 @@ public class BhasItems {
   public static final Set<Item> seekerItems = Set.of(DETECTOR, SCANNER, FLYER);
 
   public static final Set<Item> hiderItems = Set.of(SELECTOR, FLYER);
+
+  public static boolean isModItem(Item item) {
+    return Objects.equals(Registry.ITEM.getId(item).getNamespace(), BlockHideAndSeekMod.MOD_ID);
+  }
 
     /**
      * このクラス自体をロードして上のアイテム達を登録させてやるためだけに生まれた虚空の戦士．

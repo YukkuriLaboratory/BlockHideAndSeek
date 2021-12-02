@@ -2,6 +2,7 @@ package com.iduki.blockhideandseekmod.game;
 
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
+import com.iduki.blockhideandseekmod.item.BhasItems;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffects;
@@ -17,7 +18,6 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 
 import java.time.Duration;
@@ -170,7 +170,7 @@ public class GameStart {
         //残り時間が０以下のとき
         if (remainsTime.isNegative()) {
             var winMessage = new LiteralText("ミミック陣営の勝利！").append(Text.of("\n"));
-            var winPlayers = scoreboard.getTeam("Hiders").getPlayerList();
+      var winPlayers = hiderTeam.getPlayerList();
             var message = new LiteralText("生き残ったミミック").append(Text.of("\n")).append(new LiteralText(winPlayers.toString()).setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
             playerManager.getPlayerList().forEach(player -> player.sendMessage(winMessage, false));
             playerManager.getPlayerList().forEach(player -> player.sendMessage(message, false));
@@ -216,17 +216,21 @@ public class GameStart {
         isInGameTime = false;
         ingametimeProgress.setVisible(false);
         HideController.clearSelectors();
-        playerManager.getPlayerList().forEach(player -> {
-            player.changeGameMode(GameMode.SPECTATOR);
-            //擬態解除(事故ることはないのでここで呼んじゃう)
-            HideController.cancelHiding(player);
-            //Modアイテムの削除
-            player.getInventory().remove(
-                    itemStack -> Objects.equals(Registry.ITEM.getId(itemStack.getItem()).getNamespace(), BlockHideAndSeekMod.MOD_ID),
-                    64,
-                    player.playerScreenHandler.getCraftingInput()
-            );
-        });
+    playerManager
+        .getPlayerList()
+        .forEach(
+            player -> {
+              player.changeGameMode(GameMode.SPECTATOR);
+              // 擬態解除(事故ることはないのでここで呼んじゃう)
+              HideController.cancelHiding(player);
+              // Modアイテムの削除
+              player
+                  .getInventory()
+                  .remove(
+                      itemStack -> BhasItems.isModItem(itemStack.getItem()),
+                      64,
+                      player.playerScreenHandler.getCraftingInput());
+            });
         TeamCreateandDelete.deleteTeam();
         TeamPlayerListHeader.EmptyList();
     }
