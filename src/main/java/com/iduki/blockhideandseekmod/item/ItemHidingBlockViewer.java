@@ -12,11 +12,11 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class HidingBlockViewer extends LoreItem implements ServerSideItem {
+public class ItemHidingBlockViewer extends LoreItem implements ServerSideItem {
 
     private static final Settings SETTINGS = new Settings();
 
-    public HidingBlockViewer() {
+    public ItemHidingBlockViewer() {
         super(SETTINGS);
     }
 

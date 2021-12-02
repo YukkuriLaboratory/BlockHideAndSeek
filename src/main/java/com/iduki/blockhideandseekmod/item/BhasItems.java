@@ -15,7 +15,7 @@ public class BhasItems {
     // 鬼用
     public static ItemDetector DETECTOR = register("detector", new ItemDetector());
     public static ItemScanner SCANNER = register("scanner", new ItemScanner());
-    public static HidingBlockViewer BLOCK_VIEWER = register("block_viewer", new HidingBlockViewer());
+    public static ItemHidingBlockViewer BLOCK_VIEWER = register("block_viewer", new ItemHidingBlockViewer());
 
     // ミミック用
     public static ItemBlockSelector SELECTOR = register("selector", new ItemBlockSelector());
