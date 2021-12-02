@@ -15,6 +15,7 @@ public class BhasItems {
     // 鬼用
     public static ItemDetector DETECTOR = register("detector", new ItemDetector());
     public static ItemScanner SCANNER = register("scanner", new ItemScanner());
+    public static HidingBlockViewer BLOCK_VIEWER = register("block_viewer", new HidingBlockViewer());
 
     // ミミック用
     public static ItemBlockSelector SELECTOR = register("selector", new ItemBlockSelector());
@@ -23,7 +24,7 @@ public class BhasItems {
         return Registry.register(Registry.ITEM, new Identifier(BlockHideAndSeekMod.MOD_ID, id), item);
     }
 
-    public static final Set<Item> seekerItems = Set.of(DETECTOR, SCANNER, FLYER);
+    public static final Set<Item> seekerItems = Set.of(DETECTOR, SCANNER, BLOCK_VIEWER, FLYER);
 
     public static final Set<Item> hiderItems = Set.of(SELECTOR, FLYER);
 
