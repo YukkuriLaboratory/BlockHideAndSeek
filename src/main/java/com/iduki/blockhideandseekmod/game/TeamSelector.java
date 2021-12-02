@@ -134,8 +134,8 @@ public class TeamSelector {
      * @param player 対象プレイヤー
      */
     public static boolean addSeeker(ServerPlayerEntity player) {
-        if (isVoteTime) {
-            var uuid = player.getUuid();
+        var uuid = player.getUuid();
+        if (isVoteTime && !seekers.contains(uuid)) {
             hiders.remove(uuid);
             seekers.add(uuid);
             return true;
@@ -150,8 +150,8 @@ public class TeamSelector {
      * @param player 対象プレイヤー
      */
     public static boolean addHider(ServerPlayerEntity player) {
-        if (isVoteTime) {
-            var uuid = player.getUuid();
+        var uuid = player.getUuid();
+        if (isVoteTime && !hiders.contains(uuid)) {
             seekers.remove(uuid);
             hiders.add(uuid);
             return true;
