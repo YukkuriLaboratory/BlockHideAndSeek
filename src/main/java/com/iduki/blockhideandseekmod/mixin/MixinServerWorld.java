@@ -1,9 +1,6 @@
 package com.iduki.blockhideandseekmod.mixin;
 
-import com.iduki.blockhideandseekmod.game.GameStart;
-import com.iduki.blockhideandseekmod.game.HideController;
-import com.iduki.blockhideandseekmod.game.PreparationTime;
-import com.iduki.blockhideandseekmod.game.TeamSelector;
+import com.iduki.blockhideandseekmod.game.*;
 import com.iduki.blockhideandseekmod.util.FlyController;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.entity.Entity;
@@ -55,6 +52,10 @@ public abstract class MixinServerWorld {
         PreparationTime.addBossBarTarget(player);
         GameStart.addBossBarTarget(player);
         FlyController.registerPlayer(player);
+
+        if (GameState.getCurrentState() == GameState.Phase.PREPARE && player.getScoreboardTeam() == TeamCreateandDelete.getSeekers()) {
+            PreparationTime.lockPlayerMovement(player);
+        }
     }
 
     @Inject(

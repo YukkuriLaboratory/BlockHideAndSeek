@@ -5,10 +5,8 @@ import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.item.BhasItems;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
-import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -22,7 +20,6 @@ import net.minecraft.world.GameMode;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -63,25 +60,6 @@ public class GameStart {
     //毎回クラス名入力するのがダルいので定数として扱う
     private static final MinecraftServer server = BlockHideAndSeekMod.SERVER;
 
-    public static void ClearSlownessSeekers() {
-        var playerManager = server.getPlayerManager();
-        var scoreboard = server.getScoreboard();
-        //鬼側のエフェクトを解除します
-        Team seekersTeam = TeamCreateandDelete.getSeekers();
-        if (seekersTeam != null) {
-            seekersTeam.getPlayerList()
-                    .stream()
-                    .map(playerManager::getPlayer)
-                    .filter(Objects::nonNull)
-                    .forEach(player -> {
-                        player.removeStatusEffect(StatusEffects.SLOWNESS);
-                        player.removeStatusEffect(StatusEffects.BLINDNESS);
-                        player.removeStatusEffect(StatusEffects.JUMP_BOOST);
-                    });
-        }
-    }
-
-
     /**
      * ゲーム時間のカウントを開始します．
      * これのメソッドが呼ばれて以降，このクラスによってゲームの開始まで進行が管理されます
@@ -91,10 +69,7 @@ public class GameStart {
         //各種変数の初期化
         ingameTime = Instant.now();
         //鬼側エフェクト削除
-        ClearSlownessSeekers();
         registerMessage();
-
-
     }
 
     /**
@@ -124,7 +99,6 @@ public class GameStart {
 
     public static void update() {
         var playerManager = server.getPlayerManager();
-        var scoreboard = server.getScoreboard();
 
         TeamPlayerListHeader.TeamList();
         PreparationTime.maxStamina();
