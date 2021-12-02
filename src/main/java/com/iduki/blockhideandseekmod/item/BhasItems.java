@@ -5,17 +5,30 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-public class BhasItems {
+import java.util.Objects;
+import java.util.Set;
 
+public class BhasItems {
+    // 共通
     public static ItemFlyer FLYER = register("flyer", new ItemFlyer());
 
+    // 鬼用
     public static ItemDetector DETECTOR = register("detector", new ItemDetector());
     public static ItemScanner SCANNER = register("scanner", new ItemScanner());
 
+    // ミミック用
     public static ItemBlockSelector SELECTOR = register("selector", new ItemBlockSelector());
 
     private static <T extends Item> T register(String id, T item) {
         return Registry.register(Registry.ITEM, new Identifier(BlockHideAndSeekMod.MOD_ID, id), item);
+    }
+
+    public static final Set<Item> seekerItems = Set.of(DETECTOR, SCANNER, FLYER);
+
+    public static final Set<Item> hiderItems = Set.of(SELECTOR, FLYER);
+
+    public static boolean isModItem(Item item) {
+        return Objects.equals(Registry.ITEM.getId(item).getNamespace(), BlockHideAndSeekMod.MOD_ID);
     }
 
     /**

@@ -8,6 +8,7 @@ import com.iduki.blockhideandseekmod.item.BhasItems;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
@@ -283,12 +284,21 @@ public class TeamSelector {
                     .filter(Objects::nonNull)
                     .toList();
 
-            //アイテムの付与
-            playerSeekers.forEach(player -> {
-                player.getInventory().insertStack(BhasItems.DETECTOR.getDefaultStack());
-                player.getInventory().insertStack(BhasItems.SCANNER.getDefaultStack());
-            });
-            playerHiders.forEach(player -> player.getInventory().insertStack(BhasItems.SELECTOR.getDefaultStack()));
+      // アイテムの付与
+      playerSeekers.forEach(
+          player -> {
+            var inventory = player.getInventory();
+            BhasItems.seekerItems.stream()
+                .map(Item::getDefaultStack)
+                .forEach(inventory::insertStack);
+          });
+      playerHiders.forEach(
+          player -> {
+            var inventory = player.getInventory();
+            BhasItems.hiderItems.stream()
+                .map(Item::getDefaultStack)
+                .forEach(inventory::insertStack);
+          });
 
             //ゲームモードをサバイバルに
             Stream.concat(playerHiders.stream(), playerSeekers.stream())
@@ -299,9 +309,6 @@ public class TeamSelector {
                         //飛行を許可し続ける
                         player.getAbilities().allowFlying = true;
                         player.sendAbilitiesUpdate();
-
-                        //追加アイテム
-                        player.getInventory().insertStack(BhasItems.FLYER.getDefaultStack());
                     });
 
             //各チームの作成
@@ -310,8 +317,8 @@ public class TeamSelector {
             TeamCreateandDelete.addHider();
             TeamCreateandDelete.addObserver();
             //各チームにプレイヤーを振り分けする
-            Team seekersteam = scoreboard.getTeam("Seekers");
-            Team hidersteam = scoreboard.getTeam("Hiders");
+            Team seekersteam = TeamCreateandDelete.getSeekers();
+            Team hidersteam = TeamCreateandDelete.getHiders();
             playerSeekers.stream()
                     .map(PlayerEntity::getEntityName)
                     .forEach(player -> scoreboard.addPlayerToTeam(player, seekersteam));
