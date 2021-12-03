@@ -83,7 +83,7 @@ public class FlyController {
                 .forEach(player -> {
                     var uuid = player.getUuid();
                     var abilities = player.getAbilities();
-                    if (abilities.flying) {
+                    if (abilities.flying && player.interactionManager.getGameMode().isSurvivalLike()) {
                         regenCoolTime.put(uuid, maxRegenCoolTime);
 
                         var currentFlyTime = flyableTime.get(uuid).minus(Duration.between(lastChecked, nowTime));

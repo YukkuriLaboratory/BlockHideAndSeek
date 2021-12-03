@@ -135,8 +135,8 @@ public class TeamSelector {
      * @param player 対象プレイヤー
      */
     public static boolean addSeeker(ServerPlayerEntity player) {
-        if (isVoteTime) {
-            var uuid = player.getUuid();
+        var uuid = player.getUuid();
+        if (isVoteTime && !seekers.contains(uuid)) {
             hiders.remove(uuid);
             seekers.add(uuid);
             return true;
@@ -151,8 +151,8 @@ public class TeamSelector {
      * @param player 対象プレイヤー
      */
     public static boolean addHider(ServerPlayerEntity player) {
-        if (isVoteTime) {
-            var uuid = player.getUuid();
+        var uuid = player.getUuid();
+        if (isVoteTime && !hiders.contains(uuid)) {
             seekers.remove(uuid);
             hiders.add(uuid);
             return true;
@@ -383,30 +383,6 @@ public class TeamSelector {
         timeProgress.setVisible(false);
         //アクションバーのメッセージを非表示にする
         playerManager.getPlayerList().forEach(player -> HudDisplay.removeActionbarText(player.getUuid(), VOTE_PROGRESS));
-    }
-
-    private static void joinOB() {
-        var playerManager = server.getPlayerManager();
-        var scoreboard = server.getScoreboard();
-        Team observersteam = TeamCreateandDelete.getObservers();
-        var playerlist = playerManager.getPlayerList();
-        //サーバープレイヤーからフィルターしてチーム無所属のプレイヤーを取得
-        List<ServerPlayerEntity> observers = playerlist.stream()
-                .filter(player -> player.getScoreboardTeam() != TeamCreateandDelete.getHiders())
-                .filter(player -> player.getScoreboardTeam() != TeamCreateandDelete.getSeekers())
-                .toList();
-        //List<ServerPlayerEntity>をList<String>に変換
-        List<String> observerNames = observers.stream()
-                .map(PlayerEntity::getEntityName)
-                .toList();
-        //スぺクにしてobserverチームに入れる
-        observers.forEach(player -> player.changeGameMode(GameMode.SPECTATOR));
-        observerNames.forEach(player -> scoreboard.addPlayerToTeam(player, observersteam));
-
-    }
-
-    public static void addobserver() {
-        joinOB();
     }
 
     /**

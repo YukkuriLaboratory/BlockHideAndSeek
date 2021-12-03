@@ -1,13 +1,16 @@
 package com.iduki.blockhideandseekmod.game;
 
+import com.google.common.collect.Maps;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,11 +20,13 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.GameMode;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -47,12 +52,6 @@ public class PreparationTime {
 
     /**
      * 時間計測用
-     * 準備時間
-     */
-    private static Instant preparationTime;
-
-    /**
-     * 時間計測用
      * 全員が擬態を終えてからの時間
      */
     private static Instant lastMimickedTime;
@@ -62,6 +61,10 @@ public class PreparationTime {
      * 準備時間用
      */
     private static final ServerBossBar preparationtimeProgress = new ServerBossBar(Text.of(""), BossBar.Color.BLUE, BossBar.Style.NOTCHED_20);
+
+    private static final Map<UUID, Entity> lockerEntities = Maps.newHashMap();
+
+    private static final String BLIND_MESSAGE = "blindMessage";
 
     /**
      * 非同期処理用
@@ -99,7 +102,6 @@ public class PreparationTime {
 
     public static boolean checkTeamcount() {
         var playerManager = server.getPlayerManager();
-        var scoreboard = server.getScoreboard();
 
         Team seekersteam = TeamCreateandDelete.getSeekers();
         Team hidersteam = TeamCreateandDelete.getHiders();
@@ -124,12 +126,58 @@ public class PreparationTime {
     public static void startPreparation() {
         GameState.setCurrentState(GameState.Phase.PREPARE);
         //各種変数の初期化
-        preparationTime = Instant.now();
         startedTime = Instant.now();
 
+        var seekersTeam = TeamCreateandDelete.getSeekers();
+        if (seekersTeam != null) {
+            seekersTeam.getPlayerList()
+                    .stream()
+                    .map(server.getPlayerManager()::getPlayer)
+                    .filter(Objects::nonNull)
+                    .forEach(PreparationTime::lockPlayerMovement);
+        }
+
         registerMessage();
+    }
 
+    /**
+     * プレイヤーに偽のEntity情報を送り，そのEntityの視点に固定します．
+     * サーバー側からなにかアクションを加えるか，Playerがリログするまで操作はできません(リログは対策済み)
+     */
+    public static void lockPlayerMovement(ServerPlayerEntity player) {
+        var uuid = player.getUuid();
+        var fakeEntity = lockerEntities.containsKey(uuid) ? lockerEntities.get(uuid) : EntityType.VILLAGER.create(player.getServerWorld());
+        if (fakeEntity != null) {
+            var blockPos = player.getBlockPos();
+            fakeEntity.setPosition(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
+            fakeEntity.setPitch(90);
+            fakeEntity.setInvisible(true);
+            player.networkHandler.sendPacket(new EntitySpawnS2CPacket(fakeEntity));
+            player.networkHandler.sendPacket(new SetCameraEntityS2CPacket(fakeEntity));
+            player.requestTeleport(fakeEntity.getX(), fakeEntity.getY(), fakeEntity.getZ());
+            getAround(blockPos.up()).forEach(pos -> player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, Blocks.BEDROCK.getDefaultState())));
+            lockerEntities.put(uuid, fakeEntity);
+            HudDisplay.setActionBarText(uuid, BLIND_MESSAGE, new LiteralText("目隠し中").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+        } else {
+            BlockHideAndSeekMod.LOGGER.error("cannot get villager entity");
+        }
+        player.changeGameMode(GameMode.SPECTATOR);
+    }
 
+    private static void unlockPlayerMovement(ServerPlayerEntity player) {
+        var uuid = player.getUuid();
+        var entity = lockerEntities.get(uuid);
+        if (entity != null) {
+            player.networkHandler.sendPacket(new SetCameraEntityS2CPacket(player));
+            player.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(entity.getId()));
+            getAround(player.getBlockPos().up()).forEach(pos -> player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, Blocks.AIR.getDefaultState())));
+            lockerEntities.remove(uuid);
+            HudDisplay.removeActionbarText(uuid, BLIND_MESSAGE);
+        }
+    }
+
+    private static Set<BlockPos> getAround(BlockPos pos) {
+        return Set.of(pos.up(), pos.down(), pos.east(), pos.west(), pos.north(), pos.south());
     }
 
     /**
@@ -156,21 +204,6 @@ public class PreparationTime {
         preparationtimeProgress.removePlayer(player);
     }
 
-    public static void SlownessSeekers() {
-        var playerManager = server.getPlayerManager();
-        var scoreboard = server.getScoreboard();
-        //準備時間中鬼側に移動制限と盲目を設けます
-        Team seekersteam = TeamCreateandDelete.getSeekers();
-        seekersteam.getPlayerList().forEach(player -> {
-            var players = playerManager.getPlayer(player);
-            if (players != null) {
-                players.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 50, 200, false, false, false));
-                players.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 50, 240, false, false, false));
-                players.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 50, 1, false, false, false));
-            }
-        });
-    }
-
     public static void maxStamina() {
         var playerManager = server.getPlayerManager();
         playerManager.getPlayerList().forEach(player -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.SATURATION, 50, 200, false, false, false)));
@@ -179,9 +212,7 @@ public class PreparationTime {
 
     public static void update() {
         var playerManager = server.getPlayerManager();
-        var scoreboard = server.getScoreboard();
 
-        SlownessSeekers();
         maxStamina();
         TeamPlayerListHeader.TeamList();
 
@@ -206,6 +237,19 @@ public class PreparationTime {
 
         //残り時間が０以下のとき
         if (remainsTime.isNegative()) {
+            var seekerTeam = TeamCreateandDelete.getSeekers();
+            if (seekerTeam != null) {
+                seekerTeam.getPlayerList()
+                        .stream()
+                        .map(playerManager::getPlayer)
+                        .filter(Objects::nonNull)
+                        .forEach(player -> {
+                            unlockPlayerMovement(player);
+                            player.changeGameMode(GameMode.SURVIVAL);
+                            player.interactionManager.changeGameMode(GameMode.SURVIVAL);
+                        });
+            }
+
             suspendGame();
             //タイトルバーにSTARTと表示
             var startMessage = new TitleS2CPacket(new LiteralText("     ").setStyle(Style.EMPTY.withFormatting(Formatting.UNDERLINE))
@@ -275,10 +319,7 @@ public class PreparationTime {
                 var startTime = Instant.now();
                 //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
                 //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
-                server.submitAndJoin(() -> {
-                    TeamSelector.addobserver();
-                    update();
-                });
+                server.submitAndJoin(PreparationTime::update);
                 try {
                     //0.5 - (作業時間)秒間待つ
                     Thread.sleep(Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now())).toMillis());
