@@ -74,6 +74,20 @@ public class ModConfig extends Config implements ConfigContainer {
             @ConfigEntry(comment = "捜索半径")
             public static double scanLength = 15;
         }
+
+        /**
+         * ミミックが透明になるアイテム
+         */
+        @Transitive
+        @ConfigEntries
+        public static class ItemBlink implements ConfigGroup {
+
+            @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
+            public static int coolTime = 1000;
+
+            @ConfigEntry(comment = "効果時間")
+            public static int duration = 80;
+        }
     }
 
 }

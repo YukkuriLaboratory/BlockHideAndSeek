@@ -19,6 +19,7 @@ public class BhasItems {
 
     // ミミック用
     public static ItemBlockSelector SELECTOR = register("selector", new ItemBlockSelector());
+    public static ItemBlink BLINK = register("brink", new ItemBlink());
 
     private static <T extends Item> T register(String id, T item) {
         return Registry.register(Registry.ITEM, new Identifier(BlockHideAndSeekMod.MOD_ID, id), item);
@@ -26,7 +27,7 @@ public class BhasItems {
 
     public static final Set<Item> seekerItems = Set.of(DETECTOR, SCANNER, BLOCK_VIEWER, FLYER);
 
-    public static final Set<Item> hiderItems = Set.of(SELECTOR, FLYER);
+    public static final Set<Item> hiderItems = Set.of(SELECTOR, BLINK, FLYER);
 
     public static boolean isModItem(Item item) {
         return Objects.equals(Registry.ITEM.getId(item).getNamespace(), BlockHideAndSeekMod.MOD_ID);
