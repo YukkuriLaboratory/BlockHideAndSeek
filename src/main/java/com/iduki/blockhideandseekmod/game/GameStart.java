@@ -138,7 +138,6 @@ public class GameStart {
 
             suspendGame();
 
-            playerManager.getPlayerList().forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
             TeamCreateandDelete.deleteTeam();
 
             return;
@@ -176,7 +175,6 @@ public class GameStart {
 
             suspendGame();
 
-            playerManager.getPlayerList().forEach(player -> player.changeGameMode(GameMode.ADVENTURE));
             TeamCreateandDelete.deleteTeam();
 
 
