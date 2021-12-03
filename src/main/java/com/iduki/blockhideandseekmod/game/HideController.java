@@ -68,6 +68,11 @@ public class HideController {
         selectingBlocks.remove(uuid);
     }
 
+    public static boolean isHiding(PlayerEntity player) {
+        var uuid = player.getUuid();
+        return hidingPlayers.containsKey(uuid) || tryingPlayers.containsKey(uuid);
+    }
+
     public static @Nullable BlockState getHidingBlock(BlockPos pos) {
         return hidingBlocks.get(pos);
     }
