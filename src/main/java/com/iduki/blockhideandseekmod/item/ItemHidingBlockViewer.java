@@ -1,9 +1,11 @@
 package com.iduki.blockhideandseekmod.item;
 
+import com.iduki.blockhideandseekmod.screen.HidersBlockScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -40,7 +42,7 @@ public class ItemHidingBlockViewer extends LoreItem implements ServerSideItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         var itemStack = user.getStackInHand(hand);
-        //TODO インベントリーにハイドしているミミックのブロックを入れる
+        HidersBlockScreen.open(((ServerPlayerEntity) user));
         user.getInventory().removeOne(itemStack);
         return TypedActionResult.pass(itemStack);
     }
