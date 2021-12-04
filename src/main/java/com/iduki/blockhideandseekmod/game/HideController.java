@@ -215,7 +215,10 @@ public class HideController {
                         .map(playerManager::getPlayer)
                         .filter(Objects::nonNull)
                         .toList();
-                BlockHighlighting.setHighlight(playerPos, targetPlayers);
+                BlockHighlighting.setHighlight(playerPos, targetPlayers, entity -> {
+                    entity.setCustomName(player.getName());
+                    entity.setCustomNameVisible(true);
+                });
             }
         }
     }
