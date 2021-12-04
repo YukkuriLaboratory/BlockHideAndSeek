@@ -4,13 +4,13 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
-import net.minecraft.server.ServerTask;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
@@ -24,6 +24,8 @@ public class BlockHighlighting {
 
     private static final Multimap<BlockPos, UUID> showingPlayers = HashMultimap.create();
     private static final Map<BlockPos, ShulkerEntity> fakeEntities = Maps.newHashMap();
+
+    private static final Map<BlockPos, Long> willRemove = Maps.newHashMap();
 
     /**
      * 対象の位置に偽のハイライトされたブロックの枠を追加します
@@ -68,8 +70,7 @@ public class BlockHighlighting {
      */
     public static void setHighlight(BlockPos pos, int showTick, List<ServerPlayerEntity> players, Consumer<ShulkerEntity> entityEditConsumer) {
         setHighlight(pos, players, entityEditConsumer);
-        var server = BlockHideAndSeekMod.SERVER;
-        server.send(new ServerTask(server.getTicks() - 3 + showTick, () -> removeHighlight(pos)));
+        willRemove.put(pos, ((long) showTick));
     }
 
     /**
@@ -102,15 +103,23 @@ public class BlockHighlighting {
     public static void resendHighlightData(ServerPlayerEntity player) {
         showingPlayers.entries()
                 .stream()
-                .filter(entry -> entry.getValue() == player.getUuid())
-                .map(Map.Entry::getKey)
-                .map(fakeEntities::get)
-                .forEach(entity -> {
+                .filter(entry -> entry.getValue() == player.getUuid()).map(Map.Entry::getKey).map(fakeEntities::get).forEach(entity -> {
                     var spawnPacket = new EntitySpawnS2CPacket(entity);
                     var dataPacket = new EntityTrackerUpdateS2CPacket(entity.getId(), entity.getDataTracker(), true);
                     var networkHandler = player.networkHandler;
                     networkHandler.sendPacket(spawnPacket);
                     networkHandler.sendPacket(dataPacket);
                 });
+    }
+
+    static {
+        ServerTickEvents.START_SERVER_TICK.register(server -> willRemove.entrySet().stream().toList().forEach(entry -> {
+            var currentTick = entry.getValue() - 1;
+            if (currentTick <= 0) {
+                removeHighlight(entry.getKey());
+            } else {
+                willRemove.put(entry.getKey(), currentTick);
+            }
+        }));
     }
 }
