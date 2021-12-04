@@ -122,7 +122,7 @@ public class HideController {
                         .getPlayerList()
                         .stream()
                         .peek(p -> p.networkHandler.sendPacket(blockPacket))
-                        .filter(p -> p.getUuid() != uuid && p.interactionManager.getGameMode().isSurvivalLike())
+                        .filter(p -> p.getUuid() != uuid && !p.isTeamPlayer(TeamCreateandDelete.getObservers()))
                         .map(p -> p.networkHandler)
                         .forEach(handler -> {
                             handler.sendPacket(showPlayerPacket);
@@ -199,7 +199,7 @@ public class HideController {
                 playerManager.getPlayerList()
                         .stream()
                         .peek(p -> p.networkHandler.sendPacket(blockPacket))
-                        .filter(p -> p.getUuid() != uuid && p.interactionManager.getGameMode().isSurvivalLike())
+                        .filter(p -> p.getUuid() != uuid && !p.isTeamPlayer(TeamCreateandDelete.getObservers()))
                         .map(p -> p.networkHandler)
                         .forEach(handler -> handler.sendPacket(hidePlayerPacket));
 
