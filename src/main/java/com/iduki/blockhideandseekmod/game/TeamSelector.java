@@ -137,9 +137,11 @@ public class TeamSelector {
      */
     public static boolean addSeeker(ServerPlayerEntity player) {
         var uuid = player.getUuid();
-        if (isVoteTime && !seekers.contains(uuid)) {
-            hiders.remove(uuid);
-            seekers.add(uuid);
+        if (isVoteTime) {
+            if (!seekers.contains(uuid)) {
+                hiders.remove(uuid);
+                seekers.add(uuid);
+            }
             return true;
         }
         return false;
@@ -153,9 +155,11 @@ public class TeamSelector {
      */
     public static boolean addHider(ServerPlayerEntity player) {
         var uuid = player.getUuid();
-        if (isVoteTime && !hiders.contains(uuid)) {
-            seekers.remove(uuid);
-            hiders.add(uuid);
+        if (isVoteTime) {
+            if (!hiders.contains(uuid)) {
+                seekers.remove(uuid);
+                hiders.add(uuid);
+            }
             return true;
         }
         return false;
