@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
@@ -24,9 +25,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.spongepowered.include.com.google.common.collect.Maps;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * 近くの隠れているBlockを指し示すアイテム
@@ -36,7 +40,9 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     private final static String SCAN_RESULT = "scanResult";
     private final static String SCAN_NOTIFY = "scanNotify";
 
-    private static final String TICK = "tick";
+    private static final Map<UUID, Long> currentTime = Maps.newHashMap();
+
+    private static final String TICK_ID = "tick";
 
     public static final String LODESTONE_POS_KEY = "LodestonePos";
     public static final String LODESTONE_DIMENSION_KEY = "LodestoneDimension";
@@ -63,6 +69,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     List<Text> getLore() {
         return List.of(
                 new LiteralText("右クリック: 近くのミミックの人数を表示します"),
+                new LiteralText(": 近くのミミックの場所をコンパスに一定時間表示します"),
                 new LiteralText("捜索範囲: " + getScanLength() + "ブロック"),
                 new LiteralText("クールタイム: " + MathHelper.floor((getCoolTime() / 20.0) * 10) / 10 + "秒")
         );
@@ -72,9 +79,10 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         if (entity instanceof ServerPlayerEntity) {
             var nbt = stack.getOrCreateNbt();
-            var nowTick = nbt.getInt(TICK);
-            nbt.putInt(TICK, nowTick - 1);
-            if (nowTick - 1 == 0) {
+            var tickId = getTickId(nbt);
+            var tick = currentTime.getOrDefault(tickId, 0L) - 1;
+            currentTime.put(tickId, tick);
+            if (tick == 0) {
                 nbt.putBoolean(LODESTONE_TRACKED_KEY, false);
                 nbt.remove(LODESTONE_DIMENSION_KEY);
                 nbt.remove(LODESTONE_POS_KEY);
@@ -119,7 +127,8 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
             nbt.putBoolean(LODESTONE_TRACKED_KEY, true);
 
             var coolTime = getCoolTime() + getDuration();
-            nbt.putInt(TICK, ModConfig.ItemConfig.ItemScanner.duration);
+            var tickId = getTickId(nbt);
+            currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemScanner.duration);
             player.getItemCooldownManager().set(this, coolTime);
             //クライアントサイドではコンパスに見えてるのでコンパスにクールダウンを表示する
             ((ServerPlayerEntity) player).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), getCoolTime()));
@@ -127,6 +136,17 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
 
 
         return TypedActionResult.success(stack);
+    }
+
+    private static UUID getTickId(NbtCompound nbt) {
+        UUID tickId;
+        if (nbt.contains(TICK_ID)) {
+            tickId = nbt.getUuid(TICK_ID);
+        } else {
+            tickId = UUID.randomUUID();
+            nbt.putUuid(TICK_ID, tickId);
+        }
+        return tickId;
     }
 
 
