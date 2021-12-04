@@ -150,6 +150,10 @@ public class HideController {
             return false;
         }
 
+        if (player.hasStatusEffect(StatusEffects.INVISIBILITY)) {
+            return false;
+        }
+
         var blockPos = player.getBlockPos();
         var world = player.world;
         var standingBlock = world.getBlockState(blockPos);
