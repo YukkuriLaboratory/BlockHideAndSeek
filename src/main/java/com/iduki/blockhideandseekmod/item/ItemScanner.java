@@ -1,8 +1,8 @@
 package com.iduki.blockhideandseekmod.item;
 
 import com.iduki.blockhideandseekmod.config.ModConfig;
-import com.iduki.blockhideandseekmod.game.HudDisplay;
 import com.iduki.blockhideandseekmod.game.TeamCreateandDelete;
+import com.iduki.blockhideandseekmod.util.HudDisplay;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

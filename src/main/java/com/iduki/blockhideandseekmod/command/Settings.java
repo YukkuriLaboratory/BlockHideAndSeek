@@ -89,11 +89,11 @@ public class Settings {
                                     if (arg != null) {
                                         entry.setValue(arg);
                                         BlockHideAndSeekMod.CONFIG.save();
-                                        context.getSource().sendFeedback(Text.of("[BHAS]" + targetId + "を" + arg + "に変更しました"), true);
+                                        context.getSource().sendFeedback(Text.of("[BHAS] " + targetId + "を" + arg + "に変更しました"), true);
                                     }
                                 } catch (Throwable throwable) {
                                     BlockHideAndSeekMod.LOGGER.throwing(throwable);
-                                    context.getSource().sendError(Text.of("エラーが発生しました"));
+                                    context.getSource().sendError(Text.of("[Bhas] エラーが発生しました"));
                                 }
                                 return Command.SINGLE_SUCCESS;
                             })

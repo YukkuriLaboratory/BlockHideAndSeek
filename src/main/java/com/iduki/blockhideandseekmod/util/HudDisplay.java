@@ -1,4 +1,4 @@
-package com.iduki.blockhideandseekmod.game;
+package com.iduki.blockhideandseekmod.util;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;

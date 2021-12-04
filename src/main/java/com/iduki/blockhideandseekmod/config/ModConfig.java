@@ -77,6 +77,28 @@ public class ModConfig extends Config implements ConfigContainer {
             @ConfigEntry(comment = "効果時間")
             public static int duration = 80;
         }
+
+        /**
+         * ミミックが透明になるアイテム
+         */
+        @Transitive
+        @ConfigEntries
+        public static class ItemBlink implements ConfigGroup {
+
+            @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
+            public static int coolTime = 1000;
+
+            @ConfigEntry(comment = "効果時間")
+            public static int duration = 80;
+        }
+
+        @Transitive
+        @ConfigEntries
+        public static class ItemHidingBlockViewer implements ConfigGroup {
+            @ConfigEntry(comment = "表示する最大スロット数(9xn)")
+            @ConfigEntry.BoundedInteger(min = 1, max = 6)
+            public static int screenRow = 1;
+        }
     }
 
 }

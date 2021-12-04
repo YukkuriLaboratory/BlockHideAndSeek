@@ -3,6 +3,7 @@ package com.iduki.blockhideandseekmod.command;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.mojang.brigadier.Command;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.minecraft.text.Text;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -14,10 +15,13 @@ public class Reload {
                                 .then(literal("reload")
                                         .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                         .executes(context -> {
-                                            if (Start.isGameRunning(context.getSource())) {
+                                            var source = context.getSource();
+                                            if (Start.isGameRunning(source)) {
+                                                source.sendError(Text.of("[Bhas] ゲーム実行中はリロードできません"));
                                                 return Command.SINGLE_SUCCESS;
                                             }
                                             BlockHideAndSeekMod.CONFIG.load();
+                                            source.sendFeedback(Text.of("[Bhas] 設定ファイルをリロードしました"), true);
                                             return Command.SINGLE_SUCCESS;
                                         })
                                 )
