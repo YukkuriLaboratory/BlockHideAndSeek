@@ -83,12 +83,17 @@ public class BlockHighlighting {
     }
 
     public static void resendHighlightData(ServerPlayerEntity player) {
-        fakeEntities.forEach((pos, entity) -> {
-            var spawnPacket = new EntitySpawnS2CPacket(entity);
-            var dataPacket = new EntityTrackerUpdateS2CPacket(entity.getId(), entity.getDataTracker(), true);
-            var networkHandler = player.networkHandler;
-            networkHandler.sendPacket(spawnPacket);
-            networkHandler.sendPacket(dataPacket);
-        });
+        showingPlayers.entries()
+                .stream()
+                .filter(entry -> entry.getValue() == player.getUuid())
+                .map(Map.Entry::getKey)
+                .map(fakeEntities::get)
+                .forEach(entity -> {
+                    var spawnPacket = new EntitySpawnS2CPacket(entity);
+                    var dataPacket = new EntityTrackerUpdateS2CPacket(entity.getId(), entity.getDataTracker(), true);
+                    var networkHandler = player.networkHandler;
+                    networkHandler.sendPacket(spawnPacket);
+                    networkHandler.sendPacket(dataPacket);
+                });
     }
 }
