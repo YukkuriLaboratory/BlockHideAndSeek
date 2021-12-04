@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.item.BhasItems;
+import com.iduki.blockhideandseekmod.util.HudDisplay;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
@@ -136,9 +137,11 @@ public class TeamSelector {
      */
     public static boolean addSeeker(ServerPlayerEntity player) {
         var uuid = player.getUuid();
-        if (isVoteTime && !seekers.contains(uuid)) {
-            hiders.remove(uuid);
-            seekers.add(uuid);
+        if (isVoteTime) {
+            if (!seekers.contains(uuid)) {
+                hiders.remove(uuid);
+                seekers.add(uuid);
+            }
             return true;
         }
         return false;
@@ -152,9 +155,11 @@ public class TeamSelector {
      */
     public static boolean addHider(ServerPlayerEntity player) {
         var uuid = player.getUuid();
-        if (isVoteTime && !hiders.contains(uuid)) {
-            seekers.remove(uuid);
-            hiders.add(uuid);
+        if (isVoteTime) {
+            if (!hiders.contains(uuid)) {
+                seekers.remove(uuid);
+                hiders.add(uuid);
+            }
             return true;
         }
         return false;
@@ -284,21 +289,21 @@ public class TeamSelector {
                     .filter(Objects::nonNull)
                     .toList();
 
-      // アイテムの付与
-      playerSeekers.forEach(
-          player -> {
-            var inventory = player.getInventory();
-            BhasItems.seekerItems.stream()
-                .map(Item::getDefaultStack)
-                .forEach(inventory::insertStack);
-          });
-      playerHiders.forEach(
-          player -> {
-            var inventory = player.getInventory();
-            BhasItems.hiderItems.stream()
-                .map(Item::getDefaultStack)
-                .forEach(inventory::insertStack);
-          });
+            // アイテムの付与
+            playerSeekers.forEach(
+                    player -> {
+                        var inventory = player.getInventory();
+                        BhasItems.seekerItems.stream()
+                                .map(Item::getDefaultStack)
+                                .forEach(inventory::insertStack);
+                    });
+            playerHiders.forEach(
+                    player -> {
+                        var inventory = player.getInventory();
+                        BhasItems.hiderItems.stream()
+                                .map(Item::getDefaultStack)
+                                .forEach(inventory::insertStack);
+                    });
 
             //ゲームモードをサバイバルに
             Stream.concat(playerHiders.stream(), playerSeekers.stream())
@@ -318,13 +323,18 @@ public class TeamSelector {
             TeamCreateandDelete.addObserver();
             //各チームにプレイヤーを振り分けする
             Team seekersteam = TeamCreateandDelete.getSeekers();
-            Team hidersteam = TeamCreateandDelete.getHiders();
             playerSeekers.stream()
                     .map(PlayerEntity::getEntityName)
                     .forEach(player -> scoreboard.addPlayerToTeam(player, seekersteam));
+            Team hidersteam = TeamCreateandDelete.getHiders();
             playerHiders.stream()
                     .map(PlayerEntity::getEntityName)
                     .forEach(player -> scoreboard.addPlayerToTeam(player, hidersteam));
+            var observerTeam = TeamCreateandDelete.getObservers();
+            playerManager.getPlayerList()
+                    .stream()
+                    .filter(player -> !playerSeekers.contains(player) && !playerHiders.contains(player))
+                    .forEach(player -> scoreboard.addPlayerToTeam(player.getEntityName(), observerTeam));
 
 
             //ゲーム開始フェーズ(準備時間)への移行

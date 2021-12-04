@@ -5,8 +5,8 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class BhasItems {
     // 共通
@@ -25,9 +25,9 @@ public class BhasItems {
         return Registry.register(Registry.ITEM, new Identifier(BlockHideAndSeekMod.MOD_ID, id), item);
     }
 
-    public static final Set<Item> seekerItems = Set.of(DETECTOR, SCANNER, BLOCK_VIEWER, FLYER);
+    public static final List<Item> seekerItems = List.of(DETECTOR, SCANNER, BLOCK_VIEWER, FLYER);
 
-    public static final Set<Item> hiderItems = Set.of(SELECTOR, BLINK, FLYER);
+    public static final List<Item> hiderItems = List.of(SELECTOR, BLINK, FLYER);
 
     public static boolean isModItem(Item item) {
         return Objects.equals(Registry.ITEM.getId(item).getNamespace(), BlockHideAndSeekMod.MOD_ID);

@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
+import com.iduki.blockhideandseekmod.util.HudDisplay;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -122,7 +123,7 @@ public class HideController {
                         .getPlayerList()
                         .stream()
                         .peek(p -> p.networkHandler.sendPacket(blockPacket))
-                        .filter(p -> p.getUuid() != uuid && p.interactionManager.getGameMode().isSurvivalLike())
+                        .filter(p -> p.getUuid() != uuid)
                         .map(p -> p.networkHandler)
                         .forEach(handler -> {
                             handler.sendPacket(showPlayerPacket);
@@ -199,7 +200,7 @@ public class HideController {
                 playerManager.getPlayerList()
                         .stream()
                         .peek(p -> p.networkHandler.sendPacket(blockPacket))
-                        .filter(p -> p.getUuid() != uuid && p.interactionManager.getGameMode().isSurvivalLike())
+                        .filter(p -> p.getUuid() != uuid)
                         .map(p -> p.networkHandler)
                         .forEach(handler -> handler.sendPacket(hidePlayerPacket));
 

@@ -1,7 +1,7 @@
 package com.iduki.blockhideandseekmod.item;
 
 import com.iduki.blockhideandseekmod.game.HideController;
-import com.iduki.blockhideandseekmod.game.HudDisplay;
+import com.iduki.blockhideandseekmod.util.HudDisplay;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
