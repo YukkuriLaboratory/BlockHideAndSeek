@@ -69,7 +69,8 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     List<Text> getLore() {
         return List.of(
                 new LiteralText("右クリック: 近くのミミックの人数を表示します"),
-                new LiteralText(": 近くのミミックの場所をコンパスに一定時間表示します"),
+                new LiteralText("(一番近くのミミックの場所をコンパスに一定時間表示します)"),
+                new LiteralText("shift+右クリック: 右クリック時の半分の範囲でスキャンします"),
                 new LiteralText("捜索範囲: " + getScanLength() + "ブロック"),
                 new LiteralText("クールタイム: " + MathHelper.floor((getCoolTime() / 20.0) * 10) / 10 + "秒")
         );
@@ -93,13 +94,13 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         var stack = player.getStackInHand(hand);
+
         var nearestPlayer = player.world
                 .getPlayers()
                 .stream()
                 .filter(p -> p.isTeamPlayer(TeamCreateandDelete.getHiders()))
-                .filter(p -> p.distanceTo(player) < getScanLength())
+                .filter(p -> p.distanceTo(player) < isSneakingScanLength(player))
                 .toList();
-
         Text message;
         if (!nearestPlayer.isEmpty()) {
             message = new LiteralText(nearestPlayer.size() + "体のミミックを検出しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
@@ -114,7 +115,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
             p.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 70, 2);
         });
 
-        var nearplayer = player.world.getClosestPlayer(player.getX(), player.getY(), player.getZ(), getScanLength(), p -> p.isTeamPlayer(TeamCreateandDelete.getHiders()));
+        var nearplayer = player.world.getClosestPlayer(player.getX(), player.getY(), player.getZ(), isSneakingScanLength(player), p -> p.isTeamPlayer(TeamCreateandDelete.getHiders()));
 
         var nbt = stack.getOrCreateNbt();
 
@@ -125,14 +126,20 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
             Objects.requireNonNull(var10001);
             var10000.resultOrPartial(var10001::error).ifPresent((nbtElement) -> nbt.put(LODESTONE_DIMENSION_KEY, nbtElement));
             nbt.putBoolean(LODESTONE_TRACKED_KEY, true);
-
-            var coolTime = getCoolTime() + getDuration();
-            var tickId = getTickId(nbt);
-            currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemScanner.duration);
-            player.getItemCooldownManager().set(this, coolTime);
-            //クライアントサイドではコンパスに見えてるのでコンパスにクールダウンを表示する
-            ((ServerPlayerEntity) player).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), getCoolTime()));
         }
+        if (!player.isSneaking()) {
+            player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 0.5f);
+        } else {
+            player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 3.0f);
+        }
+
+        var tickId = getTickId(nbt);
+        currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemScanner.duration);
+
+        var coolTime = getCoolTime() + getDuration();
+        player.getItemCooldownManager().set(this, coolTime);
+        //クライアントサイドではコンパスに見えてるのでコンパスにクールダウンを表示する
+        ((ServerPlayerEntity) player).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
 
 
         return TypedActionResult.success(stack);
@@ -161,5 +168,13 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
 
     private static int getDuration() {
         return ModConfig.ItemConfig.ItemScanner.duration;
+    }
+
+    private static double isSneakingScanLength(PlayerEntity player) {
+        if (!player.isSneaking()) {
+            return ModConfig.ItemConfig.ItemScanner.scanLength;
+        } else {
+            return ModConfig.ItemConfig.ItemScanner.scanLength / 2;
+        }
     }
 }
