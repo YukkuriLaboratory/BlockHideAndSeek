@@ -319,13 +319,18 @@ public class TeamSelector {
             TeamCreateandDelete.addObserver();
             //各チームにプレイヤーを振り分けする
             Team seekersteam = TeamCreateandDelete.getSeekers();
-            Team hidersteam = TeamCreateandDelete.getHiders();
             playerSeekers.stream()
                     .map(PlayerEntity::getEntityName)
                     .forEach(player -> scoreboard.addPlayerToTeam(player, seekersteam));
+            Team hidersteam = TeamCreateandDelete.getHiders();
             playerHiders.stream()
                     .map(PlayerEntity::getEntityName)
                     .forEach(player -> scoreboard.addPlayerToTeam(player, hidersteam));
+            var observerTeam = TeamCreateandDelete.getObservers();
+            playerManager.getPlayerList()
+                    .stream()
+                    .filter(player -> !playerSeekers.contains(player) && !playerHiders.contains(player))
+                    .forEach(player -> scoreboard.addPlayerToTeam(player.getEntityName(), observerTeam));
 
 
             //ゲーム開始フェーズ(準備時間)への移行
