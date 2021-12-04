@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class BlockHighlighting {
 
@@ -32,7 +33,7 @@ public class BlockHighlighting {
      * @param pos     対象の位置
      * @param players 表示するプレイヤー
      */
-    public static void setHighlight(BlockPos pos, List<ServerPlayerEntity> players) {
+    public static void setHighlight(BlockPos pos, List<ServerPlayerEntity> players, Consumer<ShulkerEntity> entityEditConsumer) {
         if (players.isEmpty()) {
             return;
         }
@@ -43,6 +44,7 @@ public class BlockHighlighting {
             BlockHideAndSeekMod.LOGGER.error("cannot get shulker entity!!");
             return;
         }
+        entityEditConsumer.accept(entity);
         entity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         entity.setInvisible(true);
         entity.setGlowing(true);
@@ -61,11 +63,11 @@ public class BlockHighlighting {
      * @param pos      対象の位置
      * @param showTick 表示時間
      * @param players  表示するプレイヤー
-     * @see BlockHighlighting#setHighlight(BlockPos, List)
+     * @see BlockHighlighting#setHighlight(BlockPos, List, Consumer)
      * 上記メソッドに時間制限を加えたもの
      */
-    public static void setHighlight(BlockPos pos, int showTick, List<ServerPlayerEntity> players) {
-        setHighlight(pos, players);
+    public static void setHighlight(BlockPos pos, int showTick, List<ServerPlayerEntity> players, Consumer<ShulkerEntity> entityEditConsumer) {
+        setHighlight(pos, players, entityEditConsumer);
         var server = BlockHideAndSeekMod.SERVER;
         server.send(new ServerTask(server.getTicks() - 3 + showTick, () -> removeHighlight(pos)));
     }
