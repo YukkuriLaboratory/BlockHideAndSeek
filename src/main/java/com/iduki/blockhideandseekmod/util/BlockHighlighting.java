@@ -14,7 +14,7 @@ import net.minecraft.server.ServerTask;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -32,11 +32,13 @@ public class BlockHighlighting {
      * @param pos     対象の位置
      * @param players 表示するプレイヤー
      */
-    public static void setHighlight(BlockPos pos, ServerPlayerEntity... players) {
-        var playerList = Arrays.stream(players).toList();
-        showingPlayers.putAll(pos, playerList.stream().map(Entity::getUuid).toList());
+    public static void setHighlight(BlockPos pos, List<ServerPlayerEntity> players) {
+        if (players.isEmpty()) {
+            return;
+        }
 
-        var entity = EntityType.SHULKER.create(players[0].world);
+        showingPlayers.putAll(pos, players.stream().map(Entity::getUuid).toList());
+        var entity = EntityType.SHULKER.create(players.get(0).world);
         if (entity == null) {
             BlockHideAndSeekMod.LOGGER.error("cannot get shulker entity!!");
             return;
@@ -48,7 +50,7 @@ public class BlockHighlighting {
 
         var spawnPacket = new EntitySpawnS2CPacket(entity);
         var dataPacket = new EntityTrackerUpdateS2CPacket(entity.getId(), entity.getDataTracker(), false);
-        playerList.forEach(player -> {
+        players.forEach(player -> {
             var networkHandler = player.networkHandler;
             networkHandler.sendPacket(spawnPacket);
             networkHandler.sendPacket(dataPacket);
@@ -59,10 +61,10 @@ public class BlockHighlighting {
      * @param pos      対象の位置
      * @param showTick 表示時間
      * @param players  表示するプレイヤー
-     * @see BlockHighlighting#setHighlight(BlockPos, ServerPlayerEntity...)
+     * @see BlockHighlighting#setHighlight(BlockPos, List)
      * 上記メソッドに時間制限を加えたもの
      */
-    public static void setHighlight(BlockPos pos, int showTick, ServerPlayerEntity... players) {
+    public static void setHighlight(BlockPos pos, int showTick, List<ServerPlayerEntity> players) {
         setHighlight(pos, players);
         var server = BlockHideAndSeekMod.SERVER;
         server.send(new ServerTask(server.getTicks() - 3 + showTick, () -> removeHighlight(pos)));
