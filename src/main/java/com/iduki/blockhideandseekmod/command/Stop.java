@@ -41,6 +41,7 @@ public class Stop {
                 PreparationTime.stopGame();
                 broadCastSuspendMessage();
             }
+            case RUNNING -> broadCastSuspendMessage();
         }
         GameStart.stopGame();
         return 1;
