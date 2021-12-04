@@ -3,6 +3,7 @@ package com.iduki.blockhideandseekmod.game;
 import com.google.common.collect.Maps;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
+import com.iduki.blockhideandseekmod.util.HudDisplay;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -245,7 +246,7 @@ public class PreparationTime {
                         .filter(Objects::nonNull)
                         .forEach(player -> {
                             unlockPlayerMovement(player);
-                            player.changeGameMode(GameMode.SURVIVAL);
+                            player.changeGameMode(GameMode.ADVENTURE);
                             player.interactionManager.changeGameMode(GameMode.SURVIVAL);
                         });
             }
