@@ -285,21 +285,21 @@ public class TeamSelector {
                     .filter(Objects::nonNull)
                     .toList();
 
-      // アイテムの付与
-      playerSeekers.forEach(
-          player -> {
-            var inventory = player.getInventory();
-            BhasItems.seekerItems.stream()
-                .map(Item::getDefaultStack)
-                .forEach(inventory::insertStack);
-          });
-      playerHiders.forEach(
-          player -> {
-            var inventory = player.getInventory();
-            BhasItems.hiderItems.stream()
-                .map(Item::getDefaultStack)
-                .forEach(inventory::insertStack);
-          });
+            // アイテムの付与
+            playerSeekers.forEach(
+                    player -> {
+                        var inventory = player.getInventory();
+                        BhasItems.seekerItems.stream()
+                                .map(Item::getDefaultStack)
+                                .forEach(inventory::insertStack);
+                    });
+            playerHiders.forEach(
+                    player -> {
+                        var inventory = player.getInventory();
+                        BhasItems.hiderItems.stream()
+                                .map(Item::getDefaultStack)
+                                .forEach(inventory::insertStack);
+                    });
 
             //ゲームモードをサバイバルに
             Stream.concat(playerHiders.stream(), playerSeekers.stream())
