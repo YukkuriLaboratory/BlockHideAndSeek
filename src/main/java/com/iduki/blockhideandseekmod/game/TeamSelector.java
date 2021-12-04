@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.item.BhasItems;
+import com.iduki.blockhideandseekmod.util.HudDisplay;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
