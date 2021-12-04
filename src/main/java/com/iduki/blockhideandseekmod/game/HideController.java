@@ -1,11 +1,9 @@
 package com.iduki.blockhideandseekmod.game;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
+import com.iduki.blockhideandseekmod.util.BlockHighlighting;
 import com.iduki.blockhideandseekmod.util.HudDisplay;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.BlockState;
@@ -26,9 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class HideController {
 
@@ -129,8 +125,14 @@ public class HideController {
                             handler.sendPacket(showPlayerPacket);
                             handler.sendPacket(playerDataPacket);
                         });
+
+                BlockHighlighting.removeHighlight(player.getBlockPos());
             }
         }
+    }
+
+    public static void showHidingBlockHighlight(ServerPlayerEntity player) {
+        getHidingPlayerMaps().values().forEach(pos -> BlockHighlighting.addPlayer(pos, player));
     }
 
     private static boolean canHide(PlayerEntity player) {
@@ -207,6 +209,21 @@ public class HideController {
                 var text = new LiteralText("擬態中:左クリックで解除");
                 HudDisplay.setActionBarText(player.getUuid(), HIDING_MESSAGE, text);
                 playerManager.getPlayerList().forEach(pl -> pl.playSound(SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.PLAYERS, 1.0f, 2.0f));
+
+                var hiderTeam = TeamCreateandDelete.getHiders();
+                Collection<String> hiders = hiderTeam != null ? hiderTeam.getPlayerList() : Set.of();
+                var observerTeam = TeamCreateandDelete.getObservers();
+                Collection<String> observers = observerTeam != null ? observerTeam.getPlayerList() : Set.of();
+                var targetLists = Sets.newHashSet(hiders);
+                targetLists.addAll(observers);
+                var targetPlayers = targetLists.stream()
+                        .map(playerManager::getPlayer)
+                        .filter(Objects::nonNull)
+                        .toList();
+                BlockHighlighting.setHighlight(playerPos, targetPlayers, entity -> {
+                    entity.setCustomName(player.getName());
+                    entity.setCustomNameVisible(true);
+                });
             }
         }
     }

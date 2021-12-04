@@ -56,6 +56,8 @@ public abstract class MixinServerPlayerEntity {
                     .filter(Objects::nonNull)
                     .map(PlayerSpawnS2CPacket::new)
                     .forEach(networkHandler::sendPacket);
+
+            HideController.showHidingBlockHighlight(player);
         }
     }
 }
