@@ -73,6 +73,9 @@ public class ModConfig extends Config implements ConfigContainer {
 
             @ConfigEntry(comment = "捜索半径")
             public static double scanLength = 15;
+
+            @ConfigEntry(comment = "効果時間")
+            public static int duration = 80;
         }
 
         /**
