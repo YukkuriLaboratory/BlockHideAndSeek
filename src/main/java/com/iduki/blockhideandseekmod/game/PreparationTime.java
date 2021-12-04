@@ -246,7 +246,7 @@ public class PreparationTime {
                         .filter(Objects::nonNull)
                         .forEach(player -> {
                             unlockPlayerMovement(player);
-                            player.changeGameMode(GameMode.SURVIVAL);
+                            player.changeGameMode(GameMode.ADVENTURE);
                             player.interactionManager.changeGameMode(GameMode.SURVIVAL);
                         });
             }
