@@ -130,6 +130,10 @@ public class HideController {
         }
     }
 
+    public static void showHidingBlockHighlight(ServerPlayerEntity player) {
+        getHidingPlayerMaps().values().forEach(pos -> BlockHighlighting.addPlayer(pos, player));
+    }
+
     private static boolean canHide(PlayerEntity player) {
         var uuid = player.getUuid();
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();

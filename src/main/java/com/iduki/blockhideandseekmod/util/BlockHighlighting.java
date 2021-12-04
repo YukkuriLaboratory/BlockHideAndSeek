@@ -72,6 +72,9 @@ public class BlockHighlighting {
         server.send(new ServerTask(server.getTicks() - 3 + showTick, () -> removeHighlight(pos)));
     }
 
+    /**
+     * ハイライトを削除します
+     */
     public static void removeHighlight(BlockPos pos) {
         var entity = fakeEntities.remove(pos);
         if (entity == null) {
@@ -84,6 +87,16 @@ public class BlockHighlighting {
                 .map(BlockHideAndSeekMod.SERVER.getPlayerManager()::getPlayer)
                 .filter(Objects::nonNull)
                 .forEach(player -> player.networkHandler.sendPacket(deletePacket));
+    }
+
+    /**
+     * 既存のハイライトにプレイヤーを追加します
+     */
+    public static void addPlayer(BlockPos pos, ServerPlayerEntity player) {
+        if (showingPlayers.containsKey(pos)) {
+            showingPlayers.put(pos, player.getUuid());
+            resendHighlightData(player);
+        }
     }
 
     public static void resendHighlightData(ServerPlayerEntity player) {

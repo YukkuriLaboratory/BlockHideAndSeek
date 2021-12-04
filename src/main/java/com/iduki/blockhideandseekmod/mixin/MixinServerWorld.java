@@ -26,6 +26,9 @@ public abstract class MixinServerWorld {
     @Final
     private MinecraftServer server;
 
+    @Shadow
+    public abstract boolean isFlat();
+
     @Inject(
             method = "addPlayer",
             at = @At("TAIL")
@@ -56,7 +59,8 @@ public abstract class MixinServerWorld {
         FlyController.registerPlayer(player);
         BlockHighlighting.resendHighlightData(player);
 
-        if (GameState.getCurrentState() == GameState.Phase.IDLE) {
+        var currentState = GameState.getCurrentState();
+        if (currentState == GameState.Phase.IDLE) {
             player.getInventory().remove(
                     itemStack -> BhasItems.isModItem(itemStack.getItem()),
                     64,
@@ -64,8 +68,13 @@ public abstract class MixinServerWorld {
             );
         }
 
-        if (GameState.getCurrentState() == GameState.Phase.PREPARE && player.getScoreboardTeam() == TeamCreateandDelete.getSeekers()) {
+        var currentTeam = player.getScoreboardTeam();
+        if (currentState == GameState.Phase.PREPARE && currentTeam == TeamCreateandDelete.getSeekers()) {
             PreparationTime.lockPlayerMovement(player);
+        }
+
+        if ((currentState == GameState.Phase.PREPARE || currentState == GameState.Phase.RUNNING) && currentTeam != TeamCreateandDelete.getSeekers()) {
+            HideController.showHidingBlockHighlight(player);
         }
     }
 
