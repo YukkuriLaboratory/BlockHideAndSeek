@@ -10,6 +10,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -107,7 +109,7 @@ public class HideController {
                 HudDisplay.removeActionbarText(uuid, HIDING_MESSAGE);
                 var destroyPacket = new EntitiesDestroyS2CPacket(riding.getId());
                 player.networkHandler.sendPacket(destroyPacket);
-                player.setInvisible(false);
+                player.removeStatusEffect(StatusEffects.INVISIBILITY);
                 player.setInvulnerable(false);
                 var playerDataPacket = new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true);
 
@@ -145,6 +147,10 @@ public class HideController {
         }
 
         if (TeamCreateandDelete.getHiders() != playerteam || playerteam == null) {
+            return false;
+        }
+
+        if (player.hasStatusEffect(StatusEffects.INVISIBILITY)) {
             return false;
         }
 
@@ -189,7 +195,7 @@ public class HideController {
                 networkHandler.sendPacket(new EntityPassengersSetS2CPacket(riding));
 
                 ridingTarget.put(uuid, riding);
-                player.setInvisible(true);
+                player.setStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, Integer.MAX_VALUE, 1), null);
                 player.setInvulnerable(true);
                 var hidePacket = new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), false);
                 player.networkHandler.sendPacket(hidePacket);
