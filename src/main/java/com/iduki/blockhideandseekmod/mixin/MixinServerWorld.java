@@ -2,18 +2,15 @@ package com.iduki.blockhideandseekmod.mixin;
 
 import com.iduki.blockhideandseekmod.game.*;
 import com.iduki.blockhideandseekmod.item.BhasItems;
+import com.iduki.blockhideandseekmod.util.BlockHighlighting;
 import com.iduki.blockhideandseekmod.util.FlyController;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,9 +25,6 @@ public abstract class MixinServerWorld {
     @Shadow
     @Final
     private MinecraftServer server;
-
-    @Shadow
-    public abstract void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch);
 
     @Inject(
             method = "addPlayer",
@@ -60,6 +54,7 @@ public abstract class MixinServerWorld {
         PreparationTime.addBossBarTarget(player);
         GameStart.addBossBarTarget(player);
         FlyController.registerPlayer(player);
+        BlockHighlighting.resendHighlightData(player);
 
         if (GameState.getCurrentState() == GameState.Phase.IDLE) {
             player.getInventory().remove(
