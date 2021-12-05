@@ -249,6 +249,7 @@ public class PreparationTime {
                             player.changeGameMode(GameMode.ADVENTURE);
                             player.interactionManager.changeGameMode(GameMode.SURVIVAL);
                             player.getAbilities().allowFlying = true;
+                            player.sendAbilitiesUpdate();
                         });
             }
 
