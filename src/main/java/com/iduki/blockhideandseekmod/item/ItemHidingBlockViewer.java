@@ -3,12 +3,12 @@ package com.iduki.blockhideandseekmod.item;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.game.HideController;
 import com.iduki.blockhideandseekmod.screen.HidersBlockScreen;
-import com.iduki.blockhideandseekmod.util.HudDisplay;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -55,14 +55,15 @@ public class ItemHidingBlockViewer extends LoreItem implements ServerSideItem {
         user.getInventory().removeOne(itemStack);
 
         var text = new LiteralText("隠れているブロックが通知されました").setStyle(Style.EMPTY.withColor(Formatting.RED));
+        var emptyTitlePacket = new TitleS2CPacket(Text.of(""));
         var packet = new SubtitleS2CPacket(text);
         HideController.getHidingPlayers()
                 .stream()
-                .peek(uuid -> HudDisplay.setActionBarText(uuid, "blockNotify", text, 50L))
                 .map(BlockHideAndSeekMod.SERVER.getPlayerManager()::getPlayer)
                 .filter(Objects::nonNull)
                 .forEach(player -> {
                     player.playSound(SoundEvents.ENTITY_WOLF_HOWL, SoundCategory.PLAYERS, 0.3f, 2);
+                    player.networkHandler.sendPacket(emptyTitlePacket);
                     player.networkHandler.sendPacket(packet);
                 });
         return TypedActionResult.pass(itemStack);
