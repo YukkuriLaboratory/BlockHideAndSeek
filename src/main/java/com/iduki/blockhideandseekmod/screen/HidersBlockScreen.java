@@ -21,6 +21,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -36,7 +37,7 @@ public class HidersBlockScreen extends ScreenHandler {
 
         var playerManager = BlockHideAndSeekMod.SERVER.getPlayerManager();
         var hidingMaps = HideController.getHidingPlayerMaps();
-        var playerUuidList = hidingMaps.keySet().stream().toList();
+        var playerUuidList = new ArrayList<>(hidingMaps.keySet());
         Collections.shuffle(playerUuidList);
         AtomicInteger playerSize = new AtomicInteger(playerUuidList.size());
         // set slots
