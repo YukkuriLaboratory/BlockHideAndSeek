@@ -2,6 +2,7 @@ package com.iduki.blockhideandseekmod.mixin;
 
 import com.iduki.blockhideandseekmod.game.GameState;
 import com.iduki.blockhideandseekmod.game.HideController;
+import com.iduki.blockhideandseekmod.game.TeamCreateandDelete;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -40,7 +41,7 @@ public abstract class MixinServerPlayerEntity {
         var playerName = player.getEntityName();
         var team = scoreboard.getPlayerTeam(playerName);
         // Observerへのチーム変更やらをここで一気にやってます
-        if (team != null && (team.getName().equals("Hiders") || team.getName().equals("Seekerss"))) {
+        if (team != null && team == TeamCreateandDelete.getHiders()) {
             scoreboard.removePlayerFromTeam(playerName, team);
             var observerTeam = scoreboard.getTeam("Observers");
             if (observerTeam != null) {
