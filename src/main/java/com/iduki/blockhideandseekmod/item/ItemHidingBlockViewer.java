@@ -1,8 +1,10 @@
 package com.iduki.blockhideandseekmod.item;
 
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
+import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.game.HideController;
 import com.iduki.blockhideandseekmod.screen.HidersBlockScreen;
+import com.iduki.blockhideandseekmod.util.HudDisplay;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -22,6 +24,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ItemHidingBlockViewer extends LoreItem implements ServerSideItem {
 
@@ -54,18 +57,30 @@ public class ItemHidingBlockViewer extends LoreItem implements ServerSideItem {
         HidersBlockScreen.open(((ServerPlayerEntity) user));
         user.getInventory().removeOne(itemStack);
 
+        Consumer<ServerPlayerEntity> notifyTask;
         var text = new LiteralText("隠れているブロックが通知されました").setStyle(Style.EMPTY.withColor(Formatting.RED));
-        var emptyTitlePacket = new TitleS2CPacket(Text.of(""));
-        var packet = new SubtitleS2CPacket(text);
+        if (isSubTitle()) {
+            var emptyTitlePacket = new TitleS2CPacket(Text.of(""));
+            var packet = new SubtitleS2CPacket(text);
+            notifyTask = player -> {
+                player.networkHandler.sendPacket(emptyTitlePacket);
+                player.networkHandler.sendPacket(packet);
+            };
+        } else {
+            notifyTask = player -> HudDisplay.setActionBarText(player.getUuid(), "blockNotify", text, 50L);
+        }
         HideController.getHidingPlayers()
                 .stream()
                 .map(BlockHideAndSeekMod.SERVER.getPlayerManager()::getPlayer)
                 .filter(Objects::nonNull)
                 .forEach(player -> {
                     player.playSound(SoundEvents.ENTITY_WOLF_HOWL, SoundCategory.PLAYERS, 0.3f, 2);
-                    player.networkHandler.sendPacket(emptyTitlePacket);
-                    player.networkHandler.sendPacket(packet);
+                    notifyTask.accept(player);
                 });
         return TypedActionResult.pass(itemStack);
+    }
+
+    private static boolean isSubTitle() {
+        return ModConfig.ItemConfig.ItemHidingBlockViewer.notifyOnTitle;
     }
 }

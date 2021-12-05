@@ -98,6 +98,8 @@ public class ModConfig extends Config implements ConfigContainer {
             @ConfigEntry(comment = "表示する最大スロット数(9xn)")
             @ConfigEntry.BoundedInteger(min = 1, max = 6)
             public static int screenRow = 1;
+            @ConfigEntry(comment = "隠れているプレイヤーに対してサブタイトルに警告を表示するかどうか(false:アクションバー)")
+            public static boolean notifyOnTitle = true;
         }
     }
 
