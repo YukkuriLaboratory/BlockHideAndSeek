@@ -323,7 +323,10 @@ public class PreparationTime {
                 server.submitAndJoin(PreparationTime::update);
                 try {
                     //0.5 - (作業時間)秒間待つ
-                    Thread.sleep(Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now())).toMillis());
+                    var time = Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now()));
+                    if (!time.isNegative()) {
+                        Thread.sleep(time.toMillis());
+                    }
                 } catch (InterruptedException ignore) {
                 }
             }

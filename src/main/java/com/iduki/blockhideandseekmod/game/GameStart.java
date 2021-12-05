@@ -167,10 +167,7 @@ public class GameStart {
                     .stream()
                     .map(playerManager::getPlayer)
                     .filter(Objects::nonNull)
-                    .forEach(player -> {
-                                player.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 200, false, false, false));
-                            }
-                    );
+                    .forEach(player -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 200, false, false, false)));
 
 
             suspendGame();
@@ -245,7 +242,10 @@ public class GameStart {
                 server.submitAndJoin(GameStart::update);
                 try {
                     //0.5 - (作業時間)秒間待つ
-                    Thread.sleep(Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now())).toMillis());
+                    var time = Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now()));
+                    if (!time.isNegative()) {
+                        Thread.sleep(time.toMillis());
+                    }
                 } catch (InterruptedException ignore) {
                 }
             }
