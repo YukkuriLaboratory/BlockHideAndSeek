@@ -1,13 +1,17 @@
 package com.iduki.blockhideandseekmod.item;
 
+import com.iduki.blockhideandseekmod.game.HideController;
 import com.iduki.blockhideandseekmod.screen.HidersBlockScreen;
+import com.iduki.blockhideandseekmod.util.HudDisplay;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -44,6 +48,10 @@ public class ItemHidingBlockViewer extends LoreItem implements ServerSideItem {
         var itemStack = user.getStackInHand(hand);
         HidersBlockScreen.open(((ServerPlayerEntity) user));
         user.getInventory().removeOne(itemStack);
+
+        var text = new LiteralText("隠れているブロックが通知されました").setStyle(Style.EMPTY.withColor(Formatting.RED));
+        HideController.getHidingPlayers()
+                .forEach(uuid -> HudDisplay.setActionBarText(uuid, "blockNotify", text, 50L));
         return TypedActionResult.pass(itemStack);
     }
 }
