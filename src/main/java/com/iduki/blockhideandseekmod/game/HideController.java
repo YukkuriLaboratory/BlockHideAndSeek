@@ -216,7 +216,7 @@ public class HideController {
 
                 var text = new LiteralText("擬態中:左クリックで解除");
                 HudDisplay.setActionBarText(player.getUuid(), HIDING_MESSAGE, text);
-                playerManager.getPlayerList().forEach(pl -> pl.playSound(SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.PLAYERS, 1.0f, 2.0f));
+                player.playSound(SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.PLAYERS, 1.0f, 2.0f);
 
                 var hiderTeam = TeamCreateandDelete.getHiders();
                 Collection<String> hiders = hiderTeam != null ? hiderTeam.getPlayerList() : Set.of();

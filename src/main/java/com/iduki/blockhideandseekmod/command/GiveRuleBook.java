@@ -14,7 +14,7 @@ public class GiveRuleBook {
         CommandRegistrationCallback.EVENT.register(
                 (dispatcher, dedicated) ->
                         dispatcher.register(literal("bhas")
-                                .then(literal("giverulebook")
+                                .then(literal("rules")
                                         .then(CommandManager.argument("targets", EntityArgumentType.players())
                                                 .executes(context -> {
                                                             var target = EntityArgumentType.getPlayers(context, "targets");
