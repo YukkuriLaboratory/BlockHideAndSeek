@@ -40,10 +40,13 @@ public abstract class MixinServerPlayerEntity {
         var scoreboard = server.getScoreboard();
         var playerName = player.getEntityName();
         var team = scoreboard.getPlayerTeam(playerName);
+        if (team == null) {
+            return;
+        }
         // Observerへのチーム変更やらをここで一気にやってます
-        if (team != null && team == TeamCreateandDelete.getHiders()) {
+        if (team == TeamCreateandDelete.getHiders()) {
             scoreboard.removePlayerFromTeam(playerName, team);
-            var observerTeam = scoreboard.getTeam("Observers");
+            var observerTeam = TeamCreateandDelete.getObservers();
             if (observerTeam != null) {
                 scoreboard.addPlayerToTeam(playerName, observerTeam);
             }
@@ -59,6 +62,11 @@ public abstract class MixinServerPlayerEntity {
                     .forEach(networkHandler::sendPacket);
 
             HideController.showHidingBlockHighlight(player);
+        } else if (team == TeamCreateandDelete.getSeekers()) {
+            player.changeGameMode(GameMode.ADVENTURE);
+            player.interactionManager.changeGameMode(GameMode.SURVIVAL);
+            player.getAbilities().allowFlying = true;
+            player.sendAbilitiesUpdate();
         }
     }
 }
