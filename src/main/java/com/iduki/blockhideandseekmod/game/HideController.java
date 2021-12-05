@@ -1,6 +1,9 @@
 package com.iduki.blockhideandseekmod.game;
 
-import com.google.common.collect.*;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.config.ModConfig;
 import com.iduki.blockhideandseekmod.util.BlockHighlighting;
@@ -27,6 +30,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class HideController {
 
@@ -197,8 +201,6 @@ public class HideController {
                 ridingTarget.put(uuid, riding);
                 player.setStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, Integer.MAX_VALUE, 1), null);
                 player.setInvulnerable(true);
-                var hidePacket = new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), false);
-                player.networkHandler.sendPacket(hidePacket);
 
                 var defaultBlock = player.world.getBlockState(player.getBlockPos().down());
                 var block = selectingBlocks.getOrDefault(uuid, defaultBlock);
@@ -220,9 +222,8 @@ public class HideController {
                 Collection<String> hiders = hiderTeam != null ? hiderTeam.getPlayerList() : Set.of();
                 var observerTeam = TeamCreateandDelete.getObservers();
                 Collection<String> observers = observerTeam != null ? observerTeam.getPlayerList() : Set.of();
-                var targetLists = Sets.newHashSet(hiders);
-                targetLists.addAll(observers);
-                var targetPlayers = targetLists.stream()
+
+                var targetPlayers = Stream.concat(hiders.stream(), observers.stream())
                         .map(playerManager::getPlayer)
                         .filter(Objects::nonNull)
                         .toList();
