@@ -6,12 +6,17 @@ import com.iduki.blockhideandseekmod.util.BlockHighlighting;
 import com.iduki.blockhideandseekmod.util.FlyController;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
+import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.GameMode;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,6 +34,12 @@ public abstract class MixinServerWorld {
 
     @Shadow
     public abstract boolean isFlat();
+
+    @Shadow
+    public abstract void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch);
+
+    @Shadow
+    public abstract ServerScoreboard getScoreboard();
 
     @Inject(
             method = "addPlayer",
@@ -81,6 +92,10 @@ public abstract class MixinServerWorld {
 
         if ((currentState == GameState.Phase.PREPARE || currentState == GameState.Phase.RUNNING) && currentTeam == null) {
             player.changeGameMode(GameMode.SPECTATOR);
+            var observerTeam = TeamCreateandDelete.getObservers();
+            if (observerTeam != null) {
+                getScoreboard().addPlayerToTeam(player.getEntityName(), observerTeam);
+            }
         }
     }
 
