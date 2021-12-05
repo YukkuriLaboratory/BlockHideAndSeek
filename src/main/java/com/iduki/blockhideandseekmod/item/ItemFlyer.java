@@ -37,7 +37,7 @@ public class ItemFlyer extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    List<Text> getLore() {
+    public List<Text> getLore() {
         return List.of(
                 Text.of("一定時間の飛行を可能にします"),
                 Text.of(""),

@@ -41,10 +41,12 @@ public class ItemDetector extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    List<Text> getLore() {
+    public List<Text> getLore() {
         return List.of(
                 new LiteralText("右クリック: ブロックに隠れるミミックを検出します"),
-                new LiteralText("クールタイム: " + MathHelper.floor((getCoolTime() / 20.0) * 10) / 10 + "秒")
+                new LiteralText("クールタイム: " + MathHelper.floor((getCoolTime() / 20.0) * 10) / 10 + "秒"),
+                Text.of(""),
+                new LiteralText("※見えているミミックに対しても有効です")
         );
     }
 

@@ -28,7 +28,7 @@ public class ItemHidingBlockViewer extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    List<Text> getLore() {
+    public List<Text> getLore() {
         return List.of(
                 new LiteralText("右クリック: 現在擬態しているブロックの名前を確認することができます")
         );

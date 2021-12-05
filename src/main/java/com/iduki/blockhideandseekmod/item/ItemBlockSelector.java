@@ -39,7 +39,7 @@ public class ItemBlockSelector extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    List<Text> getLore() {
+    public List<Text> getLore() {
         return List.of(
                 new LiteralText("右クリック: 擬態するブロックを変更します"),
                 new LiteralText("シフト右クリック: 擬態するブロックをリセットします")

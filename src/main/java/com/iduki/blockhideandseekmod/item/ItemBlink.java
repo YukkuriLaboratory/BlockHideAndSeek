@@ -47,7 +47,7 @@ public class ItemBlink extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    List<Text> getLore() {
+    public List<Text> getLore() {
         return List.of(
                 new LiteralText("右クリック: 一定時間透明になります"),
                 Text.of("効果時間: " + ModConfig.ItemConfig.ItemBlink.duration),

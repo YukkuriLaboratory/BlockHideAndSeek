@@ -18,7 +18,7 @@ public abstract class LoreItem extends Item {
      *
      * @return Listの各要素がそのまま行として表現されます
      */
-    abstract List<Text> getLore();
+    public abstract List<Text> getLore();
 
     @Override
     public ItemStack getDefaultStack() {

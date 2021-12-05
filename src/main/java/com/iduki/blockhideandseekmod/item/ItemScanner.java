@@ -66,7 +66,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    List<Text> getLore() {
+    public List<Text> getLore() {
         return List.of(
                 new LiteralText("右クリック: 近くのミミックの人数を表示します"),
                 new LiteralText("(一番近くのミミックの場所をコンパスに一定時間表示します)"),
