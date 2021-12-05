@@ -10,7 +10,6 @@ public class TeamPlayerListHeader {
 
     public static void TeamList() {
         var playerManager = BlockHideAndSeekMod.SERVER.getPlayerManager();
-        var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
         var emptyText = LiteralText.EMPTY;
         var hidersCount = String.valueOf(TeamCreateandDelete.getHiders().getPlayerList().size());
         var seekersCount = String.valueOf(TeamCreateandDelete.getSeekers().getPlayerList().size());

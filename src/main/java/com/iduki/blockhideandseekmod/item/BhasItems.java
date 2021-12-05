@@ -11,6 +11,7 @@ import java.util.Objects;
 public class BhasItems {
     // 共通
     public static ItemFlyer FLYER = register("flyer", new ItemFlyer());
+    public static ItemRuleBook RuleBook = register("rulebook", new ItemRuleBook());
 
     // 鬼用
     public static ItemDetector DETECTOR = register("detector", new ItemDetector());

@@ -39,6 +39,7 @@ public class BlockHideAndSeekMod implements ModInitializer {
 		Settings.registerCommands();
 		Reload.registerCommands();
 		Rules.registerCommands();
+        GiveRuleBook.registerCommands();
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> SERVER = server);
 	}

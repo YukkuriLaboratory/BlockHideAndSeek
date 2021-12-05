@@ -79,7 +79,6 @@ public class PreparationTime {
     //準備時間開始時にチーム別にタイトル表示
     public static void teamMessage() {
         var playerManager = server.getPlayerManager();
-        var scoreboard = server.getScoreboard();
 
         Team seekers = TeamCreateandDelete.getSeekers();
         var startSeekerMessage = new LiteralText("").append(Text.of("\n"))
