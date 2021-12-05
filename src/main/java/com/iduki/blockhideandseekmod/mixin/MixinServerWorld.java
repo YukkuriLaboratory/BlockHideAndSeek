@@ -11,6 +11,7 @@ import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.GameMode;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -69,12 +70,17 @@ public abstract class MixinServerWorld {
         }
 
         var currentTeam = player.getScoreboardTeam();
-        if (currentState == GameState.Phase.PREPARE && currentTeam == TeamCreateandDelete.getSeekers()) {
+        var seekersTeam = TeamCreateandDelete.getSeekers();
+        if (currentState == GameState.Phase.PREPARE && currentTeam == seekersTeam) {
             PreparationTime.lockPlayerMovement(player);
         }
 
-        if ((currentState == GameState.Phase.PREPARE || currentState == GameState.Phase.RUNNING) && currentTeam != TeamCreateandDelete.getSeekers()) {
+        if ((currentState == GameState.Phase.PREPARE || currentState == GameState.Phase.RUNNING) && currentTeam != seekersTeam) {
             HideController.showHidingBlockHighlight(player);
+        }
+
+        if ((currentState == GameState.Phase.PREPARE || currentState == GameState.Phase.RUNNING) && currentTeam == null) {
+            player.changeGameMode(GameMode.SPECTATOR);
         }
     }
 
