@@ -25,9 +25,9 @@ public class BhasItems {
         return Registry.register(Registry.ITEM, new Identifier(BlockHideAndSeekMod.MOD_ID, id), item);
     }
 
-    public static final List<Item> seekerItems = List.of(DETECTOR, SCANNER, BLOCK_VIEWER, FLYER);
+    public static final List<LoreItem> seekerItems = List.of(DETECTOR, SCANNER, BLOCK_VIEWER, FLYER);
 
-    public static final List<Item> hiderItems = List.of(SELECTOR, BLINK, FLYER);
+    public static final List<LoreItem> hiderItems = List.of(SELECTOR, BLINK, FLYER);
 
     public static boolean isModItem(Item item) {
         return Objects.equals(Registry.ITEM.getId(item).getNamespace(), BlockHideAndSeekMod.MOD_ID);
