@@ -17,7 +17,7 @@ public class ModConfig extends Config implements ConfigContainer {
     @ConfigEntries
     public static class SystemConfig implements ConfigGroup {
         @ConfigEntry(comment = "鬼の最大人数")
-        public static int seekerLimit = 1;
+        public static int seekerLimit = 2;
 
         @Transitive
         @ConfigEntries
@@ -26,7 +26,7 @@ public class ModConfig extends Config implements ConfigContainer {
             public static int voteTime = 30;
 
             @ConfigEntry(comment = "準備時間(単位:秒)")
-            public static int prepareTime = 60;
+            public static int prepareTime = 120;
 
             @ConfigEntry(comment = "ゲーム時間(単位:秒)")
             public static int playTime = 300;
@@ -56,7 +56,7 @@ public class ModConfig extends Config implements ConfigContainer {
         @ConfigEntries
         public static class ItemDetecter implements ConfigGroup {
             @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
-            public static int coolTime = 200;
+            public static int coolTime = 30;
             @ConfigEntry(comment = "ダメージ量")
             public static int damageAmount = 50;
         }
@@ -69,13 +69,13 @@ public class ModConfig extends Config implements ConfigContainer {
         public static class ItemScanner implements ConfigGroup {
 
             @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
-            public static int coolTime = 300;
+            public static int coolTime = 10;
 
             @ConfigEntry(comment = "捜索半径")
-            public static double scanLength = 15;
+            public static double scanLength = 30;
 
             @ConfigEntry(comment = "効果時間")
-            public static int duration = 80;
+            public static int duration = 60;
         }
 
         /**
@@ -86,7 +86,7 @@ public class ModConfig extends Config implements ConfigContainer {
         public static class ItemBlink implements ConfigGroup {
 
             @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
-            public static int coolTime = 1000;
+            public static int coolTime = 100000;
 
             @ConfigEntry(comment = "効果時間")
             public static int duration = 80;
