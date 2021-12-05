@@ -334,7 +334,10 @@ public class TeamSelector {
             playerManager.getPlayerList()
                     .stream()
                     .filter(player -> !playerSeekers.contains(player) && !playerHiders.contains(player))
-                    .forEach(player -> scoreboard.addPlayerToTeam(player.getEntityName(), observerTeam));
+                    .forEach(player -> {
+                        scoreboard.addPlayerToTeam(player.getEntityName(), observerTeam);
+                        player.changeGameMode(GameMode.SPECTATOR);
+                    });
 
 
             //ゲーム開始フェーズ(準備時間)への移行
