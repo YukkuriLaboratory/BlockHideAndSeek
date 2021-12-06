@@ -17,7 +17,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.iduki.blockhideandseekmod.BlockHideAndSeekMod"
+      "com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod"
     ]
   },
   "mixins": [

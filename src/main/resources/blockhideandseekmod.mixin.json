@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.iduki.blockhideandseekmod.mixin",
+  "package": "com.github.yukulab.blockhideandseekmod.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "MixinClientConnection",
@@ -17,9 +17,6 @@
     "MixinServerPlayNetworkHandler",
     "MixinServerPropertiesHandler",
     "MixinServerWorld"
-  ],
-  "client": [
-    "BlockHideAndSeekMixin"
   ],
   "injectors": {
     "defaultRequire": 1
