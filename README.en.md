@@ -3,6 +3,8 @@
 The BlockHideAndSeekMod is a game that divides players into two camps: Hiders, who mimic blocks and hide behind them,
 and Seekers, who seek them out and defeat them.
 
+<span style="color: red; ">**!! This mod is only available in Japanese. !!**</span>
+
 ## Requirements
 
 This mod is server-side only,You can have it installed on the client, though it will not have any effect.
