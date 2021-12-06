@@ -15,10 +15,6 @@ API](https://www.curseforge.com/minecraft/mc-mods/fabric-api),[Cloth Config API 
 Fabric)](https://www.curseforge.com/minecraft/mc-mods/cloth-config)
 and [Fabric Language Kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric-language-kotlin).**
 
-## Installation
-
-1.17.1:Minecraft Fabric Loader, Fabric API,Cloth Config API (Fabric) and Fabric Language Kotlin.
-
 ## Command
 
 `/bhas start` Start the game.*

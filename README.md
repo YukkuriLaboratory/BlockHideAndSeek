@@ -11,10 +11,6 @@ API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)、[Cloth Config AP
 Fabric)](https://www.curseforge.com/minecraft/mc-mods/cloth-config)、[Fabric Language
 Kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric-language-kotlin) が必要です。**
 
-## Installation
-
-1.17.1:Minecraft Fabric LoaderとFabric API、Cloth Config API (Fabric)、Fabric Language Kotlinが必要です。
-
 ## Command
 
 `/bhas start` ゲームをスタートします。※
