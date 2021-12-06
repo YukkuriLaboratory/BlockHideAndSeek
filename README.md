@@ -11,27 +11,29 @@ This mod is server-side only,You can have it installed on the client, though it 
 
 **BLockHideandSeekMod
 requires [Fabric Loader ](https://www.curseforge.com/linkout?remoteUrl=https%3a%2f%2ffabricmc.net%2fuse%2f),[Fabric
-API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
+API](https://www.curseforge.com/minecraft/mc-mods/fabric-api),[Cloth Config API (
+Fabric)](https://www.curseforge.com/minecraft/mc-mods/cloth-config)
 and [Fabric Language Kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric-language-kotlin)**.
 
 ## Installation
 
-1.17.1:Minecraft Fabric Loader, Fabric API and Fabric Language Kotlin.
+1.17.1:Minecraft Fabric Loader, Fabric API,Cloth Config API (Fabric) and Fabric Language Kotlin.
 
 ## Command
 
-/bhas start Start the game.*
+`/bhas start` Start the game.*
 
-/bhas stop Suspend the game.*
+`/bhas stop` Suspend the game.*
 
-/bhas settings <Parameters>  Change various parameters of the game.*
+`/bhas settings <parameters>`  Change various parameters of the game.*
 
-/bhas reload Reload Config changes.*
+`/bhas reload` Reload Config changes.*
 
-/bhas rules <target>  Displays the game rules, and distributes the rulebook to the target if the argument is specified.*
+`/bhas rules <target>`  Displays the game rules, and distributes the rulebook to the target if the argument is
+specified.*
 
-/bhas team <seeker|hider>  Join the team specified in the argument, it is only valid during voting time, so players who
-log in during voting time should use it!
+`/bhas team <seeker|hider>`  Join the team specified in the argument, it is only valid during voting time, so players
+who log in during voting time should use it!
 
 *Operator privileges are required to execute the command, but the rules command can be executed by anyone with no
 arguments.
