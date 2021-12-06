@@ -1,5 +1,6 @@
 package com.iduki.blockhideandseekmod.command;
 
+import com.iduki.blockhideandseekmod.BlockHideAndSeekMod;
 import com.iduki.blockhideandseekmod.item.BhasItems;
 import com.mojang.brigadier.Command;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -16,6 +17,7 @@ public class GiveRuleBook {
                         dispatcher.register(literal("bhas")
                                 .then(literal("rules")
                                         .then(CommandManager.argument("targets", EntityArgumentType.players())
+                                                .requires(source -> source.hasPermissionLevel(BlockHideAndSeekMod.SERVER.getOpPermissionLevel()))
                                                 .executes(context -> {
                                                             var target = EntityArgumentType.getPlayers(context, "targets");
                                                             target.forEach(
