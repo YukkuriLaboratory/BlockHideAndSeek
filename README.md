@@ -6,8 +6,7 @@ BlockHideAndSeekModはブロックに擬態して隠れるミミック側(Hider)
 
 このMODはサーバーサイドのみで、クライアントにインストールしても効果はありません。
 
-**
-BLockHideandSeekModには、[Fabric Loader](https://www.curseforge.com/linkout?remoteUrl=https%3a%2f%2ffabricmc.net%2fuse%2f)、[Fabric
+**BLockHideandSeekModには、[Fabric Loader](https://www.curseforge.com/linkout?remoteUrl=https%3a%2f%2ffabricmc.net%2fuse%2f)、[Fabric
 API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)、[Cloth Config API (
 Fabric)](https://www.curseforge.com/minecraft/mc-mods/cloth-config)、Fabric Language Kotlinが必要です。**
 
