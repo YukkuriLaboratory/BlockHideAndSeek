@@ -1,7 +1,5 @@
 # BlockHideandSeekMod
 
-BlockHideAndSeekModはブロックに擬態して隠れるミミック側(Hider)とそれを探し出して倒す鬼側(Seeker)陣営に分かれて遊ぶゲームです。
-
 The BlockHideAndSeekMod is a game that divides players into two camps: Hiders, who mimic blocks and hide behind them,
 and Seekers, who seek them out and defeat them.
 
