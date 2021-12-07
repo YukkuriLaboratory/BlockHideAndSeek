@@ -1,3 +1,17 @@
+
+<img align="left" src="src\main\resources\assets\blockhideandseekmod\icon.png" height="200">
+
+<img src="https://img.shields.io/badge/-Intellijidea-000000.svg?logo=intellijidea&style=plastic">&nbsp;
+
+<img src="https://img.shields.io/badge/-Intellijidea-000000.svg?logo=intellijidea&style=plastic">&nbsp;
+
+<img src="https://img.shields.io/badge/-Intellijidea-000000.svg?logo=intellijidea&style=plastic">&nbsp;
+
+<img src="https://img.shields.io/badge/-Intellijidea-000000.svg?logo=intellijidea&style=plastic">&nbsp;
+
+<img src="https://img.shields.io/badge/-Intellijidea-000000.svg?logo=intellijidea&style=plastic">&nbsp;
+
+
 # BlockHideandSeekMod (日本語)/([English](README.en.md))
 
 BlockHideAndSeekModはブロックに擬態して隠れるミミック側(Hider)とそれを探し出して倒す鬼側(Seeker)陣営に分かれて遊ぶゲームです。
