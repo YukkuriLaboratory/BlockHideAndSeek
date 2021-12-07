@@ -1,3 +1,7 @@
+![](https://dl.dropboxusercontent.com/u/3924504/server/12px.com/blog/140118/img.png)
+
+
+
 # BlockHideandSeekMod (English)/([Japanese](README.md))
 
 The BlockHideAndSeekMod is a game that divides players into two camps: Hiders, who mimic blocks and hide behind them,
