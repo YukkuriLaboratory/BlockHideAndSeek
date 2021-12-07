@@ -1,6 +1,7 @@
 package com.github.yukulab.blockhideandseekmod;
 
-import com.github.yukulab.blockhideandseekmod.command.*;
+import com.github.yukulab.blockhideandseekmod.command.BHASCommands;
+import com.github.yukulab.blockhideandseekmod.command.Settings;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import net.fabricmc.api.ModInitializer;
@@ -33,13 +34,8 @@ public class BlockHideAndSeekMod implements ModInitializer {
 		//item
 		BhasItems.init();
 		//コマンド登録
-		Start.registerCommands();
-		Stop.registerCommands();
-		Team.registerCommands();
-		Settings.registerCommands();
-		Reload.registerCommands();
-		Rules.registerCommands();
-        GiveRuleBook.registerCommands();
+        BHASCommands.register();
+        Settings.registerCommands();
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> SERVER = server);
 	}
