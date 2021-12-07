@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("fabric-loom") version "0.9-SNAPSHOT"
-    kotlin("jvm") version "1.6.0"
+    kotlin("jvm") version "1.5.31"
     `maven-publish`
 }
 
@@ -50,7 +50,7 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_version}")
 
-    modImplementation("net.fabricmc:fabric-language-kotlin:1.7.0+kotlin.1.6.0")
+    modImplementation("net.fabricmc:fabric-language-kotlin:1.6.5+kotlin.1.5.31")
 
     modImplementation("com.gitlab.Lortseam:completeconfig:1.2.0")
 
