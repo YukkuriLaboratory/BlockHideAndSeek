@@ -50,3 +50,6 @@ vision and cannot move.
 the Hider team escapes until 0 seconds left, the Hider team wins.Hider who die during the game will go into spectator
 mode.
 
+## License
+
+This MOD is released under the [AGPL-3.0 License](https://github.com/YukkuriLaboratory/BlockHideAndSeek/blob/1.17/LICENSE).
