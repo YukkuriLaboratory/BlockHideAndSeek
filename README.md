@@ -48,3 +48,7 @@ Kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric-language-kotlin) が
 <u>準備時間</u> 準備時間中は、ミミックが隠れる時間です。 この間鬼は視界が奪われ、動けなくなります。
 
 <u>本戦時間</u> ゲーム時間内に鬼チームがミミックチームを全て倒せば鬼チームの勝利、ゲーム中に死亡したミミックは観戦モードになります。
+
+## License
+
+このMODは[AGPL-3.0 License](https://github.com/YukkuriLaboratory/BlockHideAndSeek/blob/1.17/LICENSE)のもとで公開されています
