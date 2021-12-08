@@ -1,8 +1,8 @@
 package com.github.yukulab.blockhideandseekmod.item;
 
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
-import com.github.yukulab.blockhideandseekmod.game.TeamCreateandDelete;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
+import com.github.yukulab.blockhideandseekmod.util.TeamCreateandDelete;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

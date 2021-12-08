@@ -1,4 +1,4 @@
-package com.github.yukulab.blockhideandseekmod.game;
+package com.github.yukulab.blockhideandseekmod.util;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;

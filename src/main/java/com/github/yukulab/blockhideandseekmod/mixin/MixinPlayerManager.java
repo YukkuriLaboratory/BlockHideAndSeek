@@ -1,8 +1,8 @@
 package com.github.yukulab.blockhideandseekmod.mixin;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.game.TeamCreateandDelete;
 import com.github.yukulab.blockhideandseekmod.util.OperatorNotifier;
+import com.github.yukulab.blockhideandseekmod.util.TeamCreateandDelete;
 import com.github.yukulab.blockhideandseekmod.util.UUIDHolder;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
