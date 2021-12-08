@@ -188,7 +188,7 @@ tasks.create<TaskModrinthUpload>("publishModrinth") {
     versionNumber = mod_version
     uploadFile = file(artifactPath)
     addGameVersion(minecraft_version)
-    addLoader("Fabric")
+    addLoader("fabric")
 }.also {
     it.dependsOn(remapJar)
 }
