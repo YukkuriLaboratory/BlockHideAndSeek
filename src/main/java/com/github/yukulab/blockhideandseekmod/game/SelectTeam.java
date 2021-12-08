@@ -213,18 +213,6 @@ public class SelectTeam implements GameStatus {
     public GameStatus next() {
         var playerManager = server.getPlayerManager();
 
-        Team seekerTeam = TeamCreateAndDelete.getSeekers();
-        Team hidersTeam = TeamCreateAndDelete.getHiders();
-        if (seekerTeam.getPlayerList().isEmpty() || hidersTeam.getPlayerList().isEmpty()) {
-            var message = new LiteralText("")
-                    .append(new LiteralText("プレイヤーがいないためゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.RED)));
-            var startMessage = new TitleS2CPacket(new LiteralText("ゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
-            playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
-            playerManager.getPlayerList().forEach(allplayer -> allplayer.sendMessage(message, false));
-            TeamCreateAndDelete.deleteTeam();
-            return null;
-        }
-
         //鬼側が上限を超えていた際にミミック側に移動させる
         //鬼からミミック陣営に移動した人のUUIDを集める用
         Set<UUID> notificationTargets = Sets.newHashSet();
@@ -288,7 +276,6 @@ public class SelectTeam implements GameStatus {
         //全プレイヤーのチャット欄に送信
         playerManager.getPlayerList().forEach(player -> player.sendMessage(message, false));
 
-
         var playerSeekers = seekers.stream()
                 .map(playerManager::getPlayer)
                 .filter(Objects::nonNull)
@@ -330,6 +317,9 @@ public class SelectTeam implements GameStatus {
         TeamCreateAndDelete.addSeeker();
         TeamCreateAndDelete.addHider();
         TeamCreateAndDelete.addObserver();
+
+        Team seekerTeam = TeamCreateAndDelete.getSeekers();
+        Team hidersTeam = TeamCreateAndDelete.getHiders();
         //各チームにプレイヤーを振り分けする
         playerSeekers.stream()
                 .map(PlayerEntity::getEntityName)
@@ -345,6 +335,17 @@ public class SelectTeam implements GameStatus {
                     scoreboard.addPlayerToTeam(player.getEntityName(), observerTeam);
                     player.changeGameMode(GameMode.SPECTATOR);
                 });
+
+        if (seekerTeam.getPlayerList().isEmpty() || hidersTeam.getPlayerList().isEmpty()) {
+            var errorMessage = new LiteralText("")
+                    .append(new LiteralText("プレイヤーがいないためゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.RED)));
+            var titleError = new TitleS2CPacket(new LiteralText("ゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+            playerManager.getPlayerList().forEach(player -> {
+                player.networkHandler.sendPacket(titleError);
+                player.sendMessage(errorMessage, false);
+            });
+            return null;
+        }
 
         return new Prepare();
     }
