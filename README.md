@@ -17,7 +17,7 @@ BlockHideAndSeekModはブロックに擬態して隠れるミミック側(Hider)
 
 ## Requirements
 
-このMODはサーバーサイドのみで、クライアントにインストールしても効果はありません。
+このMODはサーバーサイドmodなので、クライアントにインストールしても動作しません。
 
 **BlockHideandSeekModには、[Fabric Loader](https://www.curseforge.com/linkout?remoteUrl=https%3a%2f%2ffabricmc.net%2fuse%2f)、[Fabric
 API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)、[Cloth Config API (
@@ -34,19 +34,19 @@ Kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric-language-kotlin) が
 
 `/bhas reload` Configを再ロードします。※
 
-`/bhas rules <target>`  ルールブックを入手します、引数が指定されている場合はルールブックをターゲットに配布します。※
+`/bhas rules <target>`  ルールブックを入手します、引数が指定されている場合はルールブックをターゲットに配布します(Rulesコマンドは引数無しなら誰でも実行できます)※
 
-`/bhas team <seeker|hider>`  引数で指定されたチームに参加します。このコマンドは投票期間中のみ有効なので、投票期間中にログインしたプレイヤーが使用してください。
+`/bhas team <seeker|hider>`  引数で指定されたチームに参加します(投票期間中のみ有効)
 
-※コマンドの実行にはOP権限が必要ですが、Rulesコマンドは引数無しなら誰でも実行できます。
+※コマンドの実行にはOP権限が必要です。
 
 ## Game progress
 
-<u>投票時間</u> チーム分けが始まりますので、チャットに表示されているチームをクリックして投票してください。時間終了まで投票していないプレイヤーは強制的に観戦モードになります。
+<u>投票時間</u> チーム分けが始まります。チャットに表示されているチームをクリックして投票してください。投票していないプレイヤーは強制的に観戦モードになります。
 
 <u>準備時間</u> 準備時間中は、ミミックが隠れる時間です。 この間鬼は視界が奪われ、動けなくなります。
 
-<u>本戦時間</u> ゲーム時間内に鬼チームがミミックチームを全て倒せば鬼チームの勝利、ゲーム中に死亡したミミックは観戦モードになります。
+<u>本戦時間</u> ゲーム時間内に鬼チームがミミックチームを全て倒せば鬼チームの勝利となり、ミミックはゲーム終了まで生き残れば勝利となります。ゲーム中に死亡したミミックは観戦モードになります。
 
 ## License
 
