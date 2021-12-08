@@ -25,7 +25,7 @@ jobs:
       - name: release
         run: ./gradlew build publish curseforge modrinth
         env:
-          TAG_VERSION: ${{ gitghub.event.release.name }}
+          TAG_VERSION: ${{ github.event.release.name }}
           CHANGE_LOG: ${{ github.event.release.body }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
