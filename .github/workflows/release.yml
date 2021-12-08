@@ -13,6 +13,11 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v2
+      - name: get release tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+          strip_v: true
       - name: validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: setup jdk ${{ matrix.java }}
@@ -25,7 +30,7 @@ jobs:
       - name: release
         run: ./gradlew build publish curseforge publishModrinth
         env:
-          TAG_VERSION: ${{ github.event.release.name }}
+          TAG_VERSION: ${{ steps.tag.outputs.tag }}
           CHANGE_LOG: ${{ github.event.release.body }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
