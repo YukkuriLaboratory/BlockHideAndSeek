@@ -1,7 +1,7 @@
 
 <img align="left" src="src\main\resources\assets\blockhideandseekmod\icon.png" height="200">
 
-<img alt="YouTube Channel Views" src="https://img.shields.io/youtube/channel/views/UCe0_ecxZmAQPRxRa0gM3KvQ?style=social">
+<a href="https://www.youtube.com/channel/UCe0_ecxZmAQPRxRa0gM3KvQ"><img alt="YouTube Channel Views" src="https://img.shields.io/youtube/channel/views/UCe0_ecxZmAQPRxRa0gM3KvQ?style=social"></a>
 
 <img src="http://cf.way2muchnoise.eu/blockhideandseekmod.svg">&nbsp;
 
