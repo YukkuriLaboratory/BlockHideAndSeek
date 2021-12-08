@@ -147,14 +147,14 @@ publishing {
 val artifactPath = "${project.buildDir}/libs/${base.archivesName.get()}-${version}"
 
 val curseApiKey: String? = env["CURSEFORGE_API_KEY"]
-if (curseApiKey != null && project.hasProperty("release")) {
+if (curseApiKey != null) {
     curseforge {
         options(closureOf<Options> {
             forgeGradleIntegration = false
         })
         apiKey = curseApiKey
 
-        val curseId = 306612
+        val curseId = 554426
         project(closureOf<CurseProject> {
             id = "$curseId"
             changelog = env["CAHNGE_LOG"] ?: "No description provided"
@@ -181,7 +181,7 @@ if (curseApiKey != null && project.hasProperty("release")) {
 tasks.create<TaskModrinthUpload>("publishModrinth") {
     val modrinthApiToken = env["MODRINTH_TOKEN"]
     onlyIf {
-        modrinthApiToken != null && project.hasProperty("release")
+        modrinthApiToken != null
     }
     token = modrinthApiToken
     projectId = "C3KKoSI2"
