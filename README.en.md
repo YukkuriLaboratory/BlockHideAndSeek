@@ -11,7 +11,7 @@
 
 <img src="https://img.shields.io/badge/-Intellijidea-000000.svg?logo=intellijidea&style=plastic">&nbsp;
 
-# BlockHideandSeekMod (English)/([Japanese](README.md))
+# BlockHideAndSeekMod (English)/([Japanese](README.md))
 
 BlockHideAndSeekMod is a competitive game played between Hiders who hide by morphing into blocks and Seekers who find and defeat the Hiders.
 
@@ -35,26 +35,28 @@ and [Fabric Language Kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric
 
 `/bhas settings <parameters>`  Changes various parameters of the game.*
 
-`/bhas reload` Reload Config changes.*
+`/bhas reload` Reload config changes.*
 
 `/bhas rules <target>`  Displays the game rules, and distributes the rulebook to the target if the argument is
 specified.*
 
-`/bhas team <seeker|hider>`  Joins the team specified in the argument. The command is only valid during voting period, so players
-who logged in during the period and could not click the team should use it!
+`/bhas team <seeker|hider>`  Joins the team specified in the argument.**
 
 *Operator privileges are required to execute the command, but the rules command could be ran by any players if without argument.
 
+** The command is only valid during voting period. The code is intended so that the players
+who logged in during the voting period could join the team without the comment display.
+
 ## Game progress
 
-<u>Voting period</u> The teaming will begin right after the game starts. The teams will be displayed on the chat, and
-Players can vote by clicking on the displayed team. Players who didn't vote will be forced to enter spectator mode.
+<u>Voting Period:</u> The teaming will begin right after the game starts. The teams will be displayed on the chat, and
+players can vote by clicking on the displayed team. Players who didn't vote will be forced to enter spectator mode.
 
-<u>Preparation period</u> During the preparation period, the Hiders will have a chance to hide while the Seekers 
-are blinded and locked into place.
+<u>Preparation Period:</u> During the preparation period, the Seekers will be blinded and locked into place
+so the Hiders will have a chance to hide.
 
-<u>Main game time</u> If the Seekers defeat all the Hiders within the game time, the Seeker team wins. 
-If any of the Hiders survive until the time runs out, the Hider team wins. 
+<u>Main Game Period:</u> If the Seekers defeat all the Hiders within the time limit, the Seeker team wins. 
+If any of the Hiders survive until time runs out, the Hider team wins. 
 The defeated Hiders will enter spectator mode for the rest of the game.
 
 ## License
