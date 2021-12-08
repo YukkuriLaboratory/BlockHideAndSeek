@@ -54,6 +54,7 @@ public class ItemBlockSelector extends LoreItem implements ServerSideItem {
     public ActionResult useOnBlock(ItemUsageContext context) {
         var player = context.getPlayer();
         if (player != null) {
+            HideController.cancelHiding(((ServerPlayerEntity) player));
             if (resetBlock(player)) {
                 return ActionResult.PASS;
             }
