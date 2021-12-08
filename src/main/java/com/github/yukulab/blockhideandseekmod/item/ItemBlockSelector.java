@@ -2,7 +2,6 @@ package com.github.yukulab.blockhideandseekmod.item;
 
 import com.github.yukulab.blockhideandseekmod.game.HideController;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
-import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -60,7 +59,7 @@ public class ItemBlockSelector extends LoreItem implements ServerSideItem {
             }
             var block = context.getWorld().getBlockState(context.getBlockPos());
             float pitch;
-            if (block.getMaterial().isSolid() && !(block.getBlock() instanceof SlabBlock)) {
+            if (HideController.isHideableBlock(block)) {
                 HideController.updateSelectedBlock(player, block);
                 pitch = 1.5f;
             } else {

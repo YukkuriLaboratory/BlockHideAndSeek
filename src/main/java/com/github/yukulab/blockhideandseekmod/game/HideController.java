@@ -11,6 +11,8 @@ import com.google.common.collect.Maps;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.Fertilizable;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -63,6 +65,11 @@ public class HideController {
         var text = new LiteralText("対象ブロック: ").append(new TranslatableText(blockState.getBlock().getTranslationKey()));
         HudDisplay.setActionBarText(uuid, SELECTED_BLOCK, text);
         selectingBlocks.put(uuid, blockState);
+    }
+
+    public static boolean isHideableBlock(BlockState blockState) {
+        var block = blockState.getBlock();
+        return blockState.getMaterial().isSolid() && !(block instanceof SlabBlock) && !(block instanceof Fertilizable);
     }
 
     public static void removeSelectedBlock(PlayerEntity player) {
@@ -175,6 +182,11 @@ public class HideController {
         }
         if (floorBlock.isAir()) {
             HudDisplay.setActionBarText(uuid, HIDE_PROGRESS, redText.append(Text.of("空中では擬態できません")), showTextTime);
+            return false;
+        }
+        if (!selectingBlocks.containsKey(uuid) && !isHideableBlock(floorBlock)) {
+            var text = new LiteralText("このブロックには擬態できません!").setStyle(Style.EMPTY.withColor(Formatting.RED));
+            HudDisplay.setActionBarText(player.getUuid(), HIDE_PROGRESS, text, 30L);
             return false;
         }
         return true;
