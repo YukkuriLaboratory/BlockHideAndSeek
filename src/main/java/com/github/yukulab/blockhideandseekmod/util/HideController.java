@@ -1,10 +1,8 @@
-package com.github.yukulab.blockhideandseekmod.game;
+package com.github.yukulab.blockhideandseekmod.util;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
-import com.github.yukulab.blockhideandseekmod.util.BlockHighlighting;
-import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
-import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
+import com.github.yukulab.blockhideandseekmod.game.GameState;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;

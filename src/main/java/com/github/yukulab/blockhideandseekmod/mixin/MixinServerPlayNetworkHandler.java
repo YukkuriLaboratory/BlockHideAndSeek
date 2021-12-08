@@ -1,10 +1,10 @@
 package com.github.yukulab.blockhideandseekmod.mixin;
 
 import com.github.yukulab.blockhideandseekmod.game.GameState;
-import com.github.yukulab.blockhideandseekmod.game.HideController;
 import com.github.yukulab.blockhideandseekmod.game.PreparationTime;
 import com.github.yukulab.blockhideandseekmod.item.ServerSideItem;
 import com.github.yukulab.blockhideandseekmod.util.FlyController;
+import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import com.github.yukulab.blockhideandseekmod.util.UUIDHolder;
 import io.netty.util.concurrent.Future;

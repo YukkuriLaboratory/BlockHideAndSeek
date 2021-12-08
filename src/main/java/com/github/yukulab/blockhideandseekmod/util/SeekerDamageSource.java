@@ -1,6 +1,5 @@
 package com.github.yukulab.blockhideandseekmod.util;
 
-import com.github.yukulab.blockhideandseekmod.game.HideController;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.EntityDamageSource;

@@ -1,6 +1,6 @@
 package com.github.yukulab.blockhideandseekmod.mixin;
 
-import com.github.yukulab.blockhideandseekmod.game.HideController;
+import com.github.yukulab.blockhideandseekmod.util.HideController;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
