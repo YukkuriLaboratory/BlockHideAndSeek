@@ -220,7 +220,7 @@ public class Prepare implements GameStatus {
 
         playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.PLAYERS, 1.0f, 1.0f));
 
-        return null;
+        return new MainGame();
     }
 
     @Override
