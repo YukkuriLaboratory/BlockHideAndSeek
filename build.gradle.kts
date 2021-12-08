@@ -95,8 +95,8 @@ java {
 }
 
 tasks.withType<Jar> {
-    from("LICENSE").also {
-        it.rename { license -> "${license}_${archives_base_name}" }
+    from("LICENSE") {
+        rename { "${it}_${archives_base_name}" }
     }
 }
 
