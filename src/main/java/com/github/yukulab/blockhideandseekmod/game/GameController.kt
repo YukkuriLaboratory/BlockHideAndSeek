@@ -36,32 +36,16 @@ object GameController {
         return true
     }
 
-    suspend fun suspend(): Boolean {
+    fun suspend(): Boolean {
         if (!isGameRunning) {
             return false
         }
-        job.cancelAndJoin()
-        current?.onFinally()
-        current?.onSuspend()
-        progressBar?.isVisible = false
-        current = null
-
-        server.playerManager
-            .playerList
-            .forEach {
-                it.changeGameMode(GameMode.SPECTATOR)
-                // 擬態解除(事故ることはないのでここで呼んじゃう)
-                HideController.cancelHiding(it)
-                // Modアイテムの削除
-                it.inventory
-                    .remove(
-                        { itemStack -> BhasItems.isModItem(itemStack.getItem()) },
-                        64,
-                        it.playerScreenHandler.craftingInput
-                    )
+        bhasScope.launch {
+            job.cancelAndJoin()
+            server.submitAndJoin {
+                stop()
             }
-        TeamCreateAndDelete.deleteTeam()
-        TeamPlayerListHeader.EmptyList()
+        }
         return true
     }
 
@@ -91,26 +75,57 @@ object GameController {
         progressBar?.removePlayer(player)
     }
 
+    private fun stop() {
+        current?.onFinally()
+        current?.onSuspend()
+        progressBar?.clearPlayers()
+        progressBar = null
+        current = null
+
+        server.playerManager
+            .playerList
+            .forEach {
+                it.changeGameMode(GameMode.SPECTATOR)
+                // 擬態解除(事故ることはないのでここで呼んじゃう)
+                HideController.cancelHiding(it)
+                // Modアイテムの削除
+                it.inventory
+                    .remove(
+                        { itemStack -> BhasItems.isModItem(itemStack.getItem()) },
+                        64,
+                        it.playerScreenHandler.craftingInput
+                    )
+            }
+        TeamCreateAndDelete.deleteTeam()
+        TeamPlayerListHeader.EmptyList()
+    }
+
     private fun startLoop() {
         job = bhasScope.launch {
             while (true) {
                 val startTime = Instant.now()
                 val current = current ?: break
-                if (current.onUpdate(progressBar)) {
-                    current.onFinally()
-                    val next = current.next()
-                    this@GameController.current = next
-                    updateProgressBar()
+                server.submitAndJoin {
+                    if (current.onUpdate(progressBar)) {
+                        current.onFinally()
+                        val next = current.next()
+                        this@GameController.current = next
+                        updateProgressBar()
+                    }
                 }
                 val lastTime = Duration.ofMillis(500) - Duration.between(startTime, Instant.now())
                 if (!lastTime.isNegative) {
                     delay(lastTime)
                 }
             }
+            server.submitAndJoin {
+                stop()
+            }
         }
     }
 
     private fun updateProgressBar() {
+        progressBar?.clearPlayers()
         progressBar = current?.progressBar
         progressBar?.also {
             server.playerManager.playerList.forEach(it::addPlayer)
