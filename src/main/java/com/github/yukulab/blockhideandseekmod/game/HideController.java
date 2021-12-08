@@ -4,7 +4,7 @@ import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.util.BlockHighlighting;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
-import com.github.yukulab.blockhideandseekmod.util.TeamCreateandDelete;
+import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
@@ -158,7 +158,7 @@ public class HideController {
             return false;
         }
 
-        if (TeamCreateandDelete.getHiders() != playerteam || playerteam == null) {
+        if (TeamCreateAndDelete.getHiders() != playerteam || playerteam == null) {
             return false;
         }
 
@@ -231,9 +231,9 @@ public class HideController {
                 HudDisplay.setActionBarText(player.getUuid(), HIDING_MESSAGE, text);
                 player.playSound(SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.PLAYERS, 1.0f, 2.0f);
 
-                var hiderTeam = TeamCreateandDelete.getHiders();
+                var hiderTeam = TeamCreateAndDelete.getHiders();
                 Collection<String> hiders = hiderTeam != null ? hiderTeam.getPlayerList() : Set.of();
-                var observerTeam = TeamCreateandDelete.getObservers();
+                var observerTeam = TeamCreateAndDelete.getObservers();
                 Collection<String> observers = observerTeam != null ? observerTeam.getPlayerList() : Set.of();
 
                 var targetPlayers = Stream.concat(hiders.stream(), observers.stream())

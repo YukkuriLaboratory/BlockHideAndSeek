@@ -4,7 +4,7 @@ import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.util.CoroutineProvider;
-import com.github.yukulab.blockhideandseekmod.util.TeamCreateandDelete;
+import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import com.github.yukulab.blockhideandseekmod.util.TeamPlayerListHeader;
 import kotlinx.coroutines.Job;
 import kotlinx.coroutines.JobKt;
@@ -116,7 +116,7 @@ public class GameStart {
         var remainsTime = Duration.ofSeconds(gameTime).minus(currentTime);
 
         //ミミック陣営が0かどうかの確認
-        var hiderTeam = TeamCreateandDelete.getHiders();
+        var hiderTeam = TeamCreateAndDelete.getHiders();
         var mimicEmpty = hiderTeam == null || hiderTeam.getPlayerList().isEmpty();
         //ミミック陣営の人数が0のとき
         if (mimicEmpty) {
@@ -135,7 +135,7 @@ public class GameStart {
 
             suspendGame();
 
-            TeamCreateandDelete.deleteTeam();
+            TeamCreateAndDelete.deleteTeam();
 
             return;
         }
@@ -169,7 +169,7 @@ public class GameStart {
 
             suspendGame();
 
-            TeamCreateandDelete.deleteTeam();
+            TeamCreateAndDelete.deleteTeam();
 
 
             return;
@@ -210,7 +210,7 @@ public class GameStart {
                                     player.playerScreenHandler.getCraftingInput()
                             );
                 });
-        TeamCreateandDelete.deleteTeam();
+        TeamCreateAndDelete.deleteTeam();
         TeamPlayerListHeader.EmptyList();
     }
 

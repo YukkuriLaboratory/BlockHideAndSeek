@@ -5,7 +5,7 @@ import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.util.CoroutineProvider;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
-import com.github.yukulab.blockhideandseekmod.util.TeamCreateandDelete;
+import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import kotlinx.coroutines.Job;
@@ -311,19 +311,19 @@ public class TeamSelector {
 
             //各チームの作成
             var scoreboard = server.getScoreboard();
-            TeamCreateandDelete.addSeeker();
-            TeamCreateandDelete.addHider();
-            TeamCreateandDelete.addObserver();
+            TeamCreateAndDelete.addSeeker();
+            TeamCreateAndDelete.addHider();
+            TeamCreateAndDelete.addObserver();
             //各チームにプレイヤーを振り分けする
-            Team seekersteam = TeamCreateandDelete.getSeekers();
+            Team seekersteam = TeamCreateAndDelete.getSeekers();
             playerSeekers.stream()
                     .map(PlayerEntity::getEntityName)
                     .forEach(player -> scoreboard.addPlayerToTeam(player, seekersteam));
-            Team hidersteam = TeamCreateandDelete.getHiders();
+            Team hidersteam = TeamCreateAndDelete.getHiders();
             playerHiders.stream()
                     .map(PlayerEntity::getEntityName)
                     .forEach(player -> scoreboard.addPlayerToTeam(player, hidersteam));
-            var observerTeam = TeamCreateandDelete.getObservers();
+            var observerTeam = TeamCreateAndDelete.getObservers();
             playerManager.getPlayerList()
                     .stream()
                     .filter(player -> !playerSeekers.contains(player) && !playerHiders.contains(player))

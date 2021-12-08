@@ -4,7 +4,7 @@ import com.github.yukulab.blockhideandseekmod.game.*;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.util.BlockHighlighting;
 import com.github.yukulab.blockhideandseekmod.util.FlyController;
-import com.github.yukulab.blockhideandseekmod.util.TeamCreateandDelete;
+import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -82,7 +82,7 @@ public abstract class MixinServerWorld {
         }
 
         var currentTeam = player.getScoreboardTeam();
-        var seekersTeam = TeamCreateandDelete.getSeekers();
+        var seekersTeam = TeamCreateAndDelete.getSeekers();
         if (currentState == GameState.Phase.PREPARE && currentTeam == seekersTeam) {
             PreparationTime.lockPlayerMovement(player);
         }
@@ -93,7 +93,7 @@ public abstract class MixinServerWorld {
 
         if ((currentState == GameState.Phase.PREPARE || currentState == GameState.Phase.RUNNING) && currentTeam == null) {
             player.changeGameMode(GameMode.SPECTATOR);
-            var observerTeam = TeamCreateandDelete.getObservers();
+            var observerTeam = TeamCreateAndDelete.getObservers();
             if (observerTeam != null) {
                 getScoreboard().addPlayerToTeam(player.getEntityName(), observerTeam);
             }

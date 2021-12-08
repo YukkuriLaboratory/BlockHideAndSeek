@@ -2,7 +2,7 @@ package com.github.yukulab.blockhideandseekmod.mixin;
 
 import com.github.yukulab.blockhideandseekmod.game.GameState;
 import com.github.yukulab.blockhideandseekmod.game.HideController;
-import com.github.yukulab.blockhideandseekmod.util.TeamCreateandDelete;
+import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -44,9 +44,9 @@ public abstract class MixinServerPlayerEntity {
             return;
         }
         // Observerへのチーム変更やらをここで一気にやってます
-        if (team == TeamCreateandDelete.getHiders()) {
+        if (team == TeamCreateAndDelete.getHiders()) {
             scoreboard.removePlayerFromTeam(playerName, team);
-            var observerTeam = TeamCreateandDelete.getObservers();
+            var observerTeam = TeamCreateAndDelete.getObservers();
             if (observerTeam != null) {
                 scoreboard.addPlayerToTeam(playerName, observerTeam);
             }
@@ -62,7 +62,7 @@ public abstract class MixinServerPlayerEntity {
                     .forEach(networkHandler::sendPacket);
 
             HideController.showHidingBlockHighlight(player);
-        } else if (team == TeamCreateandDelete.getSeekers()) {
+        } else if (team == TeamCreateAndDelete.getSeekers()) {
             player.changeGameMode(GameMode.ADVENTURE);
             player.interactionManager.changeGameMode(GameMode.SURVIVAL);
             player.getAbilities().allowFlying = true;

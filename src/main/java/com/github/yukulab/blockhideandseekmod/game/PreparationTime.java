@@ -5,7 +5,7 @@ import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.util.CoroutineProvider;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
-import com.github.yukulab.blockhideandseekmod.util.TeamCreateandDelete;
+import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import com.github.yukulab.blockhideandseekmod.util.TeamPlayerListHeader;
 import com.google.common.collect.Maps;
 import kotlinx.coroutines.Job;
@@ -79,7 +79,7 @@ public class PreparationTime {
     public static void teamMessage() {
         var playerManager = server.getPlayerManager();
 
-        Team seekers = TeamCreateandDelete.getSeekers();
+        Team seekers = TeamCreateAndDelete.getSeekers();
         var startSeekerMessage = new LiteralText("").append(Text.of("\n"))
                 .append(new LiteralText("[鬼はスタートしたらミミックを探そう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
         List<ServerPlayerEntity> seekersList = seekers.getPlayerList()
@@ -88,7 +88,7 @@ public class PreparationTime {
                 .toList();
         seekersList.forEach(player -> player.sendMessage(startSeekerMessage, false));
 
-        Team hiders = TeamCreateandDelete.getHiders();
+        Team hiders = TeamCreateAndDelete.getHiders();
         var startHiderMessage = new LiteralText("").append(Text.of("\n"))
                 .append(new LiteralText("[ミミックは準備時間終了までに隠れよう!]").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
         List<ServerPlayerEntity> hidersList = hiders.getPlayerList()
@@ -102,15 +102,15 @@ public class PreparationTime {
     public static boolean checkTeamcount() {
         var playerManager = server.getPlayerManager();
 
-        Team seekersteam = TeamCreateandDelete.getSeekers();
-        Team hidersteam = TeamCreateandDelete.getHiders();
+        Team seekersteam = TeamCreateAndDelete.getSeekers();
+        Team hidersteam = TeamCreateAndDelete.getHiders();
         if (seekersteam.getPlayerList().isEmpty() || hidersteam.getPlayerList().isEmpty()) {
             var message = new LiteralText("")
                     .append(new LiteralText("プレイヤーがいないためゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.RED)));
             var startMessage = new TitleS2CPacket(new LiteralText("ゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
             playerManager.getPlayerList().forEach(allplayer -> allplayer.sendMessage(message, false));
-            TeamCreateandDelete.deleteTeam();
+            TeamCreateAndDelete.deleteTeam();
             return false;
         }
         return true;
@@ -211,7 +211,7 @@ public class PreparationTime {
         var now = Instant.now();
 
         var hideMimicList = HideController.getHidingPlayers();
-        var isAllPlayerMimicked = TeamCreateandDelete.getHiders().getPlayerList().size() == hideMimicList.size();
+        var isAllPlayerMimicked = TeamCreateAndDelete.getHiders().getPlayerList().size() == hideMimicList.size();
 
         if (isAllPlayerMimicked && (lastMimickedTime == null || Duration.between(lastMimickedTime, now).toSeconds() > 5)) {
             lastMimickedTime = now;
@@ -225,7 +225,7 @@ public class PreparationTime {
 
         //残り時間が０以下のとき
         if (remainsTime.isNegative()) {
-            var seekerTeam = TeamCreateandDelete.getSeekers();
+            var seekerTeam = TeamCreateAndDelete.getSeekers();
             if (seekerTeam != null) {
                 seekerTeam.getPlayerList()
                         .stream()
@@ -299,7 +299,7 @@ public class PreparationTime {
             return;
         }
 
-        var seekersTeam = TeamCreateandDelete.getSeekers();
+        var seekersTeam = TeamCreateAndDelete.getSeekers();
         if (seekersTeam != null) {
             seekersTeam.getPlayerList()
                     .stream()

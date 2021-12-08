@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import static net.minecraft.scoreboard.AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS;
 import static net.minecraft.util.Formatting.*;
 
-public class TeamCreateandDelete {
+public class TeamCreateAndDelete {
 
     public static void addSeeker() {
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();

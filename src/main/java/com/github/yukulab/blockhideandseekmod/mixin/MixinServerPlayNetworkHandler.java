@@ -5,7 +5,7 @@ import com.github.yukulab.blockhideandseekmod.game.HideController;
 import com.github.yukulab.blockhideandseekmod.game.PreparationTime;
 import com.github.yukulab.blockhideandseekmod.item.ServerSideItem;
 import com.github.yukulab.blockhideandseekmod.util.FlyController;
-import com.github.yukulab.blockhideandseekmod.util.TeamCreateandDelete;
+import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import com.github.yukulab.blockhideandseekmod.util.UUIDHolder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -55,7 +55,7 @@ public class MixinServerPlayNetworkHandler {
             )
     )
     private void cancelHidingBlockUpdate(ServerPlayNetworkHandler instance, Packet<?> packet) {
-        if (GameState.getCurrentState() == GameState.Phase.PREPARE && player.getScoreboardTeam() == TeamCreateandDelete.getSeekers()) {
+        if (GameState.getCurrentState() == GameState.Phase.PREPARE && player.getScoreboardTeam() == TeamCreateAndDelete.getSeekers()) {
             PreparationTime.lockPlayerMovement(player);
         }
 
