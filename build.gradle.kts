@@ -158,6 +158,7 @@ if (curseApiKey != null && project.hasProperty("release")) {
         project(closureOf<CurseProject> {
             id = "$curseId"
             changelog = env["CAHNGE_LOG"] ?: "No description provided"
+            releaseType = "release"
             addGameVersion(minecraft_version)
             addGameVersion("Fabric")
 
@@ -188,4 +189,6 @@ tasks.create<TaskModrinthUpload>("publishModrinth") {
     uploadFile = file(artifactPath)
     addGameVersion(minecraft_version)
     addLoader("Fabric")
+}.also {
+    it.dependsOn(remapJar)
 }
