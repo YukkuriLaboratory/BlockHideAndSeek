@@ -22,9 +22,9 @@ BlockHideAndSeekMod is a competitive game played between Hiders who hide by morp
 This mod is server-side only; you do not need to install this on client, and doing so will not have any effect.
 
 **BlockHideandSeekMod
-requires [Fabric Loader ](https://www.curseforge.com/linkout?remoteUrl=https%3a%2f%2ffabricmc.net%2fuse%2f),[Fabric
-API](https://www.curseforge.com/minecraft/mc-mods/fabric-api),[Cloth Config API (
-Fabric)](https://www.curseforge.com/minecraft/mc-mods/cloth-config)
+requires [Fabric Loader](https://www.curseforge.com/linkout?remoteUrl=https%3a%2f%2ffabricmc.net%2fuse%2f),
+[Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api),
+[Cloth Config API (Fabric)](https://www.curseforge.com/minecraft/mc-mods/cloth-config),
 and [Fabric Language Kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric-language-kotlin).**
 
 ## Command
