@@ -30,7 +30,7 @@ val env: MutableMap<String, String> = System.getenv()
 
 val minecraft_version: String by project
 
-val mod_version = (env["TAG_VERSION"] ?: "SNAPSHOT") + minecraft_version
+val mod_version = (env["TAG_VERSION"] ?: "SNAPSHOT") + "+" + minecraft_version
 val maven_group: String by project
 
 version = mod_version
@@ -144,7 +144,7 @@ publishing {
     }
 }
 
-val artifactPath = "${project.buildDir}/libs/${base.archivesName.get()}-${version}"
+val artifactPath = "${project.buildDir}/libs/${base.archivesName.get()}-${mod_version}.jar"
 
 val curseApiKey: String? = env["CURSEFORGE_API_KEY"]
 if (curseApiKey != null) {
