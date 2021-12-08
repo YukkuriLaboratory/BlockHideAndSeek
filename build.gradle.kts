@@ -1,7 +1,4 @@
-import com.matthewprenger.cursegradle.CurseArtifact
-import com.matthewprenger.cursegradle.CurseProject
-import com.matthewprenger.cursegradle.CurseUploadTask
-import com.matthewprenger.cursegradle.Options
+import com.matthewprenger.cursegradle.*
 import com.modrinth.minotaur.TaskModrinthUpload
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RemapSourcesJarTask
@@ -161,6 +158,11 @@ if (curseApiKey != null) {
             releaseType = "release"
             addGameVersion(minecraft_version)
             addGameVersion("Fabric")
+            relations(closureOf<CurseRelation> {
+                requiredDependency("fabric-api")
+                requiredDependency("fabric-language-kotlin")
+                requiredDependency("cloth-config")
+            })
 
             mainArtifact(
                 artifactPath,
