@@ -2,8 +2,11 @@ package com.github.yukulab.blockhideandseekmod.game;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.util.CoroutineProvider;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
 import com.google.common.collect.Maps;
+import kotlinx.coroutines.Job;
+import kotlinx.coroutines.JobKt;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -28,8 +31,6 @@ import net.minecraft.world.GameMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 
 /**
@@ -43,7 +44,7 @@ public class PreparationTime {
      * 非同期処理の状態確認用
      * <p>
      */
-    private static volatile boolean isPreparationTime = false;
+    private static Job job = JobKt.Job(null);
 
     /**
      * 時間計測用
@@ -66,12 +67,6 @@ public class PreparationTime {
     private static final Map<UUID, Entity> lockerEntities = Maps.newHashMap();
 
     private static final String BLIND_MESSAGE = "blindMessage";
-
-    /**
-     * 非同期処理用
-     * マインクラフトを動かしているスレッドとは別のスレッドで処理を行うことができます.
-     */
-    private static final ThreadPoolExecutor EXECUTOR = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 
     //毎回クラス名入力するのがダルいので定数として扱う
     private static final MinecraftServer server = BlockHideAndSeekMod.SERVER;
@@ -111,7 +106,7 @@ public class PreparationTime {
             var startMessage = new TitleS2CPacket(new LiteralText("ゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
             playerManager.getPlayerList().forEach(allplayer -> allplayer.sendMessage(message, false));
-            isPreparationTime = false;
+            job.cancel(null);
             preparationtimeProgress.setVisible(false);
             TeamCreateandDelete.deleteTeam();
             return false;
@@ -288,7 +283,7 @@ public class PreparationTime {
     }
 
     private static void suspendGame() {
-        isPreparationTime = false;
+        job.cancel(null);
         preparationtimeProgress.setVisible(false);
     }
 
@@ -297,11 +292,7 @@ public class PreparationTime {
         GameState.setCurrentState(GameState.Phase.IDLE);
     }
 
-    //Thread.sleepは多くの場合で冗長とされてwaringの対象となっているが，今回の場合は正しい使用方法と判断できるため警告を抑制している
-    @SuppressWarnings("BusyWait")
     private static void registerMessage() {
-        isPreparationTime = true;
-
         //ボスバーを表示
         preparationtimeProgress.setVisible(true);
 
@@ -314,23 +305,10 @@ public class PreparationTime {
         teamMessage();
 
         //非同期スレッドの呼び出し
-        EXECUTOR.execute(() -> {
-            //準備時間中常に実行
-            while (isPreparationTime) {
-                //現在の時間の取得
-                var startTime = Instant.now();
-                //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
-                //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
-                server.submitAndJoin(PreparationTime::update);
-                try {
-                    //0.5 - (作業時間)秒間待つ
-                    var time = Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now()));
-                    if (!time.isNegative()) {
-                        Thread.sleep(time.toMillis());
-                    }
-                } catch (InterruptedException ignore) {
-                }
-            }
+        job = CoroutineProvider.loop(Duration.ofMillis(500), () -> {
+            //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
+            //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
+            server.submitAndJoin(PreparationTime::update);
         });
     }
 
