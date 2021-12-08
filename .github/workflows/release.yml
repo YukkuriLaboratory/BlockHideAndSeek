@@ -23,7 +23,7 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
       - name: release
-      - run: ./gradlew build publish curseforge modrinth
+        run: ./gradlew build publish curseforge modrinth
         env:
           TAG_VERSION: ${{ gitghub.event.release.name }}
           CHANGE_LOG: ${{ github.event.release.body }}
