@@ -1,4 +1,4 @@
-package com.github.yukulab.blockhideandseekmod.game;
+package com.github.yukulab.blockhideandseekmod.util;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
@@ -11,8 +11,8 @@ public class TeamPlayerListHeader {
     public static void TeamList() {
         var playerManager = BlockHideAndSeekMod.SERVER.getPlayerManager();
         var emptyText = LiteralText.EMPTY;
-        var hidersCount = String.valueOf(TeamCreateandDelete.getHiders().getPlayerList().size());
-        var seekersCount = String.valueOf(TeamCreateandDelete.getSeekers().getPlayerList().size());
+        var hidersCount = String.valueOf(TeamCreateAndDelete.getHiders().getPlayerList().size());
+        var seekersCount = String.valueOf(TeamCreateAndDelete.getSeekers().getPlayerList().size());
         var packet = new LiteralText("Seekers:").setStyle(Style.EMPTY.withColor(Formatting.RED))
                 .append(new LiteralText(seekersCount).setStyle(Style.EMPTY.withColor(Formatting.WHITE)))
                 .append(new LiteralText("/").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)))

@@ -1,6 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.command;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
+import com.github.yukulab.blockhideandseekmod.game.GameController;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -68,7 +69,7 @@ public class Settings {
                             commentField = entry.getClass().getDeclaredField("comment");
                             commentField.setAccessible(true);
                             var result = commentField.get(entry);
-                            context.getSource().sendFeedback(Text.of("[BHAS] " + targetId + ": " + result.toString()), false);
+                            context.getSource().sendFeedback(BHASCommands.bhasMessage(Text.of(" " + targetId + ": " + result.toString())), false);
                         } catch (Throwable throwable) {
                             BlockHideAndSeekMod.LOGGER.throwing(throwable);
                         }
@@ -81,7 +82,8 @@ public class Settings {
                                 return builder.buildFuture();
                             })
                             .executes(context -> {
-                                if (Start.isGameRunning(context.getSource())) {
+                                if (GameController.isGameRunning()) {
+                                    context.getSource().sendError(BHASCommands.getGAME_IS_RUNNING());
                                     return Command.SINGLE_SUCCESS;
                                 }
                                 try {
@@ -89,11 +91,11 @@ public class Settings {
                                     if (arg != null) {
                                         entry.setValue(arg);
                                         BlockHideAndSeekMod.CONFIG.save();
-                                        context.getSource().sendFeedback(Text.of("[BHAS] " + targetId + "を" + arg + "に変更しました"), true);
+                                        context.getSource().sendFeedback(BHASCommands.bhasMessage(Text.of(" " + targetId + "を" + arg + "に変更しました")), true);
                                     }
                                 } catch (Throwable throwable) {
                                     BlockHideAndSeekMod.LOGGER.throwing(throwable);
-                                    context.getSource().sendError(Text.of("[Bhas] エラーが発生しました"));
+                                    context.getSource().sendError(BHASCommands.bhasMessage(Text.of(" エラーが発生しました")));
                                 }
                                 return Command.SINGLE_SUCCESS;
                             })

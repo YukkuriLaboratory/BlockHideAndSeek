@@ -2,7 +2,7 @@ package com.github.yukulab.blockhideandseekmod.screen;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
-import com.github.yukulab.blockhideandseekmod.game.HideController;
+import com.github.yukulab.blockhideandseekmod.util.HideController;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;

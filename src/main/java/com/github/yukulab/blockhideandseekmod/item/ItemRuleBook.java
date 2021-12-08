@@ -43,6 +43,7 @@ public class ItemRuleBook extends LoreItem implements ServerSideItem {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         var player = ((ServerPlayerEntity) user);
         RuleBookScreen.open(player);
+        user.playerScreenHandler.syncState();
         return TypedActionResult.pass(user.getStackInHand(hand));
     }
 

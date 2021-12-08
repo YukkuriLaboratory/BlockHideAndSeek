@@ -1,8 +1,8 @@
 package com.github.yukulab.blockhideandseekmod.mixin;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.game.TeamCreateandDelete;
 import com.github.yukulab.blockhideandseekmod.util.OperatorNotifier;
+import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import com.github.yukulab.blockhideandseekmod.util.UUIDHolder;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
@@ -44,7 +44,7 @@ public class MixinPlayerManager {
     private void checkSeekerRespawn(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> cir) {
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
         var team = scoreboard.getPlayerTeam(player.getEntityName());
-        if (team != null && team == TeamCreateandDelete.getSeekers()) {
+        if (team != null && team == TeamCreateAndDelete.getSeekers()) {
             player.changeGameMode(GameMode.ADVENTURE);
             player.interactionManager.changeGameMode(GameMode.SURVIVAL);
             player.getAbilities().allowFlying = true;

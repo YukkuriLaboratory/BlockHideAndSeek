@@ -1,8 +1,8 @@
 package com.github.yukulab.blockhideandseekmod.item;
 
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
-import com.github.yukulab.blockhideandseekmod.game.TeamCreateandDelete;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
+import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -98,7 +98,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
         var nearestPlayer = player.world
                 .getPlayers()
                 .stream()
-                .filter(p -> p.isTeamPlayer(TeamCreateandDelete.getHiders()))
+                .filter(p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()))
                 .filter(p -> p.distanceTo(player) < isSneakingScanLength(player))
                 .toList();
         Text message;
@@ -115,7 +115,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
             p.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 70, 2);
         });
 
-        var nearplayer = player.world.getClosestPlayer(player.getX(), player.getY(), player.getZ(), isSneakingScanLength(player), p -> p.isTeamPlayer(TeamCreateandDelete.getHiders()));
+        var nearplayer = player.world.getClosestPlayer(player.getX(), player.getY(), player.getZ(), isSneakingScanLength(player), p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()));
 
         var nbt = stack.getOrCreateNbt();
 

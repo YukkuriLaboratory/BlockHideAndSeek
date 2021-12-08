@@ -1,9 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.command
 
-import com.github.yukulab.blockhideandseekmod.game.GameStart
-import com.github.yukulab.blockhideandseekmod.game.GameState
-import com.github.yukulab.blockhideandseekmod.game.PreparationTime
-import com.github.yukulab.blockhideandseekmod.game.TeamSelector
+import com.github.yukulab.blockhideandseekmod.command.BHASCommands.bhasMessage
+import com.github.yukulab.blockhideandseekmod.game.GameController
 import dev.uten2c.cmdlib.CommandBuilder
 import net.minecraft.network.MessageType
 import net.minecraft.text.Text
@@ -14,30 +12,15 @@ object Stop : BHASCommand {
         literal("stop") {
             requires { it.hasPermissionLevel(it.server.opPermissionLevel) }
             executes {
-                fun sendSuspendMessage() {
+                if (GameController.suspend()) {
                     source.server.playerManager.broadcastChatMessage(
-                        Text.of("[BHAS] ゲームが中断されました"),
+                        bhasMessage(Text.of(" ゲームが中断されました")),
                         MessageType.CHAT,
                         UUID.randomUUID()
                     )
+                } else {
+                    source.sendError(bhasMessage(Text.of(" ゲームが開始されていません")))
                 }
-
-                when (GameState.getCurrentState()) {
-                    GameState.Phase.IDLE -> source.sendError(Text.of("[BHAS] ゲームが開始されていません"))
-                    GameState.Phase.SELECT_TEAM -> {
-                        TeamSelector.suspend()
-                        sendSuspendMessage()
-                    }
-                    GameState.Phase.PREPARE -> {
-                        PreparationTime.stopGame()
-                        sendSuspendMessage()
-                    }
-                    GameState.Phase.RUNNING -> {
-                        sendSuspendMessage()
-                    }
-                    null -> {}
-                }
-                GameStart.stopGame()
             }
         }
     }

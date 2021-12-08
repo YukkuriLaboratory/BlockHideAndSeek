@@ -1,6 +1,8 @@
 package com.github.yukulab.blockhideandseekmod.command
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod
+import com.github.yukulab.blockhideandseekmod.command.BHASCommands.bhasMessage
+import com.github.yukulab.blockhideandseekmod.game.GameController
 import dev.uten2c.cmdlib.CommandBuilder
 import net.minecraft.text.Text
 
@@ -13,9 +15,9 @@ object Reload : BHASCommand {
             }
 
             executes {
-                if (!Start.isGameRunning(source)) {
+                if (!GameController.isGameRunning) {
                     BlockHideAndSeekMod.CONFIG.load()
-                    source.sendFeedback(Text.of("[Bhas] 設定ファイルをリロードしました"), true)
+                    source.sendFeedback(bhasMessage(Text.of("設定ファイルをリロードしました")), true)
                 }
             }
         }
