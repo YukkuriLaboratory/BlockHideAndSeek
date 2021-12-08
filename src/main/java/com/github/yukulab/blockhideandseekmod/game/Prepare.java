@@ -182,6 +182,14 @@ public class Prepare implements GameStatus {
 
     @Override
     public void onSuspend() {
+        var seekerTeam = TeamCreateAndDelete.getSeekers();
+        if (seekerTeam != null) {
+            seekerTeam.getPlayerList()
+                    .stream()
+                    .map(server.getPlayerManager()::getPlayer)
+                    .filter(Objects::nonNull)
+                    .forEach(this::unlockPlayerMovement);
+        }
         server.getPlayerManager().getPlayerList()
                 .forEach(player -> {
                     player.changeGameMode(GameMode.SPECTATOR);
