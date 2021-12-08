@@ -2,11 +2,13 @@ package com.github.yukulab.blockhideandseekmod.game;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.util.CoroutineProvider;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
 import com.google.common.collect.Maps;
 import kotlinx.coroutines.Job;
 import kotlinx.coroutines.JobKt;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -106,8 +108,6 @@ public class PreparationTime {
             var startMessage = new TitleS2CPacket(new LiteralText("ゲームを開始できません").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(startMessage));
             playerManager.getPlayerList().forEach(allplayer -> allplayer.sendMessage(message, false));
-            job.cancel(null);
-            preparationtimeProgress.setVisible(false);
             TeamCreateandDelete.deleteTeam();
             return false;
         }
@@ -122,15 +122,6 @@ public class PreparationTime {
         GameState.setCurrentState(GameState.Phase.PREPARE);
         //各種変数の初期化
         startedTime = Instant.now();
-
-        var seekersTeam = TeamCreateandDelete.getSeekers();
-        if (seekersTeam != null) {
-            seekersTeam.getPlayerList()
-                    .stream()
-                    .map(server.getPlayerManager()::getPlayer)
-                    .filter(Objects::nonNull)
-                    .forEach(PreparationTime::lockPlayerMovement);
-        }
 
         registerMessage();
     }
@@ -289,6 +280,11 @@ public class PreparationTime {
 
     public static void stopGame() {
         suspendGame();
+        server.getPlayerManager().getPlayerList()
+                .forEach(player -> {
+                    player.changeGameMode(GameMode.SPECTATOR);
+                    player.getInventory().remove(itemStack -> BhasItems.isModItem(itemStack.getItem()), 64, player.playerScreenHandler.getCraftingInput());
+                });
         GameState.setCurrentState(GameState.Phase.IDLE);
     }
 
@@ -296,11 +292,19 @@ public class PreparationTime {
         //ボスバーを表示
         preparationtimeProgress.setVisible(true);
 
-        /* デバッグのため一時的にコメントアウト
-        if (!checkTeamcount()) {
+        if (!FabricLoader.getInstance().isDevelopmentEnvironment() && !checkTeamcount()) {
+            stopGame();
             return;
         }
-        */
+
+        var seekersTeam = TeamCreateandDelete.getSeekers();
+        if (seekersTeam != null) {
+            seekersTeam.getPlayerList()
+                    .stream()
+                    .map(server.getPlayerManager()::getPlayer)
+                    .filter(Objects::nonNull)
+                    .forEach(PreparationTime::lockPlayerMovement);
+        }
 
         teamMessage();
 
@@ -315,8 +319,6 @@ public class PreparationTime {
     static {
         //最初は非表示にしておく
         preparationtimeProgress.setVisible(false);
-
-
     }
 
 }
