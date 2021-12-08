@@ -1,9 +1,8 @@
 package com.github.yukulab.blockhideandseekmod.mixin;
 
-import com.github.yukulab.blockhideandseekmod.game.GameStart;
-import com.github.yukulab.blockhideandseekmod.game.GameState;
-import com.github.yukulab.blockhideandseekmod.game.PreparationTime;
-import com.github.yukulab.blockhideandseekmod.game.TeamSelector;
+import com.github.yukulab.blockhideandseekmod.game.GameController;
+import com.github.yukulab.blockhideandseekmod.game.MainGame;
+import com.github.yukulab.blockhideandseekmod.game.Prepare;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.util.BlockHighlighting;
 import com.github.yukulab.blockhideandseekmod.util.FlyController;
@@ -11,17 +10,13 @@ import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.GameMode;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -36,12 +31,6 @@ public abstract class MixinServerWorld {
     @Shadow
     @Final
     private MinecraftServer server;
-
-    @Shadow
-    public abstract boolean isFlat();
-
-    @Shadow
-    public abstract void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch);
 
     @Shadow
     public abstract ServerScoreboard getScoreboard();
@@ -70,14 +59,11 @@ public abstract class MixinServerWorld {
             at = @At("TAIL")
     )
     private void onPlayerJoinWorld(ServerPlayerEntity player, CallbackInfo ci) {
-        TeamSelector.addBossBarTarget(player);
-        PreparationTime.addBossBarTarget(player);
-        GameStart.addBossBarTarget(player);
+        GameController.addBossBarTarget(player);
         FlyController.registerPlayer(player);
         BlockHighlighting.resendHighlightData(player);
 
-        var currentState = GameState.getCurrentState();
-        if (currentState == GameState.Phase.IDLE) {
+        if (!GameController.isGameRunning()) {
             player.getInventory().remove(
                     itemStack -> BhasItems.isModItem(itemStack.getItem()),
                     64,
@@ -87,15 +73,16 @@ public abstract class MixinServerWorld {
 
         var currentTeam = player.getScoreboardTeam();
         var seekersTeam = TeamCreateAndDelete.getSeekers();
-        if (currentState == GameState.Phase.PREPARE && currentTeam == seekersTeam) {
-            PreparationTime.lockPlayerMovement(player);
+        var current = GameController.getCurrent();
+        if (current instanceof Prepare prepare && currentTeam == seekersTeam) {
+            prepare.lockPlayerMovement(player);
         }
 
-        if ((currentState == GameState.Phase.PREPARE || currentState == GameState.Phase.RUNNING) && currentTeam != seekersTeam) {
+        if ((current instanceof Prepare || current instanceof MainGame) && currentTeam != seekersTeam) {
             HideController.showHidingBlockHighlight(player);
         }
 
-        if ((currentState == GameState.Phase.PREPARE || currentState == GameState.Phase.RUNNING) && currentTeam == null) {
+        if ((current instanceof Prepare || current instanceof MainGame) && currentTeam == null) {
             player.changeGameMode(GameMode.SPECTATOR);
             var observerTeam = TeamCreateAndDelete.getObservers();
             if (observerTeam != null) {
@@ -109,9 +96,7 @@ public abstract class MixinServerWorld {
             at = @At("TAIL")
     )
     private void onPlayerLeaveWorld(ServerPlayerEntity player, Entity.RemovalReason reason, CallbackInfo ci) {
-        TeamSelector.removeBossBarTarget(player);
-        PreparationTime.removeBossBarTarget(player);
-        GameStart.removeBossBarTarget(player);
+        GameController.removeBossBarTarget(player);
         FlyController.removePlayer(player);
     }
 }

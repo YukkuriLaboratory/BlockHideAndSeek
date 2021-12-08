@@ -2,7 +2,8 @@ package com.github.yukulab.blockhideandseekmod.util;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
-import com.github.yukulab.blockhideandseekmod.game.GameState;
+import com.github.yukulab.blockhideandseekmod.game.GameController;
+import com.github.yukulab.blockhideandseekmod.game.SelectTeam;
 import com.google.common.collect.Maps;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -45,8 +46,7 @@ public class FlyController {
     }
 
     public static boolean canFly(PlayerEntity player) {
-        var state = GameState.getCurrentState();
-        if (state == GameState.Phase.IDLE || state == GameState.Phase.SELECT_TEAM) {
+        if (!GameController.isGameRunning() || GameController.getCurrent() instanceof SelectTeam) {
             return false;
         }
 

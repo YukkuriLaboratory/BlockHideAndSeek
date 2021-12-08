@@ -1,9 +1,8 @@
 package com.github.yukulab.blockhideandseekmod.command
 
-import com.github.yukulab.blockhideandseekmod.game.GameState
-import com.github.yukulab.blockhideandseekmod.game.TeamSelector
+import com.github.yukulab.blockhideandseekmod.command.BHASCommands.GAME_IS_RUNNING
+import com.github.yukulab.blockhideandseekmod.game.GameController
 import dev.uten2c.cmdlib.CommandBuilder
-import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import net.minecraft.world.GameRules
 
@@ -12,7 +11,7 @@ object Start : BHASCommand {
         literal("start") {
             requires { it.hasPermissionLevel(it.server.opPermissionLevel) }
             executes {
-                if (!isGameRunning(source)) {
+                if (GameController.startGame()) {
                     val gameRules = source.player.world.gameRules
                     val keepInventory = gameRules.get(GameRules.KEEP_INVENTORY)
                     if (!keepInventory.get()) {
@@ -27,18 +26,10 @@ object Start : BHASCommand {
                         val ruleChangeMessage = Text.of("Info: naturalRegenerationを無効化しました")
                         source.sendFeedback(ruleChangeMessage, true)
                     }
-                    TeamSelector.startVote()
+                } else {
+                    source.sendError(GAME_IS_RUNNING)
                 }
             }
         }
-    }
-
-    @JvmStatic
-    fun isGameRunning(source: ServerCommandSource): Boolean {
-        if (GameState.getCurrentState() != GameState.Phase.IDLE) {
-            source.sendError(Text.of("[BHAS] ゲーム進行中は実行できませsん"))
-            return true
-        }
-        return false
     }
 }

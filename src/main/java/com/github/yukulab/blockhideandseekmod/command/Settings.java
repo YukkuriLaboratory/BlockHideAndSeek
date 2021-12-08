@@ -1,6 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.command;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
+import com.github.yukulab.blockhideandseekmod.game.GameController;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -81,7 +82,8 @@ public class Settings {
                                 return builder.buildFuture();
                             })
                             .executes(context -> {
-                                if (Start.isGameRunning(context.getSource())) {
+                                if (GameController.isGameRunning()) {
+                                    context.getSource().sendError(BHASCommands.getGAME_IS_RUNNING());
                                     return Command.SINGLE_SUCCESS;
                                 }
                                 try {

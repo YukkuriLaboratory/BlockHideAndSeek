@@ -1,6 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.mixin;
 
-import com.github.yukulab.blockhideandseekmod.game.GameState;
+import com.github.yukulab.blockhideandseekmod.game.GameController;
+import com.github.yukulab.blockhideandseekmod.game.SelectTeam;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import net.minecraft.entity.damage.DamageSource;
@@ -32,8 +33,8 @@ public abstract class MixinServerPlayerEntity {
             at = @At("HEAD")
     )
     private void removeHiders(DamageSource source, CallbackInfo ci) {
-        var currentState = GameState.getCurrentState();
-        if (currentState == GameState.Phase.IDLE || currentState == GameState.Phase.SELECT_TEAM) {
+        var current = GameController.getCurrent();
+        if (!GameController.isGameRunning() || current instanceof SelectTeam) {
             return;
         }
         var player = ((ServerPlayerEntity) (Object) this);

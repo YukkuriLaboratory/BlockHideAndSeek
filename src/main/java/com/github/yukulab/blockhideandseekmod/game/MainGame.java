@@ -3,12 +3,10 @@ package com.github.yukulab.blockhideandseekmod.game;
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
-import com.github.yukulab.blockhideandseekmod.util.CoroutineProvider;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
+import com.github.yukulab.blockhideandseekmod.util.PlayerUtil;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import com.github.yukulab.blockhideandseekmod.util.TeamPlayerListHeader;
-import kotlinx.coroutines.Job;
-import kotlinx.coroutines.JobKt;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -16,7 +14,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
@@ -25,84 +22,49 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 
+
 /**
- * ゲーム時間の計測＆表示//
+ * ゲーム時間の計測
  * ↓
  * ゲーム開始
  * ↓
  * Hidersが全滅した場合はSeekersの勝利
  * 時間までHidersが残っていた場合は残っているHidersの勝ち
  */
-public class GameStart {
-
-    /**
-     * 非同期処理の状態確認用
-     * <p>
-     */
-    private static Job updateJob = JobKt.Job(null);
-
+public class MainGame implements GameStatus {
     /**
      * 時間計測用
      * 準備時間
      */
     private static Instant ingameTime;
 
-    /**
-     * 残り時間表示用のボスバー
-     * 準備時間用
-     */
-    private static final ServerBossBar ingametimeProgress = new ServerBossBar(Text.of(""), BossBar.Color.BLUE, BossBar.Style.NOTCHED_20);
 
     //毎回クラス名入力するのがダルいので定数として扱う
     private static final MinecraftServer server = BlockHideAndSeekMod.SERVER;
 
-    /**
-     * ゲーム時間のカウントを開始します．
-     * これのメソッドが呼ばれて以降，このクラスによってゲームの開始まで進行が管理されます
-     */
-    public static void startGame() {
-        GameState.setCurrentState(GameState.Phase.RUNNING);
-        //各種変数の初期化
+    public MainGame() {
         ingameTime = Instant.now();
-        //鬼側エフェクト削除
-        registerMessage();
     }
 
-    /**
-     * プレイヤーをボスバーの表示対象に加えるメソッド
-     * ワールドに参加したタイミングで呼び出されています
-     * 途中で退出して再参加した場合や，途中参加でも表示が正しく行われるように作成
-     *
-     * @param player 新たにサーバーに参加したプレイヤー
-     */
-    public static void addBossBarTarget(ServerPlayerEntity player) {
-        ingametimeProgress.addPlayer(player);
+    @NotNull
+    @Override
+    public ServerBossBar getProgressBar() {
+        return new ServerBossBar(Text.of(""), BossBar.Color.BLUE, BossBar.Style.NOTCHED_20);
     }
 
-    /**
-     * プレイヤーをボスバーの表示対象から外すメソッド
-     * ワールドから退出したタイミングで呼び出されています
-     * <p>
-     * この処理がなかった場合，
-     * プレイヤーが死亡，ワールド間の移動，サーバーの出入りを繰り返すたびにplayerのインスタンスが変更されて新たなplayerとして追加され，ServerBossBarのplayersが無限に肥大化してしまう
-     *
-     * @param player 退出したプレイヤー
-     */
-    public static void removeBossBarTarget(ServerPlayerEntity player) {
-        ingametimeProgress.removePlayer(player);
-    }
-
-
-    public static void update() {
+    @Override
+    public boolean onUpdate(@Nullable ServerBossBar progressBar) {
         var playerManager = server.getPlayerManager();
 
         TeamPlayerListHeader.TeamList();
-        PreparationTime.maxStamina();
+        PlayerUtil.setMaxStamina();
 
         //制限時間(毎回入力するのがダルいので定数化．クラス内定数にしないのは途中でConfig変えられたりする可能性を考えているため)
         var gameTime = ModConfig.SystemConfig.Times.playTime;
@@ -133,12 +95,7 @@ public class GameStart {
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(endsubMessage));
 
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 1.0f, 1.0f));
-
-            suspendGame();
-
-            TeamCreateAndDelete.deleteTeam();
-
-            return;
+            return true;
         }
 
         //残り時間が０以下のとき
@@ -149,7 +106,6 @@ public class GameStart {
             playerManager.getPlayerList().forEach(player -> player.sendMessage(winMessage, false));
             playerManager.getPlayerList().forEach(player -> player.sendMessage(message, false));
 
-            suspendGame();
             //タイトルバーにGAMEOVERと表示
             var endMessage = new TitleS2CPacket(new LiteralText("     ").setStyle(Style.EMPTY.withFormatting(Formatting.UNDERLINE))
                     .append(new LiteralText("GAMEOVER").setStyle(Style.EMPTY.withFormatting(Formatting.UNDERLINE)))
@@ -166,38 +122,30 @@ public class GameStart {
                     .map(playerManager::getPlayer)
                     .filter(Objects::nonNull)
                     .forEach(player -> player.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 200, false, false, false)));
-
-
-            suspendGame();
-
-            TeamCreateAndDelete.deleteTeam();
-
-
-            return;
+            return true;
         }
 
-        //ボスバーのテキストを更新
-        var timeText = Text.of("残り時間: " + remainsTime.toSeconds() + "秒");
-        ingametimeProgress.setName(timeText);
-        //ゲージ更新
-        ingametimeProgress.setPercent(MathHelper.clamp(remainsTime.toSeconds() / ((float) gameTime), 0, 1));
+        if (progressBar != null) {
+            //ボスバーのテキストを更新
+            var timeText = Text.of("残り時間: " + remainsTime.toSeconds() + "秒");
+            progressBar.setName(timeText);
+            //ゲージ更新
+            progressBar.setPercent(MathHelper.clamp(remainsTime.toSeconds() / ((float) gameTime), 0, 1));
+        }
 
         var isDisplayTime = Math.floor(currentTime.toMillis() / 100f / 5) % 2 == 0;
 
         if (currentTime.toSeconds() >= gameTime - 4 && isDisplayTime) {
             playerManager.getPlayerList().forEach(player -> player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_HAT, SoundCategory.PLAYERS, 1.0f, 1.0f));
         }
-
+        return false;
     }
 
-    //ゲーム終了処理
-    private static void suspendGame() {
-        GameState.setCurrentState(GameState.Phase.IDLE);
-        var playerManager = server.getPlayerManager();
-        updateJob.cancel(null);
-        ingametimeProgress.setVisible(false);
+    @Override
+    public void onFinally() {
+        TeamCreateAndDelete.deleteTeam();
         HideController.clearSelectors();
-        playerManager
+        server.getPlayerManager()
                 .getPlayerList()
                 .forEach(player -> {
                     player.changeGameMode(GameMode.SPECTATOR);
@@ -215,29 +163,14 @@ public class GameStart {
         TeamPlayerListHeader.EmptyList();
     }
 
-    //stopコマンドの処理
-    public static void stopGame() {
-        suspendGame();
-        GameState.setCurrentState(GameState.Phase.IDLE);
+    @Override
+    public void onSuspend() {
+
     }
 
-
-    private static void registerMessage() {
-        //ボスバーを表示
-        ingametimeProgress.setVisible(true);
-
-        //非同期スレッドの呼び出し
-        updateJob = CoroutineProvider.loop(Duration.ofMillis(500), () -> {
-            //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
-            //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
-            server.submitAndJoin(GameStart::update);
-        });
+    @Nullable
+    @Override
+    public GameStatus next() {
+        return null;
     }
-
-    static {
-        //最初は非表示にしておく
-        ingametimeProgress.setVisible(false);
-    }
-
-
 }

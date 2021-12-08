@@ -2,7 +2,7 @@ package com.github.yukulab.blockhideandseekmod.util;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
-import com.github.yukulab.blockhideandseekmod.game.GameState;
+import com.github.yukulab.blockhideandseekmod.game.GameController;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
@@ -152,7 +152,7 @@ public class HideController {
         var scoreboard = BlockHideAndSeekMod.SERVER.getScoreboard();
         var playerteam = scoreboard.getPlayerTeam(player.getEntityName());
 
-        if (GameState.getCurrentState() == GameState.Phase.IDLE) {
+        if (!GameController.isGameRunning()) {
             return false;
         }
 
