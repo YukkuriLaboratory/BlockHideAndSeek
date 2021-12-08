@@ -1,3 +1,8 @@
+import com.matthewprenger.cursegradle.CurseArtifact
+import com.matthewprenger.cursegradle.CurseProject
+import com.matthewprenger.cursegradle.CurseUploadTask
+import com.matthewprenger.cursegradle.Options
+import com.modrinth.minotaur.TaskModrinthUpload
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RemapSourcesJarTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -5,6 +10,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("fabric-loom") version "0.9-SNAPSHOT"
     kotlin("jvm") version "1.5.31"
+    id("com.matthewprenger.cursegradle") version "1.4.0"
+    id("com.modrinth.minotaur") version "1.2.1"
     `maven-publish`
 }
 
@@ -18,7 +25,12 @@ base {
     archivesName.set(archives_base_name)
 }
 
-val mod_version: String by project
+
+val env: MutableMap<String, String> = System.getenv()
+
+val minecraft_version: String by project
+
+val mod_version = (env["TAG_VERSION"] ?: "SNAPSHOT") + minecraft_version
 val maven_group: String by project
 
 version = mod_version
@@ -36,7 +48,6 @@ repositories {
     maven("https://uten2c.github.io/repo/")
 }
 
-val minecraft_version: String by project
 val yarn_mappings: String by project
 val loader_version: String by project
 val fabric_version: String by project
@@ -100,6 +111,12 @@ tasks.withType<Jar> {
     }
 }
 
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = "16"
+    }
+}
+
 val remapJar = tasks.getByName<RemapJarTask>("remapJar")
 val sourcesJar = tasks.getByName<Jar>("sourcesJar")
 val remapSourcesJar = tasks.getByName<RemapSourcesJarTask>("remapSourcesJar")
@@ -127,8 +144,48 @@ publishing {
     }
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = "16"
+val artifactPath = "${project.buildDir}/libs/${base.archivesName.get()}-${version}"
+
+val curseApiKey: String? = env["CURSEFORGE_API_KEY"]
+if (curseApiKey != null && project.hasProperty("release")) {
+    curseforge {
+        options(closureOf<Options> {
+            forgeGradleIntegration = false
+        })
+        apiKey = curseApiKey
+
+        val curseId = 306612
+        project(closureOf<CurseProject> {
+            id = "$curseId"
+            changelog = env["CAHNGE_LOG"] ?: "No description provided"
+            addGameVersion(minecraft_version)
+            addGameVersion("Fabric")
+
+            mainArtifact(
+                artifactPath,
+                closureOf<CurseArtifact> {
+                    displayName = "BlockHideAndSeek $mod_version"
+                }
+            )
+        })
+
+        project.afterEvaluate {
+            tasks.getByName<CurseUploadTask>("curseforge${curseId}") {
+                dependsOn(remapJar)
+            }
+        }
     }
+}
+
+tasks.create<TaskModrinthUpload>("publishModrinth") {
+    val modrinthApiToken = env["MODRINTH_TOKEN"]
+    onlyIf {
+        modrinthApiToken != null && project.hasProperty("release")
+    }
+    token = modrinthApiToken
+    projectId = "C3KKoSI2"
+    versionNumber = mod_version
+    uploadFile = file(artifactPath)
+    addGameVersion(minecraft_version)
+    addLoader("Fabric")
 }
