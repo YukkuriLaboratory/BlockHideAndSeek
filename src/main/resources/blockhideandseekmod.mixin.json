@@ -13,6 +13,7 @@
     "MixinPacketEncoder",
     "MixinPlayerEntity",
     "MixinPlayerManager",
+    "MixinRegistrySyncManager",
     "MixinServerPlayerEntity",
     "MixinServerPlayNetworkHandler",
     "MixinServerPropertiesHandler",
