@@ -3,6 +3,9 @@ package com.github.yukulab.blockhideandseekmod.game;
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
+import com.github.yukulab.blockhideandseekmod.util.CoroutineProvider;
+import kotlinx.coroutines.Job;
+import kotlinx.coroutines.JobKt;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -23,8 +26,6 @@ import net.minecraft.world.GameMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * ゲーム時間の計測＆表示//
@@ -40,7 +41,7 @@ public class GameStart {
      * 非同期処理の状態確認用
      * <p>
      */
-    private static volatile boolean isInGameTime = false;
+    private static Job updateJob = JobKt.Job(null);
 
     /**
      * 時間計測用
@@ -53,12 +54,6 @@ public class GameStart {
      * 準備時間用
      */
     private static final ServerBossBar ingametimeProgress = new ServerBossBar(Text.of(""), BossBar.Color.BLUE, BossBar.Style.NOTCHED_20);
-
-    /**
-     * 非同期処理用
-     * マインクラフトを動かしているスレッドとは別のスレッドで処理を行うことができます.
-     */
-    private static final ThreadPoolExecutor EXECUTOR = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 
     //毎回クラス名入力するのがダルいので定数として扱う
     private static final MinecraftServer server = BlockHideAndSeekMod.SERVER;
@@ -196,7 +191,7 @@ public class GameStart {
     private static void suspendGame() {
         GameState.setCurrentState(GameState.Phase.IDLE);
         var playerManager = server.getPlayerManager();
-        isInGameTime = false;
+        updateJob.cancel(null);
         ingametimeProgress.setVisible(false);
         HideController.clearSelectors();
         playerManager
@@ -224,39 +219,21 @@ public class GameStart {
     }
 
 
-    //Thread.sleepは多くの場合で冗長とされてwaringの対象となっているが，今回の場合は正しい使用方法と判断できるため警告を抑制している
-    @SuppressWarnings("BusyWait")
     private static void registerMessage() {
-        isInGameTime = true;
         //ボスバーを表示
         ingametimeProgress.setVisible(true);
 
         //非同期スレッドの呼び出し
-        EXECUTOR.execute(() -> {
-            //準備時間中常に実行
-            while (isInGameTime) {
-                //現在の時間の取得
-                var startTime = Instant.now();
-                //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
-                //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
-                server.submitAndJoin(GameStart::update);
-                try {
-                    //0.5 - (作業時間)秒間待つ
-                    var time = Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now()));
-                    if (!time.isNegative()) {
-                        Thread.sleep(time.toMillis());
-                    }
-                } catch (InterruptedException ignore) {
-                }
-            }
+        updateJob = CoroutineProvider.loop(Duration.ofMillis(500), () -> {
+            //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
+            //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
+            server.submitAndJoin(GameStart::update);
         });
     }
 
     static {
         //最初は非表示にしておく
         ingametimeProgress.setVisible(false);
-
-
     }
 
 

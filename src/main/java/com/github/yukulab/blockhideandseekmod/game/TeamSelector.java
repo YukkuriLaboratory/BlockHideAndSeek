@@ -3,9 +3,12 @@ package com.github.yukulab.blockhideandseekmod.game;
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
+import com.github.yukulab.blockhideandseekmod.util.CoroutineProvider;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import kotlinx.coroutines.Job;
+import kotlinx.coroutines.JobKt;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,8 +27,6 @@ import net.minecraft.world.GameMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -57,11 +58,8 @@ public class TeamSelector {
 
     /**
      * 非同期処理の状態確認用
-     * 投票を受け付けている間のみtrue
-     * <p>
-     * tips: volatileとは非同期処理向けの変数のmodifierで，変数の値をCPUでキャッシングしないように命令しメモリを常に参照することで最新の変数の状態を確認し続けます
      */
-    private static volatile boolean isVoteTime = false;
+    private static Job job = JobKt.Job(null);
 
     /**
      * 時間計測用
@@ -79,12 +77,6 @@ public class TeamSelector {
      * 残り時間表示用のボスバー
      */
     private static final ServerBossBar timeProgress = new ServerBossBar(Text.of(""), BossBar.Color.WHITE, BossBar.Style.NOTCHED_6);
-
-    /**
-     * 非同期処理用
-     * マインクラフトを動かしているスレッドとは別のスレッドで処理を行うことができます.
-     */
-    private static final ThreadPoolExecutor EXECUTOR = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 
     /**
      * {@link HideController}用のID
@@ -137,7 +129,7 @@ public class TeamSelector {
      */
     public static boolean addSeeker(ServerPlayerEntity player) {
         var uuid = player.getUuid();
-        if (isVoteTime) {
+        if (job.isActive()) {
             if (!seekers.contains(uuid)) {
                 hiders.remove(uuid);
                 seekers.add(uuid);
@@ -155,7 +147,7 @@ public class TeamSelector {
      */
     public static boolean addHider(ServerPlayerEntity player) {
         var uuid = player.getUuid();
-        if (isVoteTime) {
+        if (job.isActive()) {
             if (!hiders.contains(uuid)) {
                 seekers.remove(uuid);
                 hiders.add(uuid);
@@ -391,7 +383,7 @@ public class TeamSelector {
     private static void stop() {
         var playerManager = server.getPlayerManager();
 
-        isVoteTime = false;
+        job.cancel(null);
         //ボスバーを非表示にする
         timeProgress.setVisible(false);
         //アクションバーのメッセージを非表示にする
@@ -401,31 +393,14 @@ public class TeamSelector {
     /**
      * 投票を受け付けている間，陣営の人数表示を毎秒更新し続けます
      */
-    //Thread.sleepは多くの場合で冗長とされてwaringの対象となっているが，今回の場合は正しい使用方法と判断できるため警告を抑制している
-    @SuppressWarnings("BusyWait")
     private static void registerMessage() {
-        isVoteTime = true;
         //ボスバーを表示
         timeProgress.setVisible(true);
         //非同期スレッドの呼び出し
-        EXECUTOR.execute(() -> {
-            //投票時間中常に実行
-            while (isVoteTime) {
-                //現在の時間の取得
-                var startTime = Instant.now();
-                //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
-                //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
-                server.submitAndJoin(TeamSelector::update);
-                try {
-                    //0.5 - (作業時間)秒間待つ
-                    var time = Duration.ofMillis(500).minus(Duration.between(startTime, Instant.now()));
-                    if (!time.isNegative()) {
-                        Thread.sleep(time.toMillis());
-                    }
-
-                } catch (InterruptedException ignore) {
-                }
-            }
+        job = CoroutineProvider.loop(Duration.ofMillis(500), () -> {
+            //マインクラフトの実行スレッドを呼び出して,処理が終了するまで待機させる
+            //実はserverはそれ自体が実行スレッドとして扱われているため，このように非同期スレッドからマイクラの実行スレッドに処理を渡すことができる
+            server.submitAndJoin(TeamSelector::update);
         });
     }
 

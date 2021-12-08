@@ -11,8 +11,6 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class FlyController {
     private final static Map<UUID, Boolean> lastFlyState = Maps.newConcurrentMap();
@@ -21,8 +19,6 @@ public class FlyController {
     private final static Map<UUID, Duration> useCoolTime = Maps.newConcurrentMap();
 
     private static Instant lastChecked = Instant.now();
-
-    private final static ThreadPoolExecutor EXECUTOR = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 
     static {
         executeLoop();
@@ -122,21 +118,8 @@ public class FlyController {
         lastChecked = nowTime;
     }
 
-    @SuppressWarnings({"BusyWait", "InfiniteLoopStatement"})
     private static void executeLoop() {
-        EXECUTOR.execute(() -> {
-            while (true) {
-                var startTime = Instant.now();
-                update();
-                try {
-                    var sleepTime = Duration.ofMillis(50).minus(Duration.between(startTime, Instant.now()));
-                    sleepTime = sleepTime.isNegative() ? Duration.ZERO : sleepTime;
-                    Thread.sleep(sleepTime.toMillis());
-                } catch (InterruptedException e) {
-                    BlockHideAndSeekMod.LOGGER.throwing(e);
-                }
-            }
-        });
+        CoroutineProvider.loop(Duration.ofMillis(50), FlyController::update);
     }
 
     public static Duration getMaxTime() {
