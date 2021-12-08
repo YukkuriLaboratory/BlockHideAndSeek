@@ -1,6 +1,9 @@
 package com.github.yukulab.blockhideandseekmod.mixin;
 
+import com.github.yukulab.blockhideandseekmod.game.GameState;
 import com.github.yukulab.blockhideandseekmod.game.HideController;
+import com.github.yukulab.blockhideandseekmod.game.PreparationTime;
+import com.github.yukulab.blockhideandseekmod.game.TeamCreateandDelete;
 import com.github.yukulab.blockhideandseekmod.item.ServerSideItem;
 import com.github.yukulab.blockhideandseekmod.util.FlyController;
 import com.github.yukulab.blockhideandseekmod.util.UUIDHolder;
@@ -52,6 +55,10 @@ public class MixinServerPlayNetworkHandler {
             )
     )
     private void cancelHidingBlockUpdate(ServerPlayNetworkHandler instance, Packet<?> packet) {
+        if (GameState.getCurrentState() == GameState.Phase.PREPARE && player.getScoreboardTeam() == TeamCreateandDelete.getSeekers()) {
+            PreparationTime.lockPlayerMovement(player);
+        }
+
         var blockPacket = ((BlockUpdateS2CPacket) packet);
         var pos = blockPacket.getPos();
         var fakeBlock = HideController.getHidingBlock(pos);
