@@ -161,7 +161,7 @@ if (curseApiKey != null) {
             relations(closureOf<CurseRelation> {
                 requiredDependency("fabric-api")
                 requiredDependency("fabric-language-kotlin")
-                requiredDependency("cloth-config")
+                requiredDependency("completeconfig")
             })
 
             mainArtifact(
