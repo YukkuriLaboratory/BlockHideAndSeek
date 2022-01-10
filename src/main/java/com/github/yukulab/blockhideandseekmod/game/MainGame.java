@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -55,19 +56,23 @@ public class MainGame implements GameStatus {
     public MainGame() {
         ingameTime = Instant.now();
 
-        server.getPlayerManager().getPlayerList().forEach(player -> player.getInventory().combinedInventory
-                        .forEach(itemStack -> {
-                            for(ItemStack stack : itemStack) {
-                                if (stack.isEmpty()) continue;
-                                if(BhasItems.isModItem(stack.getItem())) {
-                                    player.getItemCooldownManager().set(stack.getItem(), 0);
-                                    if (stack.getItem() instanceof ServerSideItem serverItem) {
-                                        player.networkHandler.sendPacket(new CooldownUpdateS2CPacket(serverItem.getVisualItem(), 0));
+        server.getPlayerManager()
+                .getPlayerList()
+                .forEach(player ->
+                        player.getInventory()
+                                .combinedInventory
+                                .forEach(itemStack -> {
+                                    for (ItemStack stack : itemStack) {
+                                        if (stack.isEmpty()) continue;
+                                        if (BhasItems.isModItem(stack.getItem())) {
+                                            player.getItemCooldownManager().remove(stack.getItem());
+                                            if (stack.getItem() instanceof ServerSideItem serverItem) {
+                                                player.networkHandler.sendPacket(new CooldownUpdateS2CPacket(serverItem.getVisualItem(), 0));
+                                            }
+                                        }
                                     }
-                                }
-                            }
-                        })
-        );
+                                })
+                );
     }
 
     @NotNull
