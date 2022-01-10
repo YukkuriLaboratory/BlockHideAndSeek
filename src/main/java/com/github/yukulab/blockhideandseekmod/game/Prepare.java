@@ -2,7 +2,6 @@ package com.github.yukulab.blockhideandseekmod.game;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
-import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.util.*;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Blocks;
@@ -74,6 +73,7 @@ public class Prepare implements GameStatus {
         List<ServerPlayerEntity> seekersList = seekers.getPlayerList()
                 .stream()
                 .map(playerManager::getPlayer)
+                .filter(Objects::nonNull)
                 .toList();
         seekersList.forEach(player -> player.sendMessage(startSeekerMessage, false));
 
@@ -83,6 +83,7 @@ public class Prepare implements GameStatus {
         List<ServerPlayerEntity> hidersList = hiders.getPlayerList()
                 .stream()
                 .map(playerManager::getPlayer)
+                .filter(Objects::nonNull)
                 .toList();
         hidersList.forEach(player -> player.sendMessage(startHiderMessage, false));
     }
@@ -190,11 +191,6 @@ public class Prepare implements GameStatus {
                     .filter(Objects::nonNull)
                     .forEach(this::unlockPlayerMovement);
         }
-        server.getPlayerManager().getPlayerList()
-                .forEach(player -> {
-                    player.changeGameMode(GameMode.SPECTATOR);
-                    player.getInventory().remove(itemStack -> BhasItems.isModItem(itemStack.getItem()), 64, player.playerScreenHandler.getCraftingInput());
-                });
     }
 
     @Nullable

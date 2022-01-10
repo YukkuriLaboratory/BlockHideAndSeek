@@ -161,6 +161,8 @@ public class HideController {
         }
 
         if (player.hasStatusEffect(StatusEffects.INVISIBILITY)) {
+            var redText = new LiteralText("").setStyle(Style.EMPTY.withColor(Formatting.RED));
+            HudDisplay.setActionBarText(uuid, HIDE_PROGRESS, redText.append(Text.of("透明化中は擬態できません")), 30L);
             return false;
         }
 

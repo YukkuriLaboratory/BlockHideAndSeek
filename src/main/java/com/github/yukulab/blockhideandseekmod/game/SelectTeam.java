@@ -285,6 +285,9 @@ public class SelectTeam implements GameStatus {
                 .filter(Objects::nonNull)
                 .toList();
 
+        //アイテムの削除
+        server.getPlayerManager().getPlayerList()
+                .forEach(player -> player.getInventory().clear());
         // アイテムの付与
         playerSeekers.forEach(
                 player -> {
