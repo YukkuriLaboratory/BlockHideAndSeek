@@ -13,6 +13,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: 'Add JDK Settings'
+        run: |
+          mkdir ./.idea
+          cat << EOF > ./.idea/misc.xml
+          <?xml version="1.0" encoding="UTF-8"?>
+          <project version="4">
+          <component name="ExternalStorageConfigurationManager" enabled="true" />
+          <component name="ProjectRootManager" version="2" languageLevel="JDK_16" project-jdk-name="openjdk-17" project-jdk-type="JavaSDK" />
+          <output url="file://$PROJECT_DIR$/classes" />
+          </component>
+          </project>
+          EOF
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v4.2.2
         with:
