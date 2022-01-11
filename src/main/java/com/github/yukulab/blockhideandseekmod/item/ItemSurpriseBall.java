@@ -1,10 +1,13 @@
 package com.github.yukulab.blockhideandseekmod.item;
 
+import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.projectileentity.SurpriseBallEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -48,6 +51,14 @@ public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
 
         user.incrementStat(Stats.USED.getOrCreateStat(this));
 
+        var coolTime = getCoolTime();
+        user.getItemCooldownManager().set(this, coolTime);
+        ((ServerPlayerEntity) user).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
+
         return TypedActionResult.success(stack);
+    }
+
+    private int getCoolTime() {
+        return ModConfig.ItemConfig.ItemSurpriseBall.coolTime;
     }
 }

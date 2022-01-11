@@ -116,6 +116,17 @@ public class ModConfig extends Config implements ConfigContainer {
             @ConfigEntry(comment = "隠れているプレイヤーに対してサブタイトルに警告を表示するかどうか(false:アクションバー)")
             public static boolean notifyOnTitle = true;
         }
+
+        /**
+         * ミミックが鬼に投げるお邪魔アイテム
+         */
+        @Transitive
+        @ConfigEntries
+        public static class ItemSurpriseBall implements ConfigGroup {
+            @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
+            public static int coolTime = 80;
+        }
+
     }
 
 }
