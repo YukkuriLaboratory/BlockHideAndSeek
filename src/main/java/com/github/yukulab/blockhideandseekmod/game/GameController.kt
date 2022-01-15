@@ -7,6 +7,8 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import net.minecraft.entity.boss.ServerBossBar
+import net.minecraft.entity.effect.StatusEffects
+import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.world.GameMode
 import java.time.Duration
@@ -82,6 +84,8 @@ object GameController {
         progressBar = null
         current = null
 
+        val spawnPackets = arrayListOf<PlayerSpawnS2CPacket>()
+
         server.playerManager
             .playerList
             .forEach {
@@ -95,6 +99,22 @@ object GameController {
                         64,
                         it.playerScreenHandler.craftingInput
                     )
+                //透明化の解除
+                if(it.hasStatusEffect(StatusEffects.INVISIBILITY)){
+                    spawnPackets.add(PlayerSpawnS2CPacket(it))
+                    it.clearStatusEffects()
+                }
+            }
+        server.playerManager
+            .playerList
+            .forEach {
+                spawnPackets
+                    .filter{playerSpawnS2CPacket ->
+                        playerSpawnS2CPacket.playerUuid != it.gameProfile.id
+                    }
+                    .forEach{playerSpawnS2CPacket ->
+                        it.networkHandler.sendPacket(playerSpawnS2CPacket)
+                    }
             }
         TeamCreateAndDelete.deleteTeam()
         TeamPlayerListHeader.EmptyList()

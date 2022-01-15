@@ -27,10 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.include.com.google.common.collect.Maps;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 近くの隠れているBlockを指し示すアイテム
@@ -101,40 +98,64 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
                 .filter(p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()))
                 .filter(p -> p.distanceTo(player) < isSneakingScanLength(player))
                 .toList();
+
         Text message;
-        if (!nearestPlayer.isEmpty()) {
-            message = new LiteralText(nearestPlayer.size() + "体のミミックを検出しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
-        } else {
-            message = new LiteralText("範囲内にミミックが存在しません").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+        if(ItemJammer.isJammerActive()){
+            message = new  LiteralText("スキャンをジャミングされました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+            player.playSound(SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.PLAYERS, 1.0f, 2.0f);
         }
+        else {
+            if (!nearestPlayer.isEmpty()) {
+                message = new LiteralText(nearestPlayer.size() + "体のミミックを検出しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+            } else {
+                message = new LiteralText("範囲内にミミックが存在しません").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+            }
+        }
+
         HudDisplay.setActionBarText(player.getUuid(), SCAN_RESULT, message, 30L);
 
-        var notify = new LiteralText("スキャナーを検知しました").setStyle(Style.EMPTY.withColor(Formatting.RED));
-        nearestPlayer.forEach(p -> {
-            HudDisplay.setActionBarText(p.getUuid(), SCAN_NOTIFY, notify, 30L);
-            p.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 70, 2);
-        });
-
-        var nearplayer = player.world.getClosestPlayer(player.getX(), player.getY(), player.getZ(), isSneakingScanLength(player), p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()));
-
-        var nbt = stack.getOrCreateNbt();
-
-        if (nearplayer != null) {
-            nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(nearplayer.getBlockPos()));
-            var var10000 = World.CODEC.encodeStart(NbtOps.INSTANCE, player.world.getRegistryKey());
-            Logger var10001 = LOGGER;
-            Objects.requireNonNull(var10001);
-            var10000.resultOrPartial(var10001::error).ifPresent((nbtElement) -> nbt.put(LODESTONE_DIMENSION_KEY, nbtElement));
-            nbt.putBoolean(LODESTONE_TRACKED_KEY, true);
+        if(ItemJammer.isJammerActive()) {
+            var notify = new LiteralText("スキャン妨害に成功しました").setStyle(Style.EMPTY.withColor(Formatting.RED));
+            nearestPlayer.forEach(p -> {
+                HudDisplay.setActionBarText(p.getUuid(), SCAN_NOTIFY, notify, 30L);
+                p.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 70, 4);
+            });
         }
-        if (!player.isSneaking()) {
-            player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 0.5f);
-        } else {
-            player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 3.0f);
+        else {
+            var notify = new LiteralText("スキャナーを検知しました").setStyle(Style.EMPTY.withColor(Formatting.RED));
+            nearestPlayer.forEach(p -> {
+                HudDisplay.setActionBarText(p.getUuid(), SCAN_NOTIFY, notify, 30L);
+                p.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 70, 2);
+            });
         }
 
-        var tickId = getTickId(nbt);
-        currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemScanner.duration);
+        if(!ItemJammer.isJammerActive()) {
+
+            var nearplayer = player.world.getClosestPlayer(player.getX(), player.getY(), player.getZ(), isSneakingScanLength(player), p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()));
+
+            var nbt = stack.getOrCreateNbt();
+
+            if (nearplayer != null) {
+                Random rand = new Random();
+                int numX = rand.nextInt(10) - 5;
+                int numZ = rand.nextInt(10) - 5;
+                nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(nearplayer.getBlockPos().add(numX,0,numZ)));
+                var var10000 = World.CODEC.encodeStart(NbtOps.INSTANCE, player.world.getRegistryKey());
+                Logger var10001 = LOGGER;
+                Objects.requireNonNull(var10001);
+                var10000.resultOrPartial(var10001::error).ifPresent((nbtElement) -> nbt.put(LODESTONE_DIMENSION_KEY, nbtElement));
+                nbt.putBoolean(LODESTONE_TRACKED_KEY, true);
+            }
+            if (!player.isSneaking()) {
+                player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 0.5f);
+            } else {
+                player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 3.0f);
+            }
+
+
+            var tickId = getTickId(nbt);
+            currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemScanner.duration);
+        }
 
         var coolTime = getCoolTime() + getDuration();
         player.getItemCooldownManager().set(this, coolTime);
@@ -169,6 +190,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     private static int getDuration() {
         return ModConfig.ItemConfig.ItemScanner.duration;
     }
+
 
     private static double isSneakingScanLength(PlayerEntity player) {
         if (!player.isSneaking()) {
