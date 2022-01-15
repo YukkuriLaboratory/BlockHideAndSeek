@@ -20,7 +20,7 @@ public class BhasItems {
 
     // ミミック用
     public static ItemBlockSelector SELECTOR = register("selector", new ItemBlockSelector());
-    public static ItemBlink BLINK = register("brink", new ItemBlink());
+    public static ItemBlink BLINK = register("blink", new ItemBlink());
     public static ItemJammer JAMMER = register("jammer", new ItemJammer());
     public static ItemSurpriseBall SURPRISEBALL = register("surpriseball", new ItemSurpriseBall());
 

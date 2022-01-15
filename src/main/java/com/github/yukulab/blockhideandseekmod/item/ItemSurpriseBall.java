@@ -8,6 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -26,13 +28,13 @@ public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
 
     @Override
     public Text getName() {
-        return new LiteralText("サプライズ玉");
+        return new LiteralText("サプライズ玉(ボール)");
     }
 
     @Override
     public List<Text> getLore() {
         return List.of(
-                new LiteralText("敵に投げて驚かせよう！")
+                new LiteralText("敵に投げて驚かせよう！(投げると擬態が解除されます)")
         );
     }
 
@@ -44,9 +46,10 @@ public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         var stack = user.getStackInHand(hand);
+        user.playSound(SoundEvents.ENTITY_ENDER_PEARL_THROW, SoundCategory.PLAYERS,1.0f,1.0f);
         SurpriseBallEntity ball = new SurpriseBallEntity(world,user);
         ball.setItem(stack);
-        ball.setProperties(user, user.prevPitch, user.prevYaw, 0.0F, 1.5F, 0F);
+        ball.setProperties(user, user.prevPitch, user.prevYaw, 0F, 3F, 0F);
         world.spawnEntity(ball);
 
         user.incrementStat(Stats.USED.getOrCreateStat(this));

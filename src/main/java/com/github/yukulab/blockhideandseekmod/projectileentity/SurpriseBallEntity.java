@@ -38,7 +38,7 @@ public class SurpriseBallEntity extends SnowballEntity {
 
         if (entity instanceof ServerPlayerEntity player) {
             ItemStack itemStack = new ItemStack(BhasItems.SURPRISEPUMPKIN);
-            itemStack.addEnchantment(Enchantments.BINDING_CURSE,2);
+            itemStack.addEnchantment(Enchantments.BINDING_CURSE,5);
             player.getInventory().insertStack(39,itemStack);
             player.playSound(SoundEvents.BLOCK_SLIME_BLOCK_BREAK, 2.0F, 1.0F);
         }

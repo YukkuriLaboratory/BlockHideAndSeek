@@ -16,6 +16,8 @@ import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -69,6 +71,7 @@ public class ItemBlink extends LoreItem implements ServerSideItem {
             currentTime.put(tickId, tick);
             if (tick == 0) {
                 player.removeStatusEffect(StatusEffects.INVISIBILITY);
+                player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS,1.0f,1.0f);
                 var spawnPacket = new PlayerSpawnS2CPacket(player);
                 BlockHideAndSeekMod.SERVER
                         .getPlayerManager()
@@ -91,6 +94,7 @@ public class ItemBlink extends LoreItem implements ServerSideItem {
             currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemBlink.duration);
             player.getItemCooldownManager().set(this, coolTime);
             player.setStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, Integer.MAX_VALUE, 1), null);
+            player.playSound(SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION, SoundCategory.PLAYERS,1.0f,1.0f);
             var destroyPacket = new EntitiesDestroyS2CPacket(player.getId());
             BlockHideAndSeekMod.SERVER
                     .getPlayerManager()
@@ -98,6 +102,7 @@ public class ItemBlink extends LoreItem implements ServerSideItem {
                     .stream()
                     .filter(p -> p.getUuid() != player.getUuid())
                     .forEach(p -> p.networkHandler.sendPacket(destroyPacket));
+
 
             (player).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
         } else {

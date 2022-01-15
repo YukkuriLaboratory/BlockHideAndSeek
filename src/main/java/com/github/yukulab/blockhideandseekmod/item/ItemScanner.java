@@ -27,10 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.include.com.google.common.collect.Maps;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 近くの隠れているBlockを指し示すアイテム
@@ -139,7 +136,10 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
             var nbt = stack.getOrCreateNbt();
 
             if (nearplayer != null) {
-                nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(nearplayer.getBlockPos()));
+                Random rand = new Random();
+                int numX = rand.nextInt(10) - 5;
+                int numZ = rand.nextInt(10) - 5;
+                nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(nearplayer.getBlockPos().add(numX,0,numZ)));
                 var var10000 = World.CODEC.encodeStart(NbtOps.INSTANCE, player.world.getRegistryKey());
                 Logger var10001 = LOGGER;
                 Objects.requireNonNull(var10001);
