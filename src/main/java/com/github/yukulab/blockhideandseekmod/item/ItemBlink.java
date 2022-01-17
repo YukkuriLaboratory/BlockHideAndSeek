@@ -4,6 +4,7 @@ import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
+import com.github.yukulab.blockhideandseekmod.util.extention.ServerPlayerEntityKt;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -13,8 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -72,13 +71,13 @@ public class ItemBlink extends LoreItem implements ServerSideItem {
             if (tick == 0) {
                 player.removeStatusEffect(StatusEffects.INVISIBILITY);
                 player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS,1.0f,1.0f);
-                var spawnPacket = new PlayerSpawnS2CPacket(player);
+                var playerTracker = ServerPlayerEntityKt.getPlayerTracker(player);
                 BlockHideAndSeekMod.SERVER
                         .getPlayerManager()
                         .getPlayerList()
                         .stream()
                         .filter(p -> p.getUuid() != player.getUuid())
-                        .forEach(p -> p.networkHandler.sendPacket(spawnPacket));
+                        .forEach(playerTracker::updateTrackedStatus);
             }
         }
     }
@@ -95,13 +94,13 @@ public class ItemBlink extends LoreItem implements ServerSideItem {
             player.getItemCooldownManager().set(this, coolTime);
             player.setStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, Integer.MAX_VALUE, 1), null);
             player.playSound(SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION, SoundCategory.PLAYERS,1.0f,1.0f);
-            var destroyPacket = new EntitiesDestroyS2CPacket(player.getId());
+            var playerTracker = ServerPlayerEntityKt.getPlayerTracker(player);
             BlockHideAndSeekMod.SERVER
                     .getPlayerManager()
                     .getPlayerList()
                     .stream()
                     .filter(p -> p.getUuid() != player.getUuid())
-                    .forEach(p -> p.networkHandler.sendPacket(destroyPacket));
+                    .forEach(playerTracker::stopTracking);
 
 
             (player).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
