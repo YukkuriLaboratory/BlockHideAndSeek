@@ -3,6 +3,7 @@ package com.github.yukulab.blockhideandseekmod.util;
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.game.GameController;
+import com.github.yukulab.blockhideandseekmod.util.extention.ServerPlayerEntityKt;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
@@ -121,22 +122,17 @@ public class HideController {
                 player.networkHandler.sendPacket(destroyPacket);
                 player.removeStatusEffect(StatusEffects.INVISIBILITY);
                 player.setInvulnerable(false);
-                var playerDataPacket = new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true);
 
                 var blockPacket = new BlockUpdateS2CPacket(player.getBlockPos(), Blocks.AIR.getDefaultState());
-                var showPlayerPacket = new PlayerSpawnS2CPacket(player);
 
+                var playerTracker = ServerPlayerEntityKt.getPlayerTracker(player);
                 BlockHideAndSeekMod.SERVER
                         .getPlayerManager()
                         .getPlayerList()
                         .stream()
                         .peek(p -> p.networkHandler.sendPacket(blockPacket))
                         .filter(p -> p.getUuid() != uuid)
-                        .map(p -> p.networkHandler)
-                        .forEach(handler -> {
-                            handler.sendPacket(showPlayerPacket);
-                            handler.sendPacket(playerDataPacket);
-                        });
+                        .forEach(playerTracker::updateTrackedStatus);
 
                 BlockHighlighting.removeHighlight(player.getBlockPos());
             }
@@ -161,6 +157,8 @@ public class HideController {
         }
 
         if (player.hasStatusEffect(StatusEffects.INVISIBILITY)) {
+            var redText = new LiteralText("").setStyle(Style.EMPTY.withColor(Formatting.RED));
+            HudDisplay.setActionBarText(uuid, HIDE_PROGRESS, redText.append(Text.of("透明化中は擬態できません")), 30L);
             return false;
         }
 
@@ -217,13 +215,12 @@ public class HideController {
                 var block = selectingBlocks.getOrDefault(uuid, defaultBlock);
                 hidingBlocks.put(playerPos, block);
                 var blockPacket = new BlockUpdateS2CPacket(playerPos, block);
-                var hidePlayerPacket = new EntitiesDestroyS2CPacket(player.getId());
+                var playerTracker = ServerPlayerEntityKt.getPlayerTracker(player);
                 playerManager.getPlayerList()
                         .stream()
                         .peek(p -> p.networkHandler.sendPacket(blockPacket))
                         .filter(p -> p.getUuid() != uuid)
-                        .map(p -> p.networkHandler)
-                        .forEach(handler -> handler.sendPacket(hidePlayerPacket));
+                        .forEach(playerTracker::stopTracking);
 
                 var text = new LiteralText("擬態中:左クリックで解除");
                 HudDisplay.setActionBarText(player.getUuid(), HIDING_MESSAGE, text);

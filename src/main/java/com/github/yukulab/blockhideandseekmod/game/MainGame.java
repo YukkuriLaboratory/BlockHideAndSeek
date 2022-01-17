@@ -3,6 +3,7 @@ package com.github.yukulab.blockhideandseekmod.game;
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
+import com.github.yukulab.blockhideandseekmod.item.ServerSideItem;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.PlayerUtil;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
@@ -11,6 +12,8 @@ import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -28,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -51,6 +55,24 @@ public class MainGame implements GameStatus {
 
     public MainGame() {
         ingameTime = Instant.now();
+
+        server.getPlayerManager()
+                .getPlayerList()
+                .forEach(player ->
+                        player.getInventory()
+                                .combinedInventory
+                                .forEach(itemStack -> {
+                                    for (ItemStack stack : itemStack) {
+                                        if (stack.isEmpty()) continue;
+                                        if (BhasItems.isModItem(stack.getItem())) {
+                                            player.getItemCooldownManager().remove(stack.getItem());
+                                            if (stack.getItem() instanceof ServerSideItem serverItem) {
+                                                player.networkHandler.sendPacket(new CooldownUpdateS2CPacket(serverItem.getVisualItem(), 0));
+                                            }
+                                        }
+                                    }
+                                })
+                );
     }
 
     @NotNull
