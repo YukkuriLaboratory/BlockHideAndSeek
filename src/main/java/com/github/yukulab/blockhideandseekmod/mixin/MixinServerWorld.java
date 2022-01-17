@@ -8,10 +8,9 @@ import com.github.yukulab.blockhideandseekmod.util.BlockHighlighting;
 import com.github.yukulab.blockhideandseekmod.util.FlyController;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
+import com.github.yukulab.blockhideandseekmod.util.extention.ServerPlayerEntityKt;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -44,14 +43,12 @@ public abstract class MixinServerWorld {
             var packet = new BlockUpdateS2CPacket(entry.getKey(), entry.getValue());
             player.networkHandler.sendPacket(packet);
         });
-        var hidingPlayers = HideController.getHidingPlayers()
+        HideController.getHidingPlayers()
                 .stream()
                 .map(uuid -> server.getPlayerManager().getPlayer(uuid))
                 .filter(Objects::nonNull)
-                .map(ServerPlayerEntity::getId)
-                .toList();
-        var packet = new EntitiesDestroyS2CPacket(new IntArrayList(hidingPlayers));
-        player.networkHandler.sendPacket(packet);
+                .map(ServerPlayerEntityKt::getPlayerTracker)
+                .forEach(tracker -> tracker.stopTracking(player));
     }
 
     @Inject(

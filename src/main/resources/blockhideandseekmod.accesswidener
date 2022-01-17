@@ -6,3 +6,9 @@ mutable       field    net/minecraft/item/ItemStack    item    Lnet/minecraft/it
 accessible    field    net/minecraft/entity/Entity    passengerList    Lcom/google/common/collect/ImmutableList;
 
 accessible    field    net/minecraft/entity/player/PlayerInventory    combinedInventory    Ljava/util/List;
+
+accessible    field    net/minecraft/server/world/ThreadedAnvilChunkStorage    entityTrackers    Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
+
+accessible    field    net/minecraft/server/world/ThreadedAnvilChunkStorage$EntityTracker   entity  Lnet/minecraft/entity/Entity;
+
+accessible    class    net/minecraft/server/world/ThreadedAnvilChunkStorage$EntityTracker

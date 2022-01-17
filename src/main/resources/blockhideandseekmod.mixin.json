@@ -6,6 +6,7 @@
   "mixins": [
     "MixinClientConnection",
     "MixinEntity",
+    "MixinEntityTracker",
     "MixinEntityTrackerUpdateS2CPacket",
     "MixinMinecraftDedicatedServer",
     "MixinPacket",
@@ -17,7 +18,8 @@
     "MixinServerPlayerEntity",
     "MixinServerPlayNetworkHandler",
     "MixinServerPropertiesHandler",
-    "MixinServerWorld"
+    "MixinServerWorld",
+    "MixinThreadedAnvilChunkStorage"
   ],
   "injectors": {
     "defaultRequire": 1
