@@ -80,6 +80,7 @@ public class ItemBlockSelector extends LoreItem implements ServerSideItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        HideController.cancelHiding(((ServerPlayerEntity) user));
         resetBlock(user);
         return TypedActionResult.pass(user.getStackInHand(hand));
     }
