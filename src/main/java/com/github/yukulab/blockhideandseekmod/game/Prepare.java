@@ -9,6 +9,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
@@ -56,6 +58,10 @@ public class Prepare implements GameStatus {
     private static final MinecraftServer server = BlockHideAndSeekMod.SERVER;
 
     public Prepare() {
+        BlockHideAndSeekMod.SERVER
+                .getPlayerManager()
+                .getPlayerList()
+                .forEach(p -> p.addStatusEffect(new StatusEffectInstance(StatusEffects.INSTANT_HEALTH,10,99,false,false,false)));
         startedTime = Instant.now();
         var seekersTeam = TeamCreateAndDelete.getSeekers();
         if (seekersTeam != null) {

@@ -62,7 +62,6 @@ public abstract class MixinServerPlayerEntity {
                     .map(PlayerSpawnS2CPacket::new)
                     .forEach(networkHandler::sendPacket);
 
-            HideController.showHidingBlockHighlight(player);
         } else if (team == TeamCreateAndDelete.getSeekers()) {
             player.changeGameMode(GameMode.ADVENTURE);
             player.interactionManager.changeGameMode(GameMode.SURVIVAL);
