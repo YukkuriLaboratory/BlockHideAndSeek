@@ -4,6 +4,8 @@ import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -76,6 +78,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         if (entity instanceof ServerPlayerEntity) {
+            ((ServerPlayerEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION,9999999,9999,false,false,false));
             var nbt = stack.getOrCreateNbt();
             var tickId = getTickId(nbt);
             var tick = currentTime.getOrDefault(tickId, 0L) - 1;

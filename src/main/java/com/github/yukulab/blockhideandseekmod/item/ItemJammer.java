@@ -92,7 +92,7 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
         var message = new LiteralText("ジャミングを使用しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
         var otherMessage = new LiteralText("誰かがジャミングを使用しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
 
-        user.playSound(SoundEvents.ITEM_SPYGLASS_USE, SoundCategory.PLAYERS, 10f, 0.8f);
+        user.playSound(SoundEvents.BLOCK_DISPENSER_DISPENSE, SoundCategory.PLAYERS, 10f, 1.2f);
         HudDisplay.setActionBarText(user.getUuid(), JAMMING_RESULT, message, 30L);
 
         var hiders = BlockHideAndSeekMod.SERVER.getPlayerManager().getPlayerList()
