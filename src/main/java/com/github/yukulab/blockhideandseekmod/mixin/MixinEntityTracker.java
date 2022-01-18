@@ -1,5 +1,6 @@
 package com.github.yukulab.blockhideandseekmod.mixin;
 
+import com.github.yukulab.blockhideandseekmod.entity.ModifiedTracker;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -26,6 +27,9 @@ public class MixinEntityTracker {
             cancellable = true
     )
     private void preventHidingPlayerDataSending(ServerPlayerEntity player, CallbackInfo ci) {
+        if (entity instanceof ModifiedTracker modifiedTracker && !modifiedTracker.canTrack(player)) {
+            ci.cancel();
+        }
         if (entity instanceof ServerPlayerEntity mimic && mimic.hasStatusEffect(StatusEffects.INVISIBILITY)) {
             ci.cancel();
         }

@@ -1,22 +1,16 @@
 package com.github.yukulab.blockhideandseekmod.util;
 
-import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
+import com.github.yukulab.blockhideandseekmod.entity.BlockHighlightEntity;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -40,25 +34,12 @@ public class BlockHighlighting {
             return;
         }
 
-        showingPlayers.putAll(pos, players.stream().map(Entity::getUuid).toList());
-        var entity = EntityType.SHULKER.create(players.get(0).world);
-        if (entity == null) {
-            BlockHideAndSeekMod.LOGGER.error("cannot get shulker entity!!");
-            return;
-        }
+        var world = players.get(0).world;
+        var entity = new BlockHighlightEntity(world);
         entityEditConsumer.accept(entity);
         entity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
-        entity.setInvisible(true);
-        entity.setGlowing(true);
+        world.spawnEntity(entity);
         fakeEntities.put(pos, entity);
-
-        var spawnPacket = new EntitySpawnS2CPacket(entity);
-        var dataPacket = new EntityTrackerUpdateS2CPacket(entity.getId(), entity.getDataTracker(), false);
-        players.forEach(player -> {
-            var networkHandler = player.networkHandler;
-            networkHandler.sendPacket(spawnPacket);
-            networkHandler.sendPacket(dataPacket);
-        });
     }
 
     /**
@@ -79,37 +60,9 @@ public class BlockHighlighting {
     public static void removeHighlight(BlockPos pos) {
         var entity = fakeEntities.remove(pos);
         if (entity == null) {
-            showingPlayers.removeAll(pos);
             return;
         }
-        var deletePacket = new EntitiesDestroyS2CPacket(entity.getId());
-        showingPlayers.removeAll(pos)
-                .stream()
-                .map(BlockHideAndSeekMod.SERVER.getPlayerManager()::getPlayer)
-                .filter(Objects::nonNull)
-                .forEach(player -> player.networkHandler.sendPacket(deletePacket));
-    }
-
-    /**
-     * 既存のハイライトにプレイヤーを追加します
-     */
-    public static void addPlayer(BlockPos pos, ServerPlayerEntity player) {
-        if (showingPlayers.containsKey(pos)) {
-            showingPlayers.put(pos, player.getUuid());
-            resendHighlightData(player);
-        }
-    }
-
-    public static void resendHighlightData(ServerPlayerEntity player) {
-        showingPlayers.entries()
-                .stream()
-                .filter(entry -> entry.getValue() == player.getUuid()).map(Map.Entry::getKey).map(fakeEntities::get).forEach(entity -> {
-                    var spawnPacket = new EntitySpawnS2CPacket(entity);
-                    var dataPacket = new EntityTrackerUpdateS2CPacket(entity.getId(), entity.getDataTracker(), true);
-                    var networkHandler = player.networkHandler;
-                    networkHandler.sendPacket(spawnPacket);
-                    networkHandler.sendPacket(dataPacket);
-                });
+        entity.discard();
     }
 
     static {

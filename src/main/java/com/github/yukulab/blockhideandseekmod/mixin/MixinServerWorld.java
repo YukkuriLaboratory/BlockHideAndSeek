@@ -58,7 +58,6 @@ public abstract class MixinServerWorld {
     private void onPlayerJoinWorld(ServerPlayerEntity player, CallbackInfo ci) {
         GameController.addBossBarTarget(player);
         FlyController.registerPlayer(player);
-        BlockHighlighting.resendHighlightData(player);
 
         if (!GameController.isGameRunning()) {
             player.getInventory().remove(
@@ -73,10 +72,6 @@ public abstract class MixinServerWorld {
         var current = GameController.getCurrent();
         if (current instanceof Prepare prepare && currentTeam == seekersTeam) {
             prepare.lockPlayerMovement(player);
-        }
-
-        if ((current instanceof Prepare || current instanceof MainGame) && currentTeam != seekersTeam) {
-            HideController.showHidingBlockHighlight(player);
         }
 
         if ((current instanceof Prepare || current instanceof MainGame) && currentTeam == null) {
