@@ -25,7 +25,9 @@ public class MixinThreadedAnvilChunkStorage {
         var entity = instance.entity;
         if (entity instanceof ServerPlayerEntity mimic && HideController.isHiding(mimic)) {
             var hidingPos = HideController.getHidingPlayerMaps().get(mimic.getUuid());
-            player.networkHandler.sendPacket(new BlockUpdateS2CPacket(hidingPos, HideController.getHidingBlock(hidingPos)));
+            if (hidingPos != null) {
+                player.networkHandler.sendPacket(new BlockUpdateS2CPacket(hidingPos, HideController.getHidingBlock(hidingPos)));
+            }
         }
         return entity;
     }
