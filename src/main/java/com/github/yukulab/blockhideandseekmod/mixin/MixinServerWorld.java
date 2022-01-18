@@ -3,8 +3,8 @@ package com.github.yukulab.blockhideandseekmod.mixin;
 import com.github.yukulab.blockhideandseekmod.game.GameController;
 import com.github.yukulab.blockhideandseekmod.game.MainGame;
 import com.github.yukulab.blockhideandseekmod.game.Prepare;
+import com.github.yukulab.blockhideandseekmod.game.SelectTeam;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
-import com.github.yukulab.blockhideandseekmod.util.BlockHighlighting;
 import com.github.yukulab.blockhideandseekmod.util.FlyController;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
@@ -65,6 +65,8 @@ public abstract class MixinServerWorld {
                     64,
                     player.getInventory()
             );
+        } else if (GameController.getCurrent() instanceof SelectTeam) {
+            player.sendMessage(SelectTeam.selectMessage, false);
         }
 
         var currentTeam = player.getScoreboardTeam();
