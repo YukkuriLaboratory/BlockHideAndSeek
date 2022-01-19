@@ -52,7 +52,7 @@ public class Prepare implements GameStatus {
 
     private final Map<UUID, Entity> lockerEntities = Maps.newHashMap();
 
-    private final String BLIND_MESSAGE = "blindMessage";
+    private static final String BLIND_MESSAGE = "blindMessage";
 
     //毎回クラス名入力するのがダルいので定数として扱う
     private static final MinecraftServer server = BlockHideAndSeekMod.SERVER;
