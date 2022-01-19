@@ -1,0 +1,4 @@
+exclude:
+  - name: All
+    paths:
+      - src/main/java/com/github/yukulab/blockhideandseekmod/mixin
