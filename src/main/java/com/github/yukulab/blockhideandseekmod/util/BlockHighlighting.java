@@ -1,6 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.util;
 
-import com.github.yukulab.blockhideandseekmod.entity.BlockHighlightEntity;
+import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
+import com.github.yukulab.blockhideandseekmod.entity.BhasEntityTypes;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -35,7 +36,11 @@ public class BlockHighlighting {
         }
 
         var world = players.get(0).world;
-        var entity = new BlockHighlightEntity(world);
+        var entity = BhasEntityTypes.BLOCKHIGHLIGHT.create(world);
+        if (entity == null) {
+            BlockHideAndSeekMod.LOGGER.error("cannot get BlockHighlightEntity!!");
+            return;
+        }
         entityEditConsumer.accept(entity);
         entity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         world.spawnEntity(entity);
