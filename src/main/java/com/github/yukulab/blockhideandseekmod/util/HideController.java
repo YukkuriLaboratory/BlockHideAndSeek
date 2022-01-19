@@ -9,10 +9,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.Fertilizable;
-import net.minecraft.block.SlabBlock;
+import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -69,7 +66,7 @@ public class HideController {
 
     public static boolean isHideableBlock(BlockState blockState) {
         var block = blockState.getBlock();
-        return blockState.getMaterial().isSolid() && !(block instanceof SlabBlock) && !(block instanceof Fertilizable);
+        return blockState.getMaterial().isSolid() && !(block instanceof SlabBlock) && (!(block instanceof Fertilizable) || block instanceof NetherrackBlock);
     }
 
     public static void removeSelectedBlock(PlayerEntity player) {
