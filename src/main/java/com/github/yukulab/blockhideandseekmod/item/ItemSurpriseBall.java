@@ -34,7 +34,8 @@ public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
     @Override
     public List<Text> getLore() {
         return List.of(
-                new LiteralText("敵に投げて驚かせよう！(投げると擬態が解除されます)")
+                new LiteralText("敵に投げて驚かせよう！(投げると擬態が解除されます)"),
+                new LiteralText("当たると10%の確率で一瞬鈍足or数秒吐き気を付与します")
         );
     }
 

@@ -78,24 +78,26 @@ public class SelectTeam implements GameStatus {
     //毎回クラス名入力するのがダルいので定数として扱う
     private final MinecraftServer server = BlockHideAndSeekMod.SERVER;
 
-    public SelectTeam() {
-        startedTime = Instant.now();
-        //テキストにカーソルを合わせると表示されるやつ
-        var hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("クリックして参加"));
-        /*
+    //テキストにカーソルを合わせると表示されるやつ
+    private static final HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("クリックして参加"));
+    /*
         表示用テキスト
         """
         陣営の投票を受け付けています．
         鬼陣営に登録する / ミミック陣営に登録する
         """
-         */
-        var text = new LiteralText("")
-                .append(new LiteralText("陣営の投票を受け付けています．").setStyle(Style.EMPTY.withColor(Formatting.GREEN)))
-                .append(Text.of("\n"))
-                .append(new LiteralText("鬼陣営に参加する").setStyle(Style.EMPTY.withColor(Formatting.RED).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bhas team seeker")).withHoverEvent(hoverEvent)))
-                .append(Text.of(" / "))
-                .append(new LiteralText("ミミック陣営に参加する").setStyle(Style.EMPTY.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bhas team hider")).withHoverEvent(hoverEvent)));
-        server.getPlayerManager().getPlayerList().forEach(p -> p.sendMessage(text, false));
+    */
+    public static final Text selectMessage = new LiteralText("")
+            .append(new LiteralText("陣営の投票を受け付けています．").setStyle(Style.EMPTY.withColor(Formatting.GREEN)))
+            .append(Text.of("\n"))
+            .append(new LiteralText("鬼陣営に参加する").setStyle(Style.EMPTY.withColor(Formatting.RED).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bhas team seeker")).withHoverEvent(hoverEvent)))
+            .append(Text.of(" / "))
+            .append(new LiteralText("ミミック陣営に参加する").setStyle(Style.EMPTY.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bhas team hider")).withHoverEvent(hoverEvent)));
+
+
+    public SelectTeam() {
+        startedTime = Instant.now();
+        server.getPlayerManager().getPlayerList().forEach(p -> p.sendMessage(selectMessage, false));
     }
 
     @NotNull
