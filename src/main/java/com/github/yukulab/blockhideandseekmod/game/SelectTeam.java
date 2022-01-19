@@ -73,7 +73,7 @@ public class SelectTeam implements GameStatus {
     /**
      * {@link HideController}用のID
      */
-    private final String VOTE_PROGRESS = "voteProgress";
+    private static final String VOTE_PROGRESS = "voteProgress";
 
     //毎回クラス名入力するのがダルいので定数として扱う
     private final MinecraftServer server = BlockHideAndSeekMod.SERVER;
@@ -195,7 +195,7 @@ public class SelectTeam implements GameStatus {
 
         //最後三秒をタイトル表示する
         if (currentTime.toSeconds() >= voteTime - 4 && isDisplayTime) {
-            var remainsTimeText = new LiteralText("" + remainsTime.toSeconds()).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+            var remainsTimeText = new LiteralText(String.valueOf(remainsTime.toSeconds())).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
             var packet = new TitleS2CPacket(remainsTimeText);
             playerManager.getPlayerList().forEach(player -> player.networkHandler.sendPacket(packet));
             //カウントダウン時の音
