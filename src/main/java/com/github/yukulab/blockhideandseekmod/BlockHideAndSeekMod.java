@@ -3,6 +3,7 @@ package com.github.yukulab.blockhideandseekmod;
 import com.github.yukulab.blockhideandseekmod.command.BHASCommands;
 import com.github.yukulab.blockhideandseekmod.command.Settings;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.entity.BhasEntityTypes;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.util.CoroutineProvider;
 import net.fabricmc.api.ModInitializer;
@@ -37,6 +38,8 @@ public class BlockHideAndSeekMod implements ModInitializer {
         CONFIG.load();
         //item
         BhasItems.init();
+        //Entity
+        BhasEntityTypes.register();
         //コマンド登録
         BHASCommands.register();
         Settings.registerCommands();

@@ -6,7 +6,7 @@ import net.minecraft.entity.mob.ShulkerEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.world.World
 
-class BlockHighlightEntity(world: World) : ShulkerEntity(EntityType.SHULKER, world), ModifiedTracker {
+class BlockHighlightEntity(type: EntityType<ShulkerEntity>, world: World) : ShulkerEntity(type, world), ModifiedTracker {
 
     init {
         isInvisible = true
