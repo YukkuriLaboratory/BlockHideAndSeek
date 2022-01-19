@@ -76,11 +76,20 @@ public abstract class MixinServerWorld {
             prepare.lockPlayerMovement(player);
         }
 
-        if ((current instanceof Prepare || current instanceof MainGame) && currentTeam == null) {
-            player.changeGameMode(GameMode.SPECTATOR);
+        if (current instanceof Prepare || current instanceof MainGame) {
+            if (currentTeam == null) {
+                player.changeGameMode(GameMode.SPECTATOR);
+                var observerTeam = TeamCreateAndDelete.getObservers();
+                if (observerTeam != null) {
+                    getScoreboard().addPlayerToTeam(player.getEntityName(), observerTeam);
+                }
+            }
             var observerTeam = TeamCreateAndDelete.getObservers();
-            if (observerTeam != null) {
-                getScoreboard().addPlayerToTeam(player.getEntityName(), observerTeam);
+            if (observerTeam != null && currentTeam != observerTeam) {
+                player.changeGameMode(GameMode.ADVENTURE);
+                player.interactionManager.changeGameMode(GameMode.SURVIVAL);
+                player.getAbilities().allowFlying = true;
+                player.sendAbilitiesUpdate();
             }
         }
     }
