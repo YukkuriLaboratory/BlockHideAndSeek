@@ -25,6 +25,10 @@ object BhasEntityTypes {
         trackRangeBlocks(10)
     }
 
+    /**
+     * たしかにこのエラーは納得なんですが，なるべくあとから別の場所でも使えるような形で書きたいので警告抑制
+     */
+    @Suppress("SameParameterValue")
     private fun <T : Entity> register(
         id: String,
         spawnGroup: SpawnGroup,
