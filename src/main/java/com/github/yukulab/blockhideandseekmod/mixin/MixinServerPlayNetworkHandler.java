@@ -2,6 +2,7 @@ package com.github.yukulab.blockhideandseekmod.mixin;
 
 import com.github.yukulab.blockhideandseekmod.game.GameController;
 import com.github.yukulab.blockhideandseekmod.game.Prepare;
+import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner;
 import com.github.yukulab.blockhideandseekmod.item.ServerSideItem;
 import com.github.yukulab.blockhideandseekmod.util.FlyController;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
@@ -64,9 +65,16 @@ public class MixinServerPlayNetworkHandler {
         var fakeBlock = HideController.getHidingBlock(pos);
         if (fakeBlock != null) {
             instance.sendPacket(new BlockUpdateS2CPacket(pos, fakeBlock));
-        } else {
-            instance.sendPacket(packet);
+            return;
         }
+
+        var decoyBlock = ItemFakeSummoner.getDecoyState(pos);
+        if (decoyBlock != null) {
+            instance.sendPacket(new BlockUpdateS2CPacket(pos, decoyBlock));
+            return;
+        }
+
+        instance.sendPacket(packet);
     }
 
     @Inject(

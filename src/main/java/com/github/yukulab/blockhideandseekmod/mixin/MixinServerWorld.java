@@ -5,10 +5,12 @@ import com.github.yukulab.blockhideandseekmod.game.MainGame;
 import com.github.yukulab.blockhideandseekmod.game.Prepare;
 import com.github.yukulab.blockhideandseekmod.game.SelectTeam;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
+import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner;
 import com.github.yukulab.blockhideandseekmod.util.FlyController;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import com.github.yukulab.blockhideandseekmod.util.extention.ServerPlayerEntityKt;
+import com.google.common.collect.Sets;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -39,10 +41,11 @@ public abstract class MixinServerWorld {
             at = @At("TAIL")
     )
     private void sendFakeBlockPacket(ServerPlayerEntity player, CallbackInfo ci) {
-        HideController.getHidingBlocks().forEach(entry -> {
-            var packet = new BlockUpdateS2CPacket(entry.getKey(), entry.getValue());
-            player.networkHandler.sendPacket(packet);
-        });
+        Sets.union(HideController.getHidingBlocks(), ItemFakeSummoner.getDecoyBlocks())
+                .forEach(entry -> {
+                    var packet = new BlockUpdateS2CPacket(entry.getKey(), entry.getValue());
+                    player.networkHandler.sendPacket(packet);
+                });
         HideController.getHidingPlayers()
                 .stream()
                 .map(uuid -> server.getPlayerManager().getPlayer(uuid))
