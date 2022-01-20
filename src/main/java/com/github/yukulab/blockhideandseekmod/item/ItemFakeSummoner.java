@@ -36,6 +36,7 @@ import net.minecraft.world.event.GameEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static net.minecraft.util.Formatting.YELLOW;
@@ -171,17 +172,21 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
         if (entity == null) {
             return;
         }
-        var packet = new BlockUpdateS2CPacket(pos,Blocks.AIR.getDefaultState());
+        var packet = new BlockUpdateS2CPacket(pos, Blocks.AIR.getDefaultState());
         BlockHideAndSeekMod.SERVER.getPlayerManager().getPlayerList()
                 .forEach(p -> p.networkHandler.sendPacket(packet));
         entity.discard();
     }
 
-    public static BlockState getDecoyState(BlockPos pos){
+    public static BlockState getDecoyState(BlockPos pos) {
         return decoyBlocks.get(pos);
     }
 
-    private static int getCooltime(){
+    public static Set<Map.Entry<BlockPos, BlockState>> getDecoyBlocks() {
+        return decoyBlocks.entrySet();
+    }
+
+    private static int getCooltime() {
         return ModConfig.ItemConfig.ItemFakeSummoner.cooltime;
     }
 }
