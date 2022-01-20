@@ -76,6 +76,9 @@ public class ModConfig extends Config implements ConfigContainer {
 
             @ConfigEntry(comment = "効果時間")
             public static int duration = 60;
+
+            @ConfigEntry(comment = "スキャン精度(半径)")
+            public static int precision = 3;
         }
 
         /**
@@ -125,6 +128,18 @@ public class ModConfig extends Config implements ConfigContainer {
         public static class ItemSurpriseBall implements ConfigGroup {
             @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
             public static int coolTime = 140;
+        }
+
+        /**
+         * ミミックが持つデコイ召喚用アイテム
+         */
+        @Transitive
+        @ConfigEntries
+        public static class ItemFakeSummoner implements ConfigGroup {
+            @ConfigEntry(comment = "デコイ消滅までの時間(単位:秒)")
+            public static int deleteTime = 30;
+            @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
+            public static int cooltime = 400;
         }
 
     }

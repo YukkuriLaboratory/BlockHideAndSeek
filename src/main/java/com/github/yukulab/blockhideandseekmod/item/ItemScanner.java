@@ -137,8 +137,8 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
 
             if (nearplayer != null) {
                 Random rand = new Random();
-                int numX = rand.nextInt(10) - 5;
-                int numZ = rand.nextInt(10) - 5;
+                int numX = rand.nextInt(getPrecision()*2) - getPrecision();
+                int numZ = rand.nextInt(getPrecision()*2) - getPrecision();
                 nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(nearplayer.getBlockPos().add(numX,0,numZ)));
                 var var10000 = World.CODEC.encodeStart(NbtOps.INSTANCE, player.world.getRegistryKey());
                 Logger var10001 = LOGGER;
@@ -178,7 +178,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     }
 
 
-    //以下3つのメソッドは途中で設定が変わってもいいようにメソッド化して毎回元のフィールドを参照してる
+    //以下4つのメソッドは途中で設定が変わってもいいようにメソッド化して毎回元のフィールドを参照してる
     private static double getScanLength() {
         return ModConfig.ItemConfig.ItemScanner.scanLength;
     }
@@ -190,6 +190,8 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     private static int getDuration() {
         return ModConfig.ItemConfig.ItemScanner.duration;
     }
+
+    private static int getPrecision(){ return ModConfig.ItemConfig.ItemScanner.precision;}
 
 
     private static double isSneakingScanLength(PlayerEntity player) {

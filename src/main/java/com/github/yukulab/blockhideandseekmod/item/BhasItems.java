@@ -23,6 +23,7 @@ public class BhasItems {
     public static ItemBlink BLINK = register("blink", new ItemBlink());
     public static ItemJammer JAMMER = register("jammer", new ItemJammer());
     public static ItemSurpriseBall SURPRISEBALL = register("surpriseball", new ItemSurpriseBall());
+    public static ItemFakeSummoner FAKESUMMONER = register("fakesummoner", new ItemFakeSummoner());
 
     //使用不可
     public static ItemSurprisePumpkin SURPRISEPUMPKIN = register("surprisepumpkin", new ItemSurprisePumpkin());
@@ -33,7 +34,7 @@ public class BhasItems {
 
     public static final List<LoreItem> seekerItems = List.of(DETECTOR, SCANNER, BLOCK_VIEWER, FLYER);
 
-    public static final List<LoreItem> hiderItems = List.of(SELECTOR, BLINK, JAMMER, SURPRISEBALL, FLYER);
+    public static final List<LoreItem> hiderItems = List.of(SELECTOR, BLINK, JAMMER, FAKESUMMONER, SURPRISEBALL, FLYER);
 
     public static boolean isModItem(Item item) {
         return Objects.equals(Registry.ITEM.getId(item).getNamespace(), BlockHideAndSeekMod.MOD_ID);

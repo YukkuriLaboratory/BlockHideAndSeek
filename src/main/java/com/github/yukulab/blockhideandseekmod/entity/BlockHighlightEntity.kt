@@ -9,7 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 
-class BlockHighlightEntity(type: EntityType<ShulkerEntity>, world: World) : ShulkerEntity(type, world),
+open class BlockHighlightEntity(type: EntityType<ShulkerEntity>, world: World) : ShulkerEntity(type, world),
     ModifiedTracker {
 
     init {

@@ -274,4 +274,8 @@ public class HideController {
             }));
         });
     }
+
+    public static BlockState getSelectedBlock(UUID uuid){
+        return selectingBlocks.get(uuid);
+    }
 }

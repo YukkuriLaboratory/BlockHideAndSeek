@@ -18,6 +18,13 @@ object BhasEntityTypes {
         trackRangeBlocks(10)
     }
 
+    @JvmField
+    val DECOY = register("decoy", SpawnGroup.MISC, ::DecoyEntity){
+        dimensions(EntityDimensions.fixed(1f,1f))
+        fireImmune()
+        trackRangeBlocks(10)
+    }
+
     private fun <T : Entity> register(
         id: String,
         spawnGroup: SpawnGroup,
