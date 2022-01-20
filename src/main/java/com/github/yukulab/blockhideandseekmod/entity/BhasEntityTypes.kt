@@ -1,11 +1,13 @@
 package com.github.yukulab.blockhideandseekmod.entity
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod
+import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityDimensions
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.SpawnGroup
+import net.minecraft.entity.mob.ShulkerEntity
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 
@@ -41,8 +43,11 @@ object BhasEntityTypes {
     )
 
     /**
-     * このクラスを呼ぶためだけの子
+     * クラス呼んでEntityType登録+Attributeの登録用
      */
     @JvmStatic
-    fun register() = Unit
+    fun register() {
+        FabricDefaultAttributeRegistry.register(BLOCKHIGHLIGHT, ShulkerEntity.createShulkerAttributes())
+        FabricDefaultAttributeRegistry.register(DECOY, ShulkerEntity.createShulkerAttributes())
+    }
 }
