@@ -107,7 +107,11 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
                     return true;
                 })
                 .toList();
-
+        var fakeEntities = ItemFakeSummoner.getFakeEntities();
+        var nearestDecoys = fakeEntities.values()
+                .stream()
+                .filter(p -> p.distanceTo(player) < isSneakingScanLength(player))
+                .toList();
         Text message;
         if (!jammedPlayer.isEmpty()) {
             message = new LiteralText("スキャンをジャミングされました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
@@ -121,7 +125,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
                     });
         } else {
             if (!nearestPlayer.isEmpty()) {
-                message = new LiteralText(nearestPlayer.size() + "体のミミックを検出しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+                message = new LiteralText(nearestPlayer.size() + nearestDecoys.size() + "体のミミックを検出しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
 
                 var scanMessage = new LiteralText("スキャナーを検知しました").setStyle(Style.EMPTY.withColor(Formatting.RED));
                 nearestPlayer.forEach(p -> {
@@ -137,11 +141,9 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
 
         if (jammedPlayer.isEmpty()) {
 
-            var nearestTarget = nearestPlayer.stream().min(Comparator.comparing(p -> player.getBlockPos().getSquaredDistance(p.getBlockPos())));
-
-            var nbt = stack.getOrCreateNbt();
-
-            if (nearestTarget.isPresent()) {
+            if(!nearestDecoys.isEmpty()){
+                var nearestTarget = nearestDecoys.stream().min(Comparator.comparing(p -> player.getBlockPos().getSquaredDistance(p.getBlockPos())));
+                var nbt = stack.getOrCreateNbt();
                 Random rand = new Random();
                 int numX = rand.nextInt(getPrecision() * 2) - getPrecision();
                 int numZ = rand.nextInt(getPrecision() * 2) - getPrecision();
@@ -151,16 +153,42 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
                 Objects.requireNonNull(var10001);
                 var10000.resultOrPartial(var10001::error).ifPresent((nbtElement) -> nbt.put(LODESTONE_DIMENSION_KEY, nbtElement));
                 nbt.putBoolean(LODESTONE_TRACKED_KEY, true);
-            }
-            if (!player.isSneaking()) {
-                player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 0.5f);
-            } else {
-                player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 3.0f);
-            }
+                if (!player.isSneaking()) {
+                    player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 0.5f);
+                } else {
+                    player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 3.0f);
+                }
 
 
-            var tickId = getTickId(nbt);
-            currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemScanner.duration);
+                var tickId = getTickId(nbt);
+                currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemScanner.duration);
+            }
+            else {
+                var nearestTarget = nearestPlayer.stream().min(Comparator.comparing(p -> player.getBlockPos().getSquaredDistance(p.getBlockPos())));
+                var nbt = stack.getOrCreateNbt();
+
+                if (nearestTarget.isPresent()) {
+                    Random rand = new Random();
+                    int numX = rand.nextInt(getPrecision() * 2) - getPrecision();
+                    int numZ = rand.nextInt(getPrecision() * 2) - getPrecision();
+                    nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(nearestTarget.get().getBlockPos().add(numX, 0, numZ)));
+                    var var10000 = World.CODEC.encodeStart(NbtOps.INSTANCE, player.world.getRegistryKey());
+                    Logger var10001 = LOGGER;
+                    Objects.requireNonNull(var10001);
+                    var10000.resultOrPartial(var10001::error).ifPresent((nbtElement) -> nbt.put(LODESTONE_DIMENSION_KEY, nbtElement));
+                    nbt.putBoolean(LODESTONE_TRACKED_KEY, true);
+                }
+                if (!player.isSneaking()) {
+                    player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 0.5f);
+                } else {
+                    player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 3.0f);
+                }
+
+
+                var tickId = getTickId(nbt);
+                currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemScanner.duration);
+            }
+
         }
 
         var coolTime = getCoolTime() + getDuration();

@@ -62,6 +62,8 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
     public List<Text> getLore() {
         return List.of(
                 new LiteralText("右クリック: デコイブロックを設置します"),
+                Text.of("(地面に対して使用してください)"),
+                Text.of("デコイの効果:鬼のスキャンに優先的に表示されます"),
                 Text.of("デコイ消滅までの時間" + ModConfig.ItemConfig.ItemFakeSummoner.deleteTime + "秒"),
                 Text.of("クールタイム" + ModConfig.ItemConfig.ItemFakeSummoner.cooltime)
         );
@@ -124,6 +126,7 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
         return ActionResult.CONSUME;
     }
 
+    //クリックの動作をしたかっただけ
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         var stack = user.getStackInHand(hand);
@@ -199,6 +202,10 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
 
     public static Set<Map.Entry<BlockPos, BlockState>> getDecoyBlocks() {
         return decoyBlocks.entrySet();
+    }
+
+    public static Map<BlockPos, ShulkerEntity> getFakeEntities(){
+        return fakeEntities;
     }
 
     private static int getCoolTime() {

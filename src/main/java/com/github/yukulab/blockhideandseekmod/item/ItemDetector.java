@@ -94,6 +94,19 @@ public class ItemDetector extends LoreItem implements ServerSideItem {
             }
         }
 
+        var decoyMap = ItemFakeSummoner.getFakeEntities();
+
+        var decoy = decoyMap.get(pos);
+        if (decoy != null) {
+            ItemFakeSummoner.removeHighlight(pos);
+            var message = new LiteralText("").setStyle(Style.EMPTY.withColor(Formatting.GREEN))
+                    .append(Text.of("デコイ"))
+                    .append(Text.of("を発見しました"));
+            HudDisplay.setActionBarText(seeker.getUuid(), DETECT_MESSAGE, message, 30L);
+            seeker.playSound(SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 75, 0.5f);
+            return ActionResult.PASS;
+        }
+
         var message = new LiteralText("検出できません").setStyle(Style.EMPTY.withColor(Formatting.RED));
         HudDisplay.setActionBarText(seeker.getUuid(), DETECT_MESSAGE, message, 30L);
         seeker.playSound(SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 75, 2);
