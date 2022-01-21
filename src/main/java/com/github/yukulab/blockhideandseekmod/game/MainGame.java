@@ -3,6 +3,7 @@ package com.github.yukulab.blockhideandseekmod.game;
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
+import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner;
 import com.github.yukulab.blockhideandseekmod.item.ServerSideItem;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.PlayerUtil;
@@ -31,7 +32,6 @@ import org.jetbrains.annotations.Nullable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 
 /**
@@ -173,6 +173,8 @@ public class MainGame implements GameStatus {
                     player.changeGameMode(GameMode.SPECTATOR);
                     // 擬態解除(事故ることはないのでここで呼んじゃう)
                     HideController.cancelHiding(player);
+                    //デコイ削除
+                    ItemFakeSummoner.clearHighlight();
                     // Modアイテムの削除
                     player.getInventory()
                             .remove(

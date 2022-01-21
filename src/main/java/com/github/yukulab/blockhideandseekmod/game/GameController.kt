@@ -1,6 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.game
 
 import com.github.yukulab.blockhideandseekmod.item.BhasItems
+import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner
 import com.github.yukulab.blockhideandseekmod.util.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -92,6 +93,8 @@ object GameController {
                 it.changeGameMode(GameMode.SPECTATOR)
                 // 擬態解除(事故ることはないのでここで呼んじゃう)
                 HideController.cancelHiding(it)
+                //デコイ削除
+                ItemFakeSummoner.clearHighlight()
                 // Modアイテムの削除
                 it.inventory
                     .remove(
