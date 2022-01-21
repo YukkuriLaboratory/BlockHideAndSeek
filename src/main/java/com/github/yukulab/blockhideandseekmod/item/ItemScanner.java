@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.spongepowered.include.com.google.common.collect.Maps;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * 近くの隠れているBlockを指し示すアイテム
@@ -92,21 +93,41 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         var stack = player.getStackInHand(hand);
 
+        var jammedPlayer = new ArrayList<PlayerEntity>();
         var nearestPlayer = player.world
                 .getPlayers()
                 .stream()
                 .filter(p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()))
                 .filter(p -> p.distanceTo(player) < isSneakingScanLength(player))
+                .filter(p -> {
+                    if (ItemJammer.isActivated(p.getUuid())) {
+                        jammedPlayer.add(p);
+                        return false;
+                    }
+                    return true;
+                })
                 .toList();
 
         Text message;
-        if(ItemJammer.isJammerActive()){
-            message = new  LiteralText("スキャンをジャミングされました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+        if (!jammedPlayer.isEmpty()) {
+            message = new LiteralText("スキャンをジャミングされました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
             player.playSound(SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.PLAYERS, 1.0f, 2.0f);
-        }
-        else {
+
+            var jammedMessage = new LiteralText("スキャン妨害に成功しました").setStyle(Style.EMPTY.withColor(Formatting.RED));
+            Stream.concat(jammedPlayer.stream(), nearestPlayer.stream())
+                    .forEach(p -> {
+                        HudDisplay.setActionBarText(p.getUuid(), SCAN_NOTIFY, jammedMessage, 30L);
+                        p.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 70, 4);
+                    });
+        } else {
             if (!nearestPlayer.isEmpty()) {
                 message = new LiteralText(nearestPlayer.size() + "体のミミックを検出しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+
+                var scanMessage = new LiteralText("スキャナーを検知しました").setStyle(Style.EMPTY.withColor(Formatting.RED));
+                nearestPlayer.forEach(p -> {
+                    HudDisplay.setActionBarText(p.getUuid(), SCAN_NOTIFY, scanMessage, 30L);
+                    p.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 70, 2);
+                });
             } else {
                 message = new LiteralText("範囲内にミミックが存在しません").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
             }
@@ -114,32 +135,17 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
 
         HudDisplay.setActionBarText(player.getUuid(), SCAN_RESULT, message, 30L);
 
-        if(ItemJammer.isJammerActive()) {
-            var notify = new LiteralText("スキャン妨害に成功しました").setStyle(Style.EMPTY.withColor(Formatting.RED));
-            nearestPlayer.forEach(p -> {
-                HudDisplay.setActionBarText(p.getUuid(), SCAN_NOTIFY, notify, 30L);
-                p.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 70, 4);
-            });
-        }
-        else {
-            var notify = new LiteralText("スキャナーを検知しました").setStyle(Style.EMPTY.withColor(Formatting.RED));
-            nearestPlayer.forEach(p -> {
-                HudDisplay.setActionBarText(p.getUuid(), SCAN_NOTIFY, notify, 30L);
-                p.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 70, 2);
-            });
-        }
+        if (jammedPlayer.isEmpty()) {
 
-        if(!ItemJammer.isJammerActive()) {
-
-            var nearplayer = player.world.getClosestPlayer(player.getX(), player.getY(), player.getZ(), isSneakingScanLength(player), p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()));
+            var nearestTarget = nearestPlayer.stream().min(Comparator.comparing(p -> player.getBlockPos().getSquaredDistance(p.getBlockPos())));
 
             var nbt = stack.getOrCreateNbt();
 
-            if (nearplayer != null) {
+            if (nearestTarget.isPresent()) {
                 Random rand = new Random();
-                int numX = rand.nextInt(getPrecision()*2) - getPrecision();
-                int numZ = rand.nextInt(getPrecision()*2) - getPrecision();
-                nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(nearplayer.getBlockPos().add(numX,0,numZ)));
+                int numX = rand.nextInt(getPrecision() * 2) - getPrecision();
+                int numZ = rand.nextInt(getPrecision() * 2) - getPrecision();
+                nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(nearestTarget.get().getBlockPos().add(numX, 0, numZ)));
                 var var10000 = World.CODEC.encodeStart(NbtOps.INSTANCE, player.world.getRegistryKey());
                 Logger var10001 = LOGGER;
                 Objects.requireNonNull(var10001);
@@ -179,7 +185,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
 
 
     //以下4つのメソッドは途中で設定が変わってもいいようにメソッド化して毎回元のフィールドを参照してる
-    private static double getScanLength() {
+    public static double getScanLength() {
         return ModConfig.ItemConfig.ItemScanner.scanLength;
     }
 
@@ -191,7 +197,9 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
         return ModConfig.ItemConfig.ItemScanner.duration;
     }
 
-    private static int getPrecision(){ return ModConfig.ItemConfig.ItemScanner.precision;}
+    private static int getPrecision() {
+        return ModConfig.ItemConfig.ItemScanner.precision;
+    }
 
 
     private static double isSneakingScanLength(PlayerEntity player) {
