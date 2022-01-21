@@ -21,6 +21,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.spongepowered.include.com.google.common.collect.Lists;
 import org.spongepowered.include.com.google.common.collect.Maps;
 
 import java.util.List;
@@ -36,9 +37,9 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
 
     private static final String TICK_ID = "tick";
 
-    private final static Settings SETTINGS = new Settings();
+    private static final Settings SETTINGS = new Settings();
 
-    private static boolean jammerActive = false;
+    private static final List<UUID> activatedPlayers = Lists.newArrayList();
 
     public ItemJammer() {
         super(SETTINGS);
@@ -58,23 +59,17 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (entity instanceof ServerPlayerEntity) {
+        if (entity instanceof ServerPlayerEntity player) {
             var nbt = stack.getOrCreateNbt();
             var tickId = getTickId(nbt);
             var tick = currentTime.getOrDefault(tickId, 0L) - 1;
             currentTime.put(tickId, tick);
             if (tick == 0) {
-                jammerActive = false;
+                activatedPlayers.remove(entity.getUuid());
                 Text message;
                 message = new LiteralText("ジャミングの効果が切れました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
-                var hiders = BlockHideAndSeekMod.SERVER.getPlayerManager().getPlayerList()
-                        .stream()
-                        .filter(p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()))
-                        .toList();
-                hiders.forEach(p -> p .playSound(SoundEvents.BLOCK_CONDUIT_DEACTIVATE, SoundCategory.PLAYERS, 1.0f, 2.0f));
-                hiders.forEach(p -> HudDisplay.setActionBarText(p.getUuid(), JAMMING_END_RESULT, message, 30L));
-
-
+                player.playSound(SoundEvents.BLOCK_CONDUIT_DEACTIVATE, SoundCategory.PLAYERS, 1.0f, 2.0f);
+                HudDisplay.setActionBarText(entity.getUuid(), JAMMING_END_RESULT, message, 30L);
             }
         }
     }
@@ -85,12 +80,11 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
         var nbt = stack.getOrCreateNbt();
         var coolTime = ModConfig.ItemConfig.ItemJammer.coolTime + ModConfig.ItemConfig.ItemJammer.duration;
         var tickId = getTickId(nbt);
-        jammerActive = true;
+        activatedPlayers.add(user.getUuid());
         currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemJammer.duration);
         user.getItemCooldownManager().set(this, coolTime);
         ((ServerPlayerEntity) user).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
         var message = new LiteralText("ジャミングを使用しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
-        var otherMessage = new LiteralText("誰かがジャミングを使用しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
 
         user.playSound(SoundEvents.BLOCK_DISPENSER_DISPENSE, SoundCategory.PLAYERS, 10f, 1.2f);
         HudDisplay.setActionBarText(user.getUuid(), JAMMING_RESULT, message, 30L);
@@ -99,11 +93,16 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
                 .stream()
                 .filter(p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()))
                 .filter(p -> p != user)
+                .filter(p -> user.getBlockPos().isWithinDistance(p.getBlockPos(), ItemScanner.getScanLength()))
                 .toList();
-        hiders.forEach(System.out::println);
 
-        hiders.forEach(p -> p .playSound(SoundEvents.ITEM_SPYGLASS_USE, SoundCategory.PLAYERS, 10f, 0.8f));
-        hiders.forEach(p -> HudDisplay.setActionBarText(p.getUuid(), JAMMING_RESULT, otherMessage, 30L));
+        var otherMessage = new LiteralText("")
+                .append(new LiteralText("").append(user.getDisplayName()).setStyle(Style.EMPTY.withColor(Formatting.GOLD)))
+                .append(new LiteralText("がジャミングを使用しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN)));
+        hiders.forEach(p -> {
+            p.playSound(SoundEvents.ITEM_SPYGLASS_USE, SoundCategory.PLAYERS, 10f, 0.8f);
+            HudDisplay.setActionBarText(p.getUuid(), JAMMING_RESULT, otherMessage, 30L);
+        });
 
 
         return TypedActionResult.pass(stack);
@@ -125,9 +124,7 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
         return tickId;
     }
 
-    //ジャミングがアクティブかスキャナーに返す用
-    public static boolean isJammerActive(){
-        return jammerActive;
+    public static boolean isActivated(UUID uuid) {
+        return activatedPlayers.contains(uuid);
     }
-
 }
