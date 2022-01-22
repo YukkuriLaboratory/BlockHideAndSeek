@@ -2,6 +2,7 @@ package com.github.yukulab.blockhideandseekmod.game
 
 import com.github.yukulab.blockhideandseekmod.item.BhasItems
 import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner
+import com.github.yukulab.blockhideandseekmod.item.ItemJammer
 import com.github.yukulab.blockhideandseekmod.util.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -84,6 +85,8 @@ object GameController {
         progressBar?.clearPlayers()
         progressBar = null
         current = null
+
+        ItemJammer.clearJamming()
 
         val spawnPackets = arrayListOf<PlayerSpawnS2CPacket>()
 

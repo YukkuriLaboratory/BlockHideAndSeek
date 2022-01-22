@@ -3,6 +3,7 @@ package com.github.yukulab.blockhideandseekmod.game;
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
+import com.github.yukulab.blockhideandseekmod.item.ItemJammer;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
@@ -98,6 +99,8 @@ public class SelectTeam implements GameStatus {
     public SelectTeam() {
         startedTime = Instant.now();
         server.getPlayerManager().getPlayerList().forEach(p -> p.sendMessage(selectMessage, false));
+
+        ItemJammer.clearJamming();
     }
 
     @NotNull

@@ -127,4 +127,8 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
     public static boolean isActivated(UUID uuid) {
         return activatedPlayers.contains(uuid);
     }
+
+    public static void clearJamming() {
+        activatedPlayers.clear();
+    }
 }
