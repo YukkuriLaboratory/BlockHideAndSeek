@@ -2,10 +2,8 @@ package com.github.yukulab.blockhideandseekmod.mixin;
 
 import com.github.yukulab.blockhideandseekmod.game.GameController;
 import com.github.yukulab.blockhideandseekmod.game.SelectTeam;
-import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,8 +14,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Objects;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity {
@@ -52,15 +48,6 @@ public abstract class MixinServerPlayerEntity {
                 scoreboard.addPlayerToTeam(playerName, observerTeam);
             }
             player.changeGameMode(GameMode.SPECTATOR);
-
-
-            var playerManager = server.getPlayerManager();
-            HideController.getHidingPlayers()
-                    .stream()
-                    .map(playerManager::getPlayer)
-                    .filter(Objects::nonNull)
-                    .map(PlayerSpawnS2CPacket::new)
-                    .forEach(networkHandler::sendPacket);
 
         } else if (team == TeamCreateAndDelete.getSeekers()) {
             player.changeGameMode(GameMode.ADVENTURE);
