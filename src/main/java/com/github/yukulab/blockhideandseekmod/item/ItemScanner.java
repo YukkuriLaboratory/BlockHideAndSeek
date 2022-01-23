@@ -124,8 +124,9 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
                         p.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 70, 4);
                     });
         } else {
-            if (!nearestPlayer.isEmpty()) {
-                message = new LiteralText(nearestPlayer.size() + nearestDecoys.size() + "体のミミックを検出しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+            var detects = nearestPlayer.size() + nearestDecoys.size();
+            if (detects > 0) {
+                message = new LiteralText(detects + "体のミミックを検出しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
 
                 var scanMessage = new LiteralText("スキャナーを検知しました").setStyle(Style.EMPTY.withColor(Formatting.RED));
                 nearestPlayer.forEach(p -> {
