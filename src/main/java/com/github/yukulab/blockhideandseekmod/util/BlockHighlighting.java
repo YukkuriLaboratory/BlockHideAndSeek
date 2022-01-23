@@ -2,9 +2,7 @@ package com.github.yukulab.blockhideandseekmod.util;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.entity.BhasEntityTypes;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -12,12 +10,10 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public class BlockHighlighting {
 
-    private static final Multimap<BlockPos, UUID> showingPlayers = HashMultimap.create();
     private static final Map<BlockPos, ShulkerEntity> fakeEntities = Maps.newHashMap();
 
     private static final Map<BlockPos, Long> willRemove = Maps.newHashMap();
