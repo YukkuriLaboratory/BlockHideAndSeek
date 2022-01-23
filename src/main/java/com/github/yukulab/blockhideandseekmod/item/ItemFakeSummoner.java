@@ -134,7 +134,7 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
             useOnBlock(new ItemUsageContext(user, hand, result));
         }
 
-        return TypedActionResult.success(stack);
+        return TypedActionResult.success(stack, false);
     }
 
     public static void setHighlight(BlockPos pos, List<ServerPlayerEntity> players, Consumer<ShulkerEntity> entityEditConsumer) {

@@ -56,7 +56,7 @@ public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
         user.getItemCooldownManager().set(this, coolTime);
         ((ServerPlayerEntity) user).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
 
-        return TypedActionResult.success(stack);
+        return TypedActionResult.success(stack, false);
     }
 
     private int getCoolTime() {
