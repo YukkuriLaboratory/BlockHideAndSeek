@@ -84,7 +84,7 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
 
         var player = ((ServerPlayerEntity)context.getPlayer());
         World world = context.getWorld();
-        if (!(world instanceof ServerWorld)) {
+        if (!(world instanceof ServerWorld) || player == null) {
             return ActionResult.SUCCESS;
         }
         BlockPos blockPos = context.getBlockPos();
@@ -94,14 +94,14 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
                 .toList();
 
         if(world.getBlockState(blockPos.up()).isAir()) {
-            if(HideController.getSelectedBlock(Objects.requireNonNull(player).getUuid()) != null) {
+            if (HideController.getSelectedBlock(player.getUuid()) != null) {
                 var blockposUp = blockPos.up();
-                if(fakeEntities.get(blockposUp) == null) {
+                if (fakeEntities.get(blockposUp) == null) {
                     setHighlight(blockposUp, hiders, entity -> {
                         entity.setCustomName(new LiteralText("デコイ"));
                         entity.setCustomNameVisible(true);
                     });
-                    decoyBlocks.put(blockposUp, HideController.getSelectedBlock(Objects.requireNonNull(player).getUuid()));
+                    decoyBlocks.put(blockposUp, HideController.getSelectedBlock(player.getUuid()));
                     var block = HideController.getSelectedBlock(player.getUuid());
                     var blockPacket = new BlockUpdateS2CPacket(blockposUp, block);
                     var playerTracker = ServerPlayerEntityKt.getPlayerTracker(player);
