@@ -10,7 +10,6 @@ import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -52,8 +51,6 @@ public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
         ball.setItem(stack);
         ball.setProperties(user, user.prevPitch, user.prevYaw, 0F, 3F, 0F);
         world.spawnEntity(ball);
-
-        user.incrementStat(Stats.USED.getOrCreateStat(this));
 
         var coolTime = getCoolTime();
         user.getItemCooldownManager().set(this, coolTime);
