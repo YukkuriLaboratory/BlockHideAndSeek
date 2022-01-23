@@ -87,6 +87,7 @@ object GameController {
         current = null
 
         ItemJammer.clearJamming()
+        BlockHighlighting.clearHighlight()
 
         val spawnPackets = arrayListOf<PlayerSpawnS2CPacket>()
 
