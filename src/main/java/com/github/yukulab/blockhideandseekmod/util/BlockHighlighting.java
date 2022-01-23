@@ -66,10 +66,6 @@ public class BlockHighlighting {
         entity.discard();
     }
 
-    public static void clearHighlight() {
-        fakeEntities.keySet().forEach(BlockHighlighting::removeHighlight);
-    }
-
     static {
         ServerTickEvents.START_SERVER_TICK.register(server -> willRemove.entrySet().stream().toList().forEach(entry -> {
             var currentTick = entry.getValue() - 1;

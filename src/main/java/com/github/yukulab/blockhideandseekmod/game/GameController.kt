@@ -4,6 +4,8 @@ import com.github.yukulab.blockhideandseekmod.item.BhasItems
 import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner
 import com.github.yukulab.blockhideandseekmod.item.ItemJammer
 import com.github.yukulab.blockhideandseekmod.util.*
+import com.github.yukulab.blockhideandseekmod.entity.BlockHighlightEntity
+import com.github.yukulab.blockhideandseekmod.entity.DecoyEntity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
@@ -87,7 +89,6 @@ object GameController {
         current = null
 
         ItemJammer.clearJamming()
-        BlockHighlighting.clearHighlight()
 
         val spawnPackets = arrayListOf<PlayerSpawnS2CPacket>()
 
@@ -125,6 +126,14 @@ object GameController {
             }
         TeamCreateAndDelete.deleteTeam()
         TeamPlayerListHeader.EmptyList()
+
+        server.worlds.forEach { world ->
+            world.iterateEntities().forEach {
+                if (it is BlockHighlightEntity || it is DecoyEntity) {
+                    it.discard()
+                }
+            }
+        }
     }
 
     private fun startLoop() {
