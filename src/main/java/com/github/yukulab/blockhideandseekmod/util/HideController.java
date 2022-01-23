@@ -110,8 +110,8 @@ public class HideController {
             tryingTimes.remove(uuid);
             HudDisplay.removeActionbarText(uuid, HIDE_PROGRESS);
         } else if (hidingPlayers.containsKey(uuid)) {
-            hidingPlayers.remove(uuid);
-            hidingBlocks.remove(player.getBlockPos());
+            var pos = hidingPlayers.remove(uuid);
+            hidingBlocks.remove(pos);
             var riding = ridingTarget.get(uuid);
             if (riding != null) {
                 HudDisplay.removeActionbarText(uuid, HIDING_MESSAGE);
@@ -120,7 +120,7 @@ public class HideController {
                 player.removeStatusEffect(StatusEffects.INVISIBILITY);
                 player.setInvulnerable(false);
 
-                var blockPacket = new BlockUpdateS2CPacket(player.getBlockPos(), Blocks.AIR.getDefaultState());
+                var blockPacket = new BlockUpdateS2CPacket(pos, Blocks.AIR.getDefaultState());
 
                 var playerTracker = ServerPlayerEntityKt.getPlayerTracker(player);
                 BlockHideAndSeekMod.SERVER
@@ -131,7 +131,7 @@ public class HideController {
                         .filter(p -> p.getUuid() != uuid)
                         .forEach(playerTracker::updateTrackedStatus);
 
-                BlockHighlighting.removeHighlight(player.getBlockPos());
+                BlockHighlighting.removeHighlight(pos);
             }
         }
     }
