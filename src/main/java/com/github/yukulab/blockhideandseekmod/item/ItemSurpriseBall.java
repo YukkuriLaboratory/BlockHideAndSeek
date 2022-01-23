@@ -52,7 +52,7 @@ public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
         ball.setProperties(user, user.prevPitch, user.prevYaw, 0F, 3F, 0F);
         world.spawnEntity(ball);
 
-        var coolTime = getCoolTime();
+        var coolTime = getCoolTime() + getDuration();
         user.getItemCooldownManager().set(this, coolTime);
         ((ServerPlayerEntity) user).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
 
@@ -61,5 +61,9 @@ public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
 
     private int getCoolTime() {
         return ModConfig.ItemConfig.ItemSurpriseBall.coolTime;
+    }
+
+    public static int getDuration() {
+        return ModConfig.ItemConfig.ItemSurpriseBall.duration;
     }
 }

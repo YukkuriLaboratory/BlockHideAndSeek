@@ -128,6 +128,9 @@ public class ModConfig extends Config implements ConfigContainer {
         public static class ItemSurpriseBall implements ConfigGroup {
             @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
             public static int coolTime = 140;
+
+            @ConfigEntry(comment = " 効果時間(単位：Tick)")
+            public static int duration = 100;
         }
 
         /**

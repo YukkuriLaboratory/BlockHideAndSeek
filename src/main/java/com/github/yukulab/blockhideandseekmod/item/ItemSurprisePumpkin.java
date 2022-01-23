@@ -41,12 +41,13 @@ public class ItemSurprisePumpkin extends LoreItem implements ServerSideItem {
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         if (entity instanceof ServerPlayerEntity player) {
             time = time + 1;
-            if (time >= 40) {
+            if (time >= ItemSurpriseBall.getDuration()) {
                 player.getInventory().removeOne(new ItemStack(BhasItems.SURPRISEPUMPKIN));
                 player.getInventory().removeStack(39);
                 time = 0;
             }
         }
     }
+
 
 }
