@@ -215,6 +215,8 @@ public class Prepare implements GameStatus {
                         player.interactionManager.changeGameMode(GameMode.SURVIVAL);
                         player.getAbilities().allowFlying = true;
                         player.sendAbilitiesUpdate();
+                        //透明化消えてね(はーと)
+                        player.setInvisible(false);
                     });
         }
         //タイトルバーにSTARTと表示

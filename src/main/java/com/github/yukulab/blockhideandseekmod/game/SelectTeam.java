@@ -318,6 +318,8 @@ public class SelectTeam implements GameStatus {
                     //飛行を許可し続ける
                     player.getAbilities().allowFlying = true;
                     player.sendAbilitiesUpdate();
+                    //透明化消えてね(はーと)
+                    player.setInvisible(false);
                 });
 
         //各チームの作成
