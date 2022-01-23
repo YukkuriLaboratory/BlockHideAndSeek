@@ -10,16 +10,17 @@ import com.github.yukulab.blockhideandseekmod.util.extention.ServerPlayerEntityK
 import com.google.common.collect.Maps;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FluidBlock;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -28,11 +29,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -126,30 +124,15 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
         return ActionResult.CONSUME;
     }
 
-    //クリックの動作をしたかっただけ
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         var stack = user.getStackInHand(hand);
 
-        BlockHitResult hitResult = SpawnEggItem.raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
-        if (((HitResult)hitResult).getType() != HitResult.Type.BLOCK) {
-            return TypedActionResult.pass(stack);
-        }
+        var hitResult = user.raycast(getLength(), 0, false);
 
-        if (!(world instanceof ServerWorld)) {
-            return TypedActionResult.success(stack);
+        if (hitResult instanceof BlockHitResult result) {
+            useOnBlock(new ItemUsageContext(user, hand, result));
         }
-
-        BlockPos blockPos = hitResult.getBlockPos();
-        if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
-            return TypedActionResult.pass(stack);
-        }
-        if (!world.canPlayerModifyAt(user, blockPos) || !user.canPlaceOn(blockPos, hitResult.getSide(), stack)) {
-            return TypedActionResult.fail(stack);
-        }
-
-        user.incrementStat(Stats.USED.getOrCreateStat(this));
-        world.emitGameEvent(GameEvent.ENTITY_PLACE, user);
 
         return TypedActionResult.success(stack);
     }
@@ -204,11 +187,15 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
         return decoyBlocks.entrySet();
     }
 
-    public static Map<BlockPos, ShulkerEntity> getFakeEntities(){
+    public static Map<BlockPos, ShulkerEntity> getFakeEntities() {
         return fakeEntities;
     }
 
     private static int getCoolTime() {
         return ModConfig.ItemConfig.ItemFakeSummoner.cooltime;
+    }
+
+    private static int getLength() {
+        return ModConfig.ItemConfig.ItemFakeSummoner.length;
     }
 }

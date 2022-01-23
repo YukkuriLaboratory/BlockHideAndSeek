@@ -140,6 +140,8 @@ public class ModConfig extends Config implements ConfigContainer {
             public static int deleteTime = 30;
             @ConfigEntry(comment = "使用クールタイム(単位:Tick)")
             public static int cooltime = 400;
+            @ConfigEntry(comment = "届く最大の距離")
+            public static int length = 30;
         }
 
     }
