@@ -130,7 +130,7 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
 
         var hitResult = user.raycast(getLength(), 0, false);
 
-        if (hitResult instanceof BlockHitResult result) {
+        if (hitResult instanceof BlockHitResult result && !user.world.getBlockState(result.getBlockPos()).isAir()) {
             useOnBlock(new ItemUsageContext(user, hand, result));
         }
 
