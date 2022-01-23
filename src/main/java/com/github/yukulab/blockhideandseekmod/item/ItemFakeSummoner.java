@@ -6,10 +6,12 @@ import com.github.yukulab.blockhideandseekmod.entity.BhasEntityTypes;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
-import com.github.yukulab.blockhideandseekmod.util.extention.ServerPlayerEntityKt;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -32,21 +34,20 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static net.minecraft.util.Formatting.YELLOW;
 
-public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
+public class ItemFakeSummoner extends LoreItem implements ServerSideItem {
     private static final Item.Settings SETTINGS = new Item.Settings();
 
     public ItemFakeSummoner() {
         super(SETTINGS);
     }
 
+    private static final Map<UUID, Boolean> shouldCoolDown = Maps.newHashMap();
+    private static final BiMap<UUID, BlockPos> spawned = HashBiMap.create();
     private static final Map<BlockPos, ShulkerEntity> fakeEntities = Maps.newHashMap();
     private static final Map<BlockPos, BlockState> decoyBlocks = Maps.newHashMap();
     private static final String ERROR_MESSAGE = "errormessage";
@@ -82,7 +83,7 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
             team.setColor(YELLOW);
         }
 
-        var player = ((ServerPlayerEntity)context.getPlayer());
+        var player = ((ServerPlayerEntity) context.getPlayer());
         World world = context.getWorld();
         if (!(world instanceof ServerWorld) || player == null) {
             return ActionResult.SUCCESS;
@@ -93,9 +94,17 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
                 .filter(p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()))
                 .toList();
 
-        if(world.getBlockState(blockPos.up()).isAir()) {
+        if (world.getBlockState(blockPos.up()).isAir()) {
             if (HideController.getSelectedBlock(player.getUuid()) != null) {
                 var blockposUp = blockPos.up();
+
+                var uuid = player.getUuid();
+                var existPos = spawned.get(uuid);
+                if (existPos != null) {
+                    removeHighlight(existPos);
+                }
+                spawned.put(uuid, blockposUp);
+
                 if (fakeEntities.get(blockposUp) == null) {
                     setHighlight(blockposUp, hiders, entity -> {
                         entity.setCustomName(new LiteralText("デコイ"));
@@ -104,21 +113,11 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
                     decoyBlocks.put(blockposUp, HideController.getSelectedBlock(player.getUuid()));
                     var block = HideController.getSelectedBlock(player.getUuid());
                     var blockPacket = new BlockUpdateS2CPacket(blockposUp, block);
-                    var playerTracker = ServerPlayerEntityKt.getPlayerTracker(player);
-                    playerManager.getPlayerList()
-                            .stream()
-                            .peek(p -> p.networkHandler.sendPacket(blockPacket))
-                            .filter(p -> p.getUuid() != player.getUuid())
-                            .forEach(playerTracker::stopTracking);
-                    var coolTime = getCoolTime();
-                    player.getItemCooldownManager().set(this, coolTime);
-
-                    player.networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
+                    playerManager.getPlayerList().forEach(p -> p.networkHandler.sendPacket(blockPacket));
                 }
-            }
-            else {
+            } else {
                 var message = new LiteralText("ブロックが選択されていません").setStyle(Style.EMPTY.withColor(Formatting.RED));
-                HudDisplay.setActionBarText(player.getUuid(), ERROR_MESSAGE, message ,30L);
+                HudDisplay.setActionBarText(player.getUuid(), ERROR_MESSAGE, message, 30L);
             }
         }
         return ActionResult.CONSUME;
@@ -137,6 +136,30 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
         return TypedActionResult.success(stack, false);
     }
 
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        if (entity instanceof ServerPlayerEntity player && shouldCoolDown.getOrDefault(player.getUuid(), false)) {
+            var coolTime = getCoolTime();
+            player.getItemCooldownManager().set(this, coolTime);
+            player.networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
+
+            shouldCoolDown.put(player.getUuid(), false);
+        }
+    }
+
+    /**
+     * その位置にデコイをおいたプレイヤーにクールタイムを付与します
+     */
+    public static void setCoolTime(BlockPos pos) {
+        var uuid = spawned.inverse().get(pos);
+        if (uuid != null) {
+            var player = BlockHideAndSeekMod.SERVER.getPlayerManager().getPlayer(uuid);
+            if (player != null) {
+                shouldCoolDown.put(player.getUuid(), true);
+            }
+        }
+    }
+
     public static void setHighlight(BlockPos pos, List<ServerPlayerEntity> players, Consumer<ShulkerEntity> entityEditConsumer) {
         if (players.isEmpty()) {
             return;
@@ -149,11 +172,18 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
             BlockHideAndSeekMod.LOGGER.error("cannot get BlockHighlightEntity!!");
             return;
         }
-        scoreboard.addPlayerToTeam(Objects.requireNonNull(entity).getEntityName(),scoreboard.getTeam("Decoy"));
+        scoreboard.addPlayerToTeam(Objects.requireNonNull(entity).getEntityName(), scoreboard.getTeam("Decoy"));
         entityEditConsumer.accept(entity);
         entity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         world.spawnEntity(entity);
         fakeEntities.put(pos, entity);
+    }
+
+    public static void removeHighlight(UUID uuid) {
+        var blockPos = spawned.get(uuid);
+        if (blockPos != null) {
+            removeHighlight(blockPos);
+        }
     }
 
     public static void removeHighlight(BlockPos pos) {
@@ -168,7 +198,9 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem{
         entity.discard();
     }
 
-    public static void clearHighlight(){
+    public static void clearHighlight() {
+        shouldCoolDown.clear();
+        spawned.clear();
         fakeEntities.forEach((key, value) -> value.discard());
         decoyBlocks.forEach((key, value) -> {
             var packet = new BlockUpdateS2CPacket(key, Blocks.AIR.getDefaultState());

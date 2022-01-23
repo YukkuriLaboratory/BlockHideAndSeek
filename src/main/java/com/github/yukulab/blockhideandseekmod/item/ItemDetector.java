@@ -84,7 +84,7 @@ public class ItemDetector extends LoreItem implements ServerSideItem {
                 var source = new SeekerDamageSource(seeker);
                 HideController.cancelHiding(player);
                 player.damage(source, getDamageAmount());
-
+                ItemFakeSummoner.removeHighlight(player.getUuid());
                 var message = new LiteralText("").setStyle(Style.EMPTY.withColor(Formatting.GREEN))
                         .append(player.getDisplayName())
                         .append(Text.of("を発見しました"));
@@ -99,6 +99,7 @@ public class ItemDetector extends LoreItem implements ServerSideItem {
         var decoy = decoyMap.get(pos);
         if (decoy != null) {
             ItemFakeSummoner.removeHighlight(pos);
+            ItemFakeSummoner.setCoolTime(pos);
             var message = new LiteralText("").setStyle(Style.EMPTY.withColor(Formatting.GREEN))
                     .append(Text.of("デコイ"))
                     .append(Text.of("を発見しました"));
