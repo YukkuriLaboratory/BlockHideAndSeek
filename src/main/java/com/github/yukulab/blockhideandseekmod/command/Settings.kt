@@ -2,13 +2,17 @@ package com.github.yukulab.blockhideandseekmod.command
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod
 import com.github.yukulab.blockhideandseekmod.config.Config
+import com.github.yukulab.blockhideandseekmod.util.HideController
 import dev.uten2c.cmdlib.CommandBuilder
 import dev.uten2c.cmdlib.CommandContext
 import io.github.redstoneparadox.paradoxconfig.config.CollectionConfigOption
 import io.github.redstoneparadox.paradoxconfig.config.ConfigCategory
 import io.github.redstoneparadox.paradoxconfig.config.ConfigOption
 import io.github.redstoneparadox.paradoxconfig.config.RangeConfigOption
+import net.minecraft.command.CommandSource
 import net.minecraft.text.Text
+import net.minecraft.util.registry.Registry
+import kotlin.reflect.full.isSubclassOf
 
 object Settings : BHASCommand {
     override val builder: CommandBuilder.() -> Unit = {
@@ -36,11 +40,16 @@ object Settings : BHASCommand {
                     Int::class -> registerAsInt(key, option as ConfigOption<Int>)
                     Double::class -> registerAsDouble(key, option as ConfigOption<Double>)
                     Boolean::class -> registerAsBoolean(key, option as ConfigOption<Boolean>)
-                    MutableCollection::class -> registerAsCollection(
-                        key,
-                        option as CollectionConfigOption<String, MutableCollection<String>>
-                    )
-                    else -> BlockHideAndSeekMod.LOGGER.warn("Config:${key}の型(${option.getKClass()})は現在コマンドで対応していません")
+                    else -> {
+                        if (option.getKClass().isSubclassOf(MutableCollection::class)) {
+                            registerAsCollection(
+                                key,
+                                option as CollectionConfigOption<String, MutableCollection<String>>
+                            )
+                            return@literal
+                        }
+                        BlockHideAndSeekMod.LOGGER.warn("Config:${key}の型(${option.getKClass()})は現在コマンドで対応していません")
+                    }
                 }
             }
         }
@@ -119,6 +128,17 @@ object Settings : BHASCommand {
     ) {
         literal("add") {
             string(key) {
+                if (key == "ExcludeBlocks") {
+                    suggests { _, builder ->
+                        listOf(
+                            HideController.interfaces.map { "Interface.${it.key}" },
+                            HideController.materials.map { "Material.$it" },
+                            Registry.BLOCK.ids.map { "Block.${it.path}" }
+                        ).flatten().let {
+                            CommandSource.suggestMatching(it, builder)
+                        }
+                    }
+                }
                 executes {
                     val value = getString(key)
                     (option.get() as MutableCollection<String>).add(value)

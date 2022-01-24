@@ -4,10 +4,9 @@ import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.game.GameController;
 import com.github.yukulab.blockhideandseekmod.util.extention.ServerPlayerEntityKt;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
+import kotlin.Pair;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
@@ -24,10 +23,13 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -52,6 +54,15 @@ public class HideController {
     private static final String HIDING_MESSAGE = "hidingmessage";
     private static final String HIDE_PROGRESS = "hidingprogress";
 
+    private static final Multimap<SelectType, String> blockRuleCache = HashMultimap.create();
+
+    public static List<String> materials;
+    public static Map<String, String> interfaces = Map.of("PlantBlock", "植物ブロック",
+            "SlabBlock", "半ブロック",
+            "BannerBlock", "バナー",
+            "Fertilizable", "骨粉が使用可能なブロック"
+    );
+
     public static void clearSelectors() {
         selectingBlocks.keySet().forEach(uuid -> HudDisplay.removeActionbarText(uuid, SELECTED_BLOCK));
         selectingBlocks.clear();
@@ -66,7 +77,91 @@ public class HideController {
 
     public static boolean isHideableBlock(BlockState blockState) {
         var block = blockState.getBlock();
-        return blockState.getMaterial().isSolid() && !(block instanceof SlabBlock) && (!(block instanceof Fertilizable) || block instanceof NetherrackBlock) && !(block instanceof AbstractBannerBlock);
+        if (!blockState.getMaterial().isSolid()) {
+            return false;
+        }
+
+        var interfaceRules = blockRuleCache.get(SelectType.INTERFACE);
+        if (!interfaceRules.isEmpty()) {
+            if (interfaceRules.contains("SlabBlock") && block instanceof SlabBlock) {
+                return false;
+            }
+            if (interfaceRules.contains("PlantBlock") && block instanceof PlantBlock) {
+                return false;
+            }
+            if (interfaceRules.contains("Fertilizable") && block instanceof Fertilizable) {
+                return false;
+            }
+            if (interfaceRules.contains("BannerBlock") && block instanceof AbstractBannerBlock) {
+                return false;
+            }
+        }
+        var materialRules = blockRuleCache.get(SelectType.MATERIAL);
+        if (materialRules.contains(blockState.getMaterial().toString())) {
+            return false;
+        }
+
+        var blockRules = blockRuleCache.get(SelectType.BLOCK);
+        return !blockRules.contains(Registry.BLOCK.getId(block).getPath());
+    }
+
+    public static void initBlockRules() {
+        blockRuleCache.clear();
+        var config = Config.Item.Selector.getExcludeBlocks().stream()
+                .map(it -> {
+                    var result = it.split("\\.");
+                    if (result.length == 2) {
+                        return new Pair<>(result[0], result[1]);
+                    } else {
+                        errorParsing(it);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+
+
+        config.stream()
+                .filter(it -> it.getFirst().contains(SelectType.INTERFACE.key))
+                .map(Pair::getSecond)
+                .filter(it -> {
+                    if (!interfaces.containsKey(it)) {
+                        errorParsing(it);
+                        return false;
+                    }
+                    return true;
+                })
+                .forEach(it -> blockRuleCache.put(SelectType.INTERFACE, it));
+
+        config.stream()
+                .filter(it -> it.getFirst().contains(SelectType.MATERIAL.key))
+                .map(Pair::getSecond)
+                .map(String::toUpperCase)
+                .filter(it -> {
+                    if (!materials.contains(it)) {
+                        errorParsing(it);
+                        return false;
+                    }
+                    return true;
+                })
+                .forEach(it -> blockRuleCache.put(SelectType.MATERIAL, it));
+
+        List<String> blocks = Registry.BLOCK.getIds().stream().map(Identifier::getPath).toList();
+        config.stream()
+                .filter(it -> it.getFirst().contains(SelectType.BLOCK.key))
+                .map(Pair::getSecond)
+                .map(String::toLowerCase)
+                .filter(it -> {
+                    if (!blocks.contains(it)) {
+                        errorParsing(it);
+                        return false;
+                    } else return true;
+                })
+                .forEach(it -> blockRuleCache.put(SelectType.BLOCK, it));
+    }
+
+    private static void errorParsing(String value) {
+        BlockHideAndSeekMod.LOGGER.error(value + "を擬態不可ブロックルールに変換できません");
     }
 
     public static void removeSelectedBlock(PlayerEntity player) {
@@ -245,6 +340,10 @@ public class HideController {
     }
 
     static {
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            materials = Arrays.stream(Material.class.getFields()).map(Field::getName).toList();
+            initBlockRules();
+        });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             var playerManager = server.getPlayerManager();
 
@@ -275,7 +374,19 @@ public class HideController {
         });
     }
 
-    public static BlockState getSelectedBlock(UUID uuid){
+    public static BlockState getSelectedBlock(UUID uuid) {
         return selectingBlocks.get(uuid);
+    }
+
+    enum SelectType {
+        INTERFACE("Interface"),
+        MATERIAL("Material"),
+        BLOCK("Block");
+
+        public final String key;
+
+        SelectType(String key) {
+            this.key = key;
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.config
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod
+import com.github.yukulab.blockhideandseekmod.util.HideController
 import io.github.redstoneparadox.paradoxconfig.codec.ConfigCodec
 import io.github.redstoneparadox.paradoxconfig.config.ConfigCategory
 import net.fabricmc.loader.api.FabricLoader
@@ -62,6 +63,23 @@ object Config : ConfigCategory("config.json5") {
             var notifyOnTitle by option(true, "NotifyOnTitle", "隠れているプレイヤーに対してサブタイトルに警告を表示するかどうか(false:アクションバー)")
         }
 
+        object Selector : ConfigCategory("Selector", "ミミックが持つブロック選択アイテム") {
+            @JvmStatic
+            var excludeBlocks by option(
+                mutableListOf(
+                    "Interface.PlantBlock",
+                    "Interface.SlabBlock",
+                    "Interface.BannerBlock",
+                    "Block.dirt",
+                    "Block.grass_block",
+                    "Block.bamboo",
+                    "Block.bamboo_sapling"
+                ),
+                "ExcludeBlocks",
+                "擬態できないブロック(Block.{id})/マテリアル(Material.{ID})を指定します。Interface.${HideController.interfaces.map { "${it.key}(${it.value})" }}が別途指定できます"
+            )
+        }
+
         object Blink : ConfigCategory("Blink", "ミミックが持つ透明化アイテム") {
             @JvmStatic
             var coolTime by option(100000, "CoolTime", "使用クールタイム(単位:Tick)")
@@ -104,6 +122,8 @@ object Config : ConfigCategory("config.json5") {
 
     @JvmStatic
     fun save(): Result<Unit> {
+        HideController.initBlockRules()
+
         val file = File(FabricLoader.getInstance().configDir.toFile(), fileName)
 
         return kotlin.runCatching {
