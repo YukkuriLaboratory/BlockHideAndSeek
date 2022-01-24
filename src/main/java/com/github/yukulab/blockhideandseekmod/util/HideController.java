@@ -66,7 +66,7 @@ public class HideController {
 
     public static boolean isHideableBlock(BlockState blockState) {
         var block = blockState.getBlock();
-        return blockState.getMaterial().isSolid() && !(block instanceof SlabBlock) && (!(block instanceof Fertilizable) || block instanceof NetherrackBlock);
+        return blockState.getMaterial().isSolid() && !(block instanceof SlabBlock) && (!(block instanceof Fertilizable) || block instanceof NetherrackBlock) && !(block instanceof AbstractBannerBlock);
     }
 
     public static void removeSelectedBlock(PlayerEntity player) {
