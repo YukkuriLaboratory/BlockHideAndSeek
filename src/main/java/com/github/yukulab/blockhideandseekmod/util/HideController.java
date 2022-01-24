@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.util;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.game.GameController;
 import com.github.yukulab.blockhideandseekmod.util.extention.ServerPlayerEntityKt;
 import com.google.common.collect.BiMap;
@@ -66,7 +66,7 @@ public class HideController {
 
     public static boolean isHideableBlock(BlockState blockState) {
         var block = blockState.getBlock();
-        return blockState.getMaterial().isSolid() && !(block instanceof SlabBlock) && (!(block instanceof Fertilizable) || block instanceof NetherrackBlock);
+        return blockState.getMaterial().isSolid() && !(block instanceof SlabBlock) && (!(block instanceof Fertilizable) || block instanceof NetherrackBlock) && !(block instanceof AbstractBannerBlock);
     }
 
     public static void removeSelectedBlock(PlayerEntity player) {
@@ -256,7 +256,7 @@ public class HideController {
                     tryingPlayers.put(uuid, player.getBlockPos());
                     var time = tryingTimes.getOrDefault(uuid, 0) + 1;
 
-                    var waitTime = (float) ModConfig.SystemConfig.Times.hideWaitTime;
+                    var waitTime = (float) Config.System.Time.getHideWaitTime();
                     if (time > waitTime) {
                         tryingTimes.remove(uuid);
                         tryingPlayers.remove(uuid);

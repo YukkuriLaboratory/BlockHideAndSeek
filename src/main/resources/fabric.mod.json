@@ -30,6 +30,14 @@
     "java": ">=16",
     "fabric-language-kotlin": ">=1.6.5+kotlin.1.5.31"
   },
+  "custom": {
+    "paradoxconfig": {
+      "package": "com.github.yukulab.blockhideandseekmod.config",
+      "configs": [
+        "Config"
+      ]
+    }
+  },
   "suggests": {
     "another-mod": "*"
   }

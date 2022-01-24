@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.game;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner;
 import com.github.yukulab.blockhideandseekmod.item.ServerSideItem;
@@ -89,7 +89,7 @@ public class MainGame implements GameStatus {
         PlayerUtil.setMaxStamina();
 
         //制限時間(毎回入力するのがダルいので定数化．クラス内定数にしないのは途中でConfig変えられたりする可能性を考えているため)
-        var gameTime = ModConfig.SystemConfig.Times.playTime;
+        var gameTime = Config.System.Time.getPlayTime();
 
         //現在の時間
         var now = Instant.now();

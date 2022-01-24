@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.item;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import net.minecraft.entity.Entity;
@@ -78,10 +78,10 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         var stack = user.getStackInHand(hand);
         var nbt = stack.getOrCreateNbt();
-        var coolTime = ModConfig.ItemConfig.ItemJammer.coolTime + ModConfig.ItemConfig.ItemJammer.duration;
+        var coolTime = getCoolTime() + getDuration();
         var tickId = getTickId(nbt);
         activatedPlayers.add(user.getUuid());
-        currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemJammer.duration);
+        currentTime.put(tickId, (long) getDuration());
         user.getItemCooldownManager().set(this, coolTime);
         ((ServerPlayerEntity) user).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
         var message = new LiteralText("ジャミングを使用しました").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
@@ -122,6 +122,14 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
             nbt.putUuid(TICK_ID, tickId);
         }
         return tickId;
+    }
+
+    private static int getCoolTime() {
+        return Config.Item.Jammer.getCoolTime();
+    }
+
+    private static int getDuration() {
+        return Config.Item.Jammer.getDuration();
     }
 
     public static boolean isActivated(UUID uuid) {

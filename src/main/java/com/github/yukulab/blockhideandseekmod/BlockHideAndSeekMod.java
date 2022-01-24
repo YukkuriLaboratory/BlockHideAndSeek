@@ -1,8 +1,6 @@
 package com.github.yukulab.blockhideandseekmod;
 
 import com.github.yukulab.blockhideandseekmod.command.BHASCommands;
-import com.github.yukulab.blockhideandseekmod.command.Settings;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
 import com.github.yukulab.blockhideandseekmod.entity.BhasEntityTypes;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.util.CoroutineProvider;
@@ -22,8 +20,6 @@ public class BlockHideAndSeekMod implements ModInitializer {
 
 	public static MinecraftServer SERVER;
 
-	public static ModConfig CONFIG;
-
 	@Override
 	public void onInitialize() {
         // This code runs as soon as Minecraft is in a mod-load-ready state.
@@ -33,16 +29,12 @@ public class BlockHideAndSeekMod implements ModInitializer {
         // init coroutine
         CoroutineProvider.init();
 
-        //initialize config
-        CONFIG = new ModConfig();
-        CONFIG.load();
         //item
         BhasItems.init();
         //Entity
         BhasEntityTypes.register();
         //コマンド登録
         BHASCommands.register();
-        Settings.registerCommands();
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> SERVER = server);
 	}

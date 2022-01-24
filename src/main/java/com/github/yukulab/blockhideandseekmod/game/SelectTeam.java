@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.game;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.item.ItemJammer;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
@@ -142,7 +142,7 @@ public class SelectTeam implements GameStatus {
         var playerManager = server.getPlayerManager();
 
         //投票の制限時間(毎回入力するのがダルいので定数化．クラス内定数にしないのは途中でConfig変えられたりする可能性を考えているため)
-        var voteTime = ModConfig.SystemConfig.Times.voteTime;
+        var voteTime = Config.System.Time.getVoteTime();
         //現在の時間
         var now = Instant.now();
 
@@ -172,11 +172,11 @@ public class SelectTeam implements GameStatus {
 
         //アクションバー表示用テキスト. "陣営選択中です 鬼:n/{上限}人(橙色) ミミック:n人(水色) 残り時間:n秒" と表示される
         var text = new LiteralText("陣営の選択を待っています ")
-                .append(new LiteralText("鬼:" + seekers.size() + "/" + ModConfig.SystemConfig.seekerLimit + "人 ").setStyle(Style.EMPTY.withColor(Formatting.GOLD)))
+                .append(new LiteralText("鬼:" + seekers.size() + "/" + Config.System.getSeekerLimit() + "人 ").setStyle(Style.EMPTY.withColor(Formatting.GOLD)))
                 .append(new LiteralText("ミミック:" + hiders.size() + "人 ").setStyle(Style.EMPTY.withColor(Formatting.AQUA)));
 
         //鬼の上限人数を超えていた場合に警告
-        if (seekers.size() > ModConfig.SystemConfig.seekerLimit) {
+        if (seekers.size() > Config.System.getSeekerLimit()) {
             text.append(new LiteralText(" 警告:鬼が上限を超えています").setStyle(Style.EMPTY.withColor(Formatting.RED)));
         }
 
@@ -222,7 +222,7 @@ public class SelectTeam implements GameStatus {
         //鬼からミミック陣営に移動した人のUUIDを集める用
         Set<UUID> notificationTargets = Sets.newHashSet();
         //鬼が上限より多い限り実行し続ける
-        while (seekers.size() > ModConfig.SystemConfig.seekerLimit) {
+        while (seekers.size() > Config.System.getSeekerLimit()) {
             var random = new Random();
             //鬼からランダムに一人を選出して削除
             var uuid = seekers.remove(random.nextInt(seekers.size() - 1));
