@@ -39,10 +39,9 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from (automatically.)
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
-    maven("https://maven.shedaniel.me/")
-    maven("https://maven.terraformersmc.com/")
-    maven("https://jitpack.io")
     maven("https://uten2c.github.io/repo/")
+    maven("https://api.modrinth.com/maven")
+    maven("https://server.bbkr.space/artifactory/libs-release")
 }
 
 val yarn_mappings: String by project
@@ -60,9 +59,9 @@ dependencies {
 
     modImplementation("net.fabricmc:fabric-language-kotlin:1.6.5+kotlin.1.5.31")
 
-    modImplementation("com.gitlab.Lortseam:completeconfig:1.2.0")
-
     includeAndExpose("dev.uten2c:cmdlib-fabric:1.17+1")
+    includeAndExpose("maven.modrinth:paradox-config:0.5.1-beta")
+    includeAndExpose("io.github.cottonmc:Jankson-Fabric:3.0.1+j1.2.0")
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
 }

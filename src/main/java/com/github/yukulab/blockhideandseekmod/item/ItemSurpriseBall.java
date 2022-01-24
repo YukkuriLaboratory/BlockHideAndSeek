@@ -1,6 +1,6 @@
 package com.github.yukulab.blockhideandseekmod.item;
 
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.projectileentity.SurpriseBallEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -60,10 +60,10 @@ public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
     }
 
     private int getCoolTime() {
-        return ModConfig.ItemConfig.ItemSurpriseBall.coolTime;
+        return Config.Item.SurpriseBall.getCoolTime();
     }
 
     public static int getDuration() {
-        return ModConfig.ItemConfig.ItemSurpriseBall.duration;
+        return Config.Item.SurpriseBall.getDuration();
     }
 }

@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.item;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
 import com.github.yukulab.blockhideandseekmod.util.SeekerDamageSource;
@@ -117,10 +117,10 @@ public class ItemDetector extends LoreItem implements ServerSideItem {
     }
 
     private int getCoolTime() {
-        return ModConfig.ItemConfig.ItemDetecter.coolTime;
+        return Config.Item.Detector.getCoolTime();
     }
 
     private float getDamageAmount() {
-        return ModConfig.ItemConfig.ItemDetecter.damageAmount;
+        return Config.Item.Detector.getDamageAmount();
     }
 }

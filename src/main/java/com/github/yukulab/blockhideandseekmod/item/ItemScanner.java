@@ -1,6 +1,6 @@
 package com.github.yukulab.blockhideandseekmod.item;
 
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import net.minecraft.entity.Entity;
@@ -162,7 +162,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
 
 
                 var tickId = getTickId(nbt);
-                currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemScanner.duration);
+                currentTime.put(tickId, (long) getDuration());
             }
             else {
                 var nearestTarget = nearestPlayer.stream().min(Comparator.comparing(p -> player.getBlockPos().getSquaredDistance(p.getBlockPos())));
@@ -187,7 +187,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
 
 
                 var tickId = getTickId(nbt);
-                currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemScanner.duration);
+                currentTime.put(tickId, (long) getDuration());
             }
 
         }
@@ -215,27 +215,28 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
 
     //以下4つのメソッドは途中で設定が変わってもいいようにメソッド化して毎回元のフィールドを参照してる
     public static double getScanLength() {
-        return ModConfig.ItemConfig.ItemScanner.scanLength;
+        return Config.Item.Scanner.getScanLength();
     }
 
     private static int getCoolTime() {
-        return ModConfig.ItemConfig.ItemScanner.coolTime;
+        return Config.Item.Scanner.getCoolTime();
     }
 
     private static int getDuration() {
-        return ModConfig.ItemConfig.ItemScanner.duration;
+        return Config.Item.Scanner.getDuration();
     }
 
     private static int getPrecision() {
-        return ModConfig.ItemConfig.ItemScanner.precision;
+        return Config.Item.Scanner.getPrecision();
     }
 
 
     private static double isSneakingScanLength(PlayerEntity player) {
+        var scanLength = (float) Config.Item.Scanner.getScanLength();
         if (!player.isSneaking()) {
-            return ModConfig.ItemConfig.ItemScanner.scanLength;
+            return scanLength;
         } else {
-            return ModConfig.ItemConfig.ItemScanner.scanLength / 2;
+            return scanLength / 2;
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.screen;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -100,7 +100,7 @@ public class HidersBlockScreen extends ScreenHandler {
     }
 
     private static int getScreenRow() {
-        return ModConfig.ItemConfig.ItemHidingBlockViewer.screenRow;
+        return Config.Item.HidingBlockViewer.getScreenRow();
     }
 
     private static ItemStack getErrorItem() {
