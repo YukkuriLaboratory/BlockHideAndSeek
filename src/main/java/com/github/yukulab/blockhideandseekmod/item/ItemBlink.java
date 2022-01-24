@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.item;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
 import com.github.yukulab.blockhideandseekmod.util.extention.ServerPlayerEntityKt;
@@ -51,8 +51,8 @@ public class ItemBlink extends LoreItem implements ServerSideItem {
     public List<Text> getLore() {
         return List.of(
                 new LiteralText("右クリック: 一定時間透明になります"),
-                Text.of("効果時間: " + ModConfig.ItemConfig.ItemBlink.duration),
-                Text.of("クールタイム: " + ModConfig.ItemConfig.ItemBlink.coolTime)
+                Text.of("効果時間: " + getDuration()),
+                Text.of("クールタイム: " + getCoolTime())
         );
     }
 
@@ -88,9 +88,9 @@ public class ItemBlink extends LoreItem implements ServerSideItem {
         var stack = user.getStackInHand(hand);
         if (!HideController.isHiding(player)) {
             var nbt = stack.getOrCreateNbt();
-            var coolTime = ModConfig.ItemConfig.ItemBlink.coolTime + ModConfig.ItemConfig.ItemBlink.duration;
+            var coolTime = getCoolTime() + getDuration();
             var tickId = getTickId(nbt);
-            currentTime.put(tickId, (long) ModConfig.ItemConfig.ItemBlink.duration);
+            currentTime.put(tickId, (long) getDuration());
             player.getItemCooldownManager().set(this, coolTime);
             player.setStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, Integer.MAX_VALUE, 1), null);
             player.playSound(SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION, SoundCategory.PLAYERS,1.0f,1.0f);
@@ -119,5 +119,13 @@ public class ItemBlink extends LoreItem implements ServerSideItem {
             nbt.putUuid(TICK_ID, tickId);
         }
         return tickId;
+    }
+
+    private static int getDuration() {
+        return Config.Item.Blink.getDuration();
+    }
+
+    private static int getCoolTime() {
+        return Config.Item.Blink.getCoolTime();
     }
 }

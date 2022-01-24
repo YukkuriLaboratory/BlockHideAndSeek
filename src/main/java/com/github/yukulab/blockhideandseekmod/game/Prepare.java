@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.game;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.util.*;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Blocks;
@@ -148,7 +148,7 @@ public class Prepare implements GameStatus {
         TeamPlayerListHeader.TeamList();
 
         //準備の制限時間(毎回入力するのがダルいので定数化．クラス内定数にしないのは途中でConfig変えられたりする可能性を考えているため)
-        var prepareTime = ModConfig.SystemConfig.Times.prepareTime;
+        var prepareTime = Config.System.Time.getPrepareTime();
 
         //現在の時間
         var now = Instant.now();

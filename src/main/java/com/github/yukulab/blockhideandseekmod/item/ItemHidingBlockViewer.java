@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.item;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.screen.HidersBlockScreen;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
@@ -81,6 +81,6 @@ public class ItemHidingBlockViewer extends LoreItem implements ServerSideItem {
     }
 
     private static boolean isSubTitle() {
-        return ModConfig.ItemConfig.ItemHidingBlockViewer.notifyOnTitle;
+        return Config.Item.HidingBlockViewer.getNotifyOnTitle();
     }
 }

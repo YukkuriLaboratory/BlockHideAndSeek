@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.util;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.game.GameController;
 import com.github.yukulab.blockhideandseekmod.game.SelectTeam;
 import com.google.common.collect.Maps;
@@ -123,7 +123,7 @@ public class FlyController {
     }
 
     public static Duration getMaxTime() {
-        return Duration.ofSeconds(ModConfig.ItemConfig.ItemFlyer.flyTime);
+        return Duration.ofSeconds(Config.Item.Flyer.getFlyTime());
     }
 
     private final static Duration maxRegenCoolTime = Duration.ofSeconds(1);

@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.item;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
-import com.github.yukulab.blockhideandseekmod.config.ModConfig;
+import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.entity.BhasEntityTypes;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
@@ -63,8 +63,8 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem {
                 new LiteralText("右クリック: デコイブロックを設置します"),
                 Text.of("(地面に対して使用してください)"),
                 Text.of("デコイの効果:鬼のスキャンに優先的に表示されます"),
-                Text.of("デコイ消滅までの時間" + ModConfig.ItemConfig.ItemFakeSummoner.deleteTime + "秒"),
-                Text.of("クールタイム" + ModConfig.ItemConfig.ItemFakeSummoner.cooltime)
+                Text.of("デコイ消滅までの時間" + getDeleteTime() + "秒"),
+                Text.of("クールタイム" + getCoolTime())
         );
     }
 
@@ -224,10 +224,14 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem {
     }
 
     private static int getCoolTime() {
-        return ModConfig.ItemConfig.ItemFakeSummoner.cooltime;
+        return Config.Item.FakeSummoner.getCoolTime();
     }
 
     private static int getLength() {
-        return ModConfig.ItemConfig.ItemFakeSummoner.length;
+        return Config.Item.FakeSummoner.getLength();
+    }
+
+    private static int getDeleteTime() {
+        return Config.Item.FakeSummoner.getDeleteTime();
     }
 }

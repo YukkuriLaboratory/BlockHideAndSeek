@@ -9,8 +9,9 @@ object BHASCommands {
     @JvmStatic
     fun register() {
         registerCommand("bhas") {
-            apply(Rules.builder)
             apply(Reload.builder)
+            apply(Rules.builder)
+            apply(Settings.builder)
             apply(Start.builder)
             apply(Stop.builder)
             apply(Team.builder)
