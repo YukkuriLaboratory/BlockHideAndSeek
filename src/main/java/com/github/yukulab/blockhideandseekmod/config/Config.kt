@@ -22,7 +22,7 @@ object Config : ConfigCategory("config.json5") {
             var playTime by option(300, "PlayTime", "ゲーム時間(単位:秒)")
 
             @JvmStatic
-            var hideWaitTime by option(20, "HideWaitTime", "擬態にかかる時間(単位:Tick)")
+            var hideWaitTime by option(10, "HideWaitTime", "擬態にかかる時間(単位:Tick)")
         }
     }
 
@@ -45,7 +45,7 @@ object Config : ConfigCategory("config.json5") {
             var coolTime by option(10, "CoolTime", "使用クールタイム(単位:Tick)")
 
             @JvmStatic
-            var scanLength by option(30, "ScanLength", "捜索半径")
+            var scanLength by option(20, "ScanLength", "捜索半径")
 
             @JvmStatic
             var duration by option(60, "Duration", "効果時間")
@@ -88,10 +88,10 @@ object Config : ConfigCategory("config.json5") {
 
         object FakeSummoner : ConfigCategory("FakeSummoner", "ミミックが持つデコイ召喚用アイテム") {
             @JvmStatic
-            var deleteTime by option(30, "DeleteTime", "デコイ消滅までの時間(単位:秒)")
+            var deleteTime by option(10000, "DeleteTime", "デコイ消滅までの時間(単位:秒)")
 
             @JvmStatic
-            var coolTime by option(400, "CoolTime", "使用クールタイム(単位:Tick)")
+            var coolTime by option(2400, "CoolTime", "使用クールタイム(単位:Tick)")
 
             @JvmStatic
             var length by option(30, "Length", "届く最大の距離")
