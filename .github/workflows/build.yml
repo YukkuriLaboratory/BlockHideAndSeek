@@ -7,10 +7,10 @@ name: build
 on:
   pull_request:
     branches:
-      - 1.17
+      - '1.18'
   push:
     branches:
-      - 1.17
+      - '1.18'
 
 jobs:
   build:
@@ -51,7 +51,7 @@ jobs:
       - name: build
         run: ./gradlew build
       - name: capture build artifacts
-        if: ${{ runner.os == 'Linux' && matrix.java == '16' }} # Only upload artifacts built from latest java on one OS
+        if: ${{ runner.os == 'Linux' && matrix.java == '17' }} # Only upload artifacts built from latest java on one OS
         uses: actions/upload-artifact@v2
         with:
           name: Artifacts
