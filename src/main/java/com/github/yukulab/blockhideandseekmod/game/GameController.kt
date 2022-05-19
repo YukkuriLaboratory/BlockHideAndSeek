@@ -1,11 +1,10 @@
 package com.github.yukulab.blockhideandseekmod.game
 
-import com.github.yukulab.blockhideandseekmod.item.BhasItems
-import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner
-import com.github.yukulab.blockhideandseekmod.item.ItemJammer
-import com.github.yukulab.blockhideandseekmod.util.*
 import com.github.yukulab.blockhideandseekmod.entity.BlockHighlightEntity
-import com.github.yukulab.blockhideandseekmod.entity.DecoyEntity
+import com.github.yukulab.blockhideandseekmod.item.BhasItems
+import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummonerJava
+import com.github.yukulab.blockhideandseekmod.item.ItemJammerJava
+import com.github.yukulab.blockhideandseekmod.util.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
@@ -88,7 +87,7 @@ object GameController {
         progressBar = null
         current = null
 
-        ItemJammer.clearJamming()
+        ItemJammerJava.clearJamming()
 
         val spawnPackets = arrayListOf<PlayerSpawnS2CPacket>()
 
@@ -99,7 +98,7 @@ object GameController {
                 // 擬態解除(事故ることはないのでここで呼んじゃう)
                 HideController.cancelHiding(it)
                 //デコイ削除
-                ItemFakeSummoner.clearHighlight()
+                ItemFakeSummonerJava.clearHighlight()
                 // Modアイテムの削除
                 it.inventory
                     .remove(
@@ -129,7 +128,7 @@ object GameController {
 
         server.worlds.forEach { world ->
             world.iterateEntities().forEach {
-                if (it is BlockHighlightEntity || it is DecoyEntity) {
+                if (it is BlockHighlightEntity) {
                     it.discard()
                 }
             }

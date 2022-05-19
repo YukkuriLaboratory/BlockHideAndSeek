@@ -8,13 +8,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ItemSurprisePumpkin extends LoreItem implements ServerSideItem {
+public class ItemSurprisePumpkinJava extends LoreItem implements JavaServerSideItem {
     private static final Item.Settings SETTINGS = new Item.Settings();
 
-    public ItemSurprisePumpkin() {
+    public ItemSurprisePumpkinJava() {
         super(SETTINGS);
     }
 
@@ -33,7 +34,7 @@ public class ItemSurprisePumpkin extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    public Item getVisualItem() {
+    public @NotNull Item getVisualItem() {
         return Items.CARVED_PUMPKIN;
     }
 
@@ -41,7 +42,7 @@ public class ItemSurprisePumpkin extends LoreItem implements ServerSideItem {
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         if (entity instanceof ServerPlayerEntity player) {
             time = time + 1;
-            if (time >= ItemSurpriseBall.getDuration()) {
+            if (time >= ItemSurpriseBallJava.getDuration()) {
                 player.getInventory().removeOne(new ItemStack(BhasItems.SURPRISEPUMPKIN));
                 player.getInventory().removeStack(39);
                 time = 0;

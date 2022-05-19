@@ -3,8 +3,9 @@ package com.github.yukulab.blockhideandseekmod.command
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod
 import com.github.yukulab.blockhideandseekmod.config.Config
 import com.github.yukulab.blockhideandseekmod.util.HideController
-import dev.uten2c.cmdlib.CommandBuilder
-import dev.uten2c.cmdlib.CommandContext
+import dev.uten2c.strobo.command.CommandBuilder
+import dev.uten2c.strobo.command.CommandContext
+import dev.uten2c.strobo.command.argument.ArgumentGetter
 import io.github.redstoneparadox.paradoxconfig.config.CollectionConfigOption
 import io.github.redstoneparadox.paradoxconfig.config.ConfigCategory
 import io.github.redstoneparadox.paradoxconfig.config.ConfigOption
@@ -60,10 +61,10 @@ object Settings : BHASCommand {
 
     @Suppress("UNCHECKED_CAST")
     private fun CommandBuilder.registerAsInt(key: String, option: ConfigOption<Int>) {
-        val executes: CommandBuilder.() -> Unit = {
+        val executes: CommandBuilder.(ArgumentGetter<Int>) -> Unit = {
             createSuggest(option)
             executes {
-                val int = getInteger(key)
+                val int = it()
                 option.set(int)
                 sendChangeMessage(key, int)
                 Config.save()
@@ -72,11 +73,11 @@ object Settings : BHASCommand {
         val child: CommandBuilder.() -> Unit = if (option is RangeConfigOption<Int>) {
             {
                 val range = rangeField.get(option) as ClosedRange<Int>
-                integer(key, range.start, range.endInclusive, executes)
+                integer(range.start, range.endInclusive, executes)
             }
         } else {
             {
-                integer(key, child = executes)
+                integer(child = executes)
             }
         }
 
@@ -85,23 +86,23 @@ object Settings : BHASCommand {
 
     @Suppress("UNCHECKED_CAST")
     private fun CommandBuilder.registerAsDouble(key: String, option: ConfigOption<Double>) {
-        val executes: CommandBuilder.() -> Unit = {
+        val executes: CommandBuilder.(ArgumentGetter<Double>) -> Unit = {
             createSuggest(option)
             executes {
-                val int = getDouble(key)
-                option.set(int)
-                sendChangeMessage(key, int)
+                val double = it()
+                option.set(double)
+                sendChangeMessage(key, double)
                 Config.save()
             }
         }
         val child: CommandBuilder.() -> Unit = if (option is RangeConfigOption<Double>) {
             {
                 val range = rangeField.get(option) as ClosedRange<Double>
-                double(key, range.start, range.endInclusive, executes)
+                double(range.start, range.endInclusive, executes)
             }
         } else {
             {
-                integer(key, child = executes)
+                double(child = executes)
             }
         }
 
@@ -109,10 +110,10 @@ object Settings : BHASCommand {
     }
 
     private fun CommandBuilder.registerAsBoolean(key: String, option: ConfigOption<Boolean>) {
-        boolean(key) {
+        boolean { getBool ->
             createSuggest(option)
             executes {
-                val boolean = getBoolean(key)
+                val boolean = getBool()
                 option.set(boolean)
                 sendChangeMessage(key, boolean)
                 Config.save()
@@ -127,7 +128,7 @@ object Settings : BHASCommand {
         option: CollectionConfigOption<String, MutableCollection<String>>
     ) {
         literal("add") {
-            string(key) {
+            string { getString ->
                 if (key == "ExcludeBlocks") {
                     suggests { _, builder ->
                         listOf(
@@ -140,7 +141,7 @@ object Settings : BHASCommand {
                     }
                 }
                 executes {
-                    val value = getString(key)
+                    val value = getString()
                     (option.get() as MutableCollection<String>).add(value)
                     source.sendFeedback(BHASCommands.bhasMessage(Text.of("${key}に${value}を追加しました")), true)
                     Config.save()
@@ -148,13 +149,13 @@ object Settings : BHASCommand {
             }
         }
         literal("remove") {
-            string(key) {
+            string { getString ->
                 suggests { _, builder ->
                     (option.get() as MutableCollection<*>).forEach { builder.suggest(it.toString()) }
                     builder.buildFuture()
                 }
                 executes {
-                    val value = getString(key)
+                    val value = getString()
                     (option.get() as MutableCollection<String>).remove(value)
                     source.sendFeedback(BHASCommands.bhasMessage(Text.of("${key}から${value}を削除しました")), true)
                     Config.save()

@@ -19,16 +19,17 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ItemBlockSelector extends LoreItem implements ServerSideItem {
+public class ItemBlockSelectorJava extends LoreItem implements JavaServerSideItem {
 
     private static final String SELECT_BLOCK_ERROR = "selectBlockError";
 
     private static final Settings SETTINGS = new Settings();
 
-    public ItemBlockSelector() {
+    public ItemBlockSelectorJava() {
         super(SETTINGS);
     }
 
@@ -46,7 +47,7 @@ public class ItemBlockSelector extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    public Item getVisualItem() {
+    public @NotNull Item getVisualItem() {
         return Items.CLOCK;
     }
 

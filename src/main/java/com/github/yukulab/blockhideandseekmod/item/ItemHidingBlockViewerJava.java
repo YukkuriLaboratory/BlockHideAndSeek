@@ -21,16 +21,17 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class ItemHidingBlockViewer extends LoreItem implements ServerSideItem {
+public class ItemHidingBlockViewerJava extends LoreItem implements JavaServerSideItem {
 
     private static final Settings SETTINGS = new Settings();
 
-    public ItemHidingBlockViewer() {
+    public ItemHidingBlockViewerJava() {
         super(SETTINGS);
     }
 
@@ -47,7 +48,7 @@ public class ItemHidingBlockViewer extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    public Item getVisualItem() {
+    public @NotNull Item getVisualItem() {
         return Items.ENCHANTED_BOOK;
     }
 

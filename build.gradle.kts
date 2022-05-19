@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("fabric-loom") version "0.11-SNAPSHOT"
-    kotlin("jvm") version "1.5.31"
+    kotlin("jvm") version "1.6.21"
     id("com.matthewprenger.cursegradle") version "1.4.0"
     id("com.modrinth.minotaur") version "1.2.1"
     `maven-publish`
@@ -57,9 +57,9 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_version}")
 
-    modImplementation("net.fabricmc:fabric-language-kotlin:1.6.5+kotlin.1.5.31")
+    modImplementation("net.fabricmc:fabric-language-kotlin:1.7.4+kotlin.1.6.21")
 
-    includeAndExpose("dev.uten2c:cmdlib-fabric:1.17+1")
+    includeAndExpose("dev.uten2c:strobo:70")
     includeAndExpose("maven.modrinth:paradox-config:0.5.1-beta")
     includeAndExpose("io.github.cottonmc:Jankson-Fabric:3.0.1+j1.2.0")
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
@@ -90,8 +90,8 @@ tasks.withType<JavaCompile>().configureEach {
     // If Javadoc is generated, this must be specified in that task too.
     options.encoding = "UTF-8"
 
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    options.release.set(16)
+    // Minecraft 1.18 upwards uses Java 17.
+    options.release.set(17)
 }
 
 java {
@@ -109,7 +109,8 @@ tasks.withType<Jar> {
 
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-        jvmTarget = "16"
+        jvmTarget = "17"
+        freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 

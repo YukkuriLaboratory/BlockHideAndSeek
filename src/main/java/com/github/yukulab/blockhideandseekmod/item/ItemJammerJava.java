@@ -21,6 +21,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.include.com.google.common.collect.Lists;
 import org.spongepowered.include.com.google.common.collect.Maps;
 
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class ItemJammer extends LoreItem implements ServerSideItem{
+public class ItemJammerJava extends LoreItem implements JavaServerSideItem {
 
     private final static String JAMMING_RESULT = "jammingResult";
     private final static String JAMMING_END_RESULT = "jammingEndResult";
@@ -41,7 +42,7 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
 
     private static final List<UUID> activatedPlayers = Lists.newArrayList();
 
-    public ItemJammer() {
+    public ItemJammerJava() {
         super(SETTINGS);
     }
 
@@ -93,7 +94,7 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
                 .stream()
                 .filter(p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()))
                 .filter(p -> p != user)
-                .filter(p -> user.getBlockPos().isWithinDistance(p.getBlockPos(), ItemScanner.getScanLength()))
+                .filter(p -> user.getBlockPos().isWithinDistance(p.getBlockPos(), ItemScannerJava.getScanLength()))
                 .toList();
 
         var otherMessage = new LiteralText("")
@@ -109,7 +110,7 @@ public class ItemJammer extends LoreItem implements ServerSideItem{
     }
 
     @Override
-    public Item getVisualItem() {
+    public @NotNull Item getVisualItem() {
         return Items.SOUL_TORCH;
     }
 

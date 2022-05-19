@@ -5,7 +5,7 @@ import com.github.yukulab.blockhideandseekmod.game.MainGame;
 import com.github.yukulab.blockhideandseekmod.game.Prepare;
 import com.github.yukulab.blockhideandseekmod.game.SelectTeam;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
-import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner;
+import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummonerJava;
 import com.github.yukulab.blockhideandseekmod.util.FlyController;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
@@ -41,7 +41,7 @@ public abstract class MixinServerWorld {
             at = @At("TAIL")
     )
     private void sendFakeBlockPacket(ServerPlayerEntity player, CallbackInfo ci) {
-        Sets.union(HideController.getHidingBlocks(), ItemFakeSummoner.getDecoyBlocks())
+        Sets.union(HideController.getHidingBlocks(), ItemFakeSummonerJava.getDecoyBlocks())
                 .forEach(entry -> {
                     var packet = new BlockUpdateS2CPacket(entry.getKey(), entry.getValue());
                     player.networkHandler.sendPacket(packet);

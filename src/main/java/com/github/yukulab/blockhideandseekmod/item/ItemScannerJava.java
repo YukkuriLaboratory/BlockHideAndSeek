@@ -25,6 +25,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.include.com.google.common.collect.Maps;
 
 import java.util.*;
@@ -33,7 +34,7 @@ import java.util.stream.Stream;
 /**
  * 近くの隠れているBlockを指し示すアイテム
  */
-public class ItemScanner extends LoreItem implements ServerSideItem {
+public class ItemScannerJava extends LoreItem implements JavaServerSideItem {
 
     private final static String SCAN_RESULT = "scanResult";
     private final static String SCAN_NOTIFY = "scanNotify";
@@ -49,7 +50,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
 
     private final static Settings SETTINGS = new Settings();
 
-    public ItemScanner() {
+    public ItemScannerJava() {
         super(SETTINGS);
     }
 
@@ -59,7 +60,7 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    public Item getVisualItem() {
+    public @NotNull Item getVisualItem() {
         return Items.COMPASS;
     }
 
@@ -100,14 +101,14 @@ public class ItemScanner extends LoreItem implements ServerSideItem {
                 .filter(p -> p.isTeamPlayer(TeamCreateAndDelete.getHiders()))
                 .filter(p -> p.distanceTo(player) < isSneakingScanLength(player))
                 .filter(p -> {
-                    if (ItemJammer.isActivated(p.getUuid())) {
+                    if (ItemJammerJava.isActivated(p.getUuid())) {
                         jammedPlayer.add(p);
                         return false;
                     }
                     return true;
                 })
                 .toList();
-        var fakeEntities = ItemFakeSummoner.getFakeEntities();
+        var fakeEntities = ItemFakeSummonerJava.getFakeEntities();
         var nearestDecoys = fakeEntities.values()
                 .stream()
                 .filter(p -> p.distanceTo(player) < isSneakingScanLength(player))

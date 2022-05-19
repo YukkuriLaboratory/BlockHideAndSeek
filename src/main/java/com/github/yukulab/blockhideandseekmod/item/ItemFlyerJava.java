@@ -16,6 +16,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -23,11 +24,11 @@ import java.util.List;
  * 実はこのアイテムを持っているかどうかは飛行可能であるかに関係が無い
  * あくまでも状態の表示用アイテムである
  */
-public class ItemFlyer extends LoreItem implements ServerSideItem {
+public class ItemFlyerJava extends LoreItem implements JavaServerSideItem {
 
     private final static Settings SETTINGS = new Settings().maxDamage(Items.ELYTRA.getMaxDamage());
 
-    public ItemFlyer() {
+    public ItemFlyerJava() {
         super(SETTINGS);
     }
 
@@ -46,7 +47,7 @@ public class ItemFlyer extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    public Item getVisualItem() {
+    public @NotNull Item getVisualItem() {
         return Items.ELYTRA;
     }
 

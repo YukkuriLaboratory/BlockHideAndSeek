@@ -24,13 +24,14 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.include.com.google.common.collect.Maps;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class ItemBlink extends LoreItem implements ServerSideItem {
+public class ItemBlink extends LoreItem implements JavaServerSideItem {
 
     private static final Map<UUID, Long> currentTime = Maps.newHashMap();
 
@@ -57,7 +58,7 @@ public class ItemBlink extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    public Item getVisualItem() {
+    public @NotNull Item getVisualItem() {
         return Items.DRAGON_BREATH;
     }
 

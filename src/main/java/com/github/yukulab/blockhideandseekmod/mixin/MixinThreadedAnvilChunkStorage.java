@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.mixin;
 
 import com.github.yukulab.blockhideandseekmod.entity.DecoyEntity;
-import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner;
+import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummonerJava;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -32,7 +32,7 @@ public class MixinThreadedAnvilChunkStorage {
             }
         } else if (entity instanceof DecoyEntity) {
             var pos = entity.getBlockPos();
-            player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, ItemFakeSummoner.getDecoyState(pos)));
+            player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, ItemFakeSummonerJava.getDecoyState(pos)));
         }
         return entity;
     }
