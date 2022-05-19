@@ -13,9 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
       - name: 'Add JDK Settings'
         run: |
-          ls -la
           mkdir ./.idea
           cat << EOF > ./.idea/misc.xml
           <?xml version="1.0" encoding="UTF-8"?>
