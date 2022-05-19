@@ -3,7 +3,7 @@ package com.github.yukulab.blockhideandseekmod.command
 import com.github.yukulab.blockhideandseekmod.command.BHASCommands.bhasMessage
 import com.github.yukulab.blockhideandseekmod.game.GameController
 import com.github.yukulab.blockhideandseekmod.game.SelectTeam
-import dev.uten2c.cmdlib.CommandBuilder
+import dev.uten2c.strobo.command.CommandBuilder
 import net.minecraft.text.LiteralText
 import net.minecraft.text.Text
 

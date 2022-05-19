@@ -2,26 +2,18 @@ package com.github.yukulab.blockhideandseekmod.mixin;
 
 import com.github.yukulab.blockhideandseekmod.game.GameController;
 import com.github.yukulab.blockhideandseekmod.game.Prepare;
-import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner;
-import com.github.yukulab.blockhideandseekmod.item.ServerSideItem;
+import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummonerJava;
 import com.github.yukulab.blockhideandseekmod.util.FlyController;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
-import com.github.yukulab.blockhideandseekmod.util.UUIDHolder;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -68,7 +60,7 @@ public class MixinServerPlayNetworkHandler {
             return;
         }
 
-        var decoyBlock = ItemFakeSummoner.getDecoyState(pos);
+        var decoyBlock = ItemFakeSummonerJava.getDecoyState(pos);
         if (decoyBlock != null) {
             instance.sendPacket(new BlockUpdateS2CPacket(pos, decoyBlock));
             return;
@@ -86,7 +78,7 @@ public class MixinServerPlayNetworkHandler {
     }
 
     @Redirect(
-            method = "onPlayerAbilities",
+            method = "onUpdatePlayerAbilities",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/network/packet/c2s/play/UpdatePlayerAbilitiesC2SPacket;isFlying()Z"
@@ -100,62 +92,10 @@ public class MixinServerPlayNetworkHandler {
     }
 
     @Inject(
-            method = "onPlayerAbilities",
+            method = "onUpdatePlayerAbilities",
             at = @At("TAIL")
     )
     private void updateFlying(UpdatePlayerAbilitiesC2SPacket packet, CallbackInfo ci) {
         player.sendAbilitiesUpdate();
-    }
-
-    @Inject(
-            method = "sendPacket(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V",
-            at = @At("HEAD")
-    )
-    private void setUUID(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> listener, CallbackInfo ci) {
-        ((UUIDHolder) packet).setUUID(((UUIDHolder) connection).getUUID());
-    }
-
-    @Redirect(
-            method = "onCreativeInventoryAction",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/network/packet/c2s/play/CreativeInventoryActionC2SPacket;getItemStack()Lnet/minecraft/item/ItemStack;"
-            )
-    )
-    private ItemStack swapStack(CreativeInventoryActionC2SPacket instance) {
-        var stack = instance.getItemStack();
-        var tag = stack.getNbt();
-        if (tag != null && tag.contains(ServerSideItem.TAG_KEY)) {
-            return convertItemStack(stack);
-        }
-        return stack;
-    }
-
-    @SuppressWarnings("deprecation")
-    private ItemStack convertItemStack(ItemStack itemStack) {
-        var copy = itemStack.copy();
-        var id = new Identifier(copy.getOrCreateNbt().getString(ServerSideItem.TAG_KEY));
-        var item = Registry.ITEM.get(id);
-        copy.item = item;
-        var tag = copy.getNbt();
-        if (tag != null) {
-            tag.remove(ServerSideItem.TAG_KEY);
-            var defaultVisualStack = ((ServerSideItem) item).createVisualStack(item.getDefaultStack());
-            var displayTagFirst = copy.getSubNbt("display");
-            var displayTagSecond = defaultVisualStack.getSubNbt("display");
-            if (displayTagFirst != null && displayTagSecond != null) {
-                var nameTagFirst = displayTagFirst.get("Name");
-                if (nameTagFirst != null && nameTagFirst.equals(displayTagSecond.get("Name"))) {
-                    displayTagFirst.remove("Name");
-                }
-                if (displayTagFirst.isEmpty()) {
-                    tag.remove("display");
-                }
-            }
-            if (tag.isEmpty()) {
-                copy.setNbt(null);
-            }
-        }
-        return copy;
     }
 }

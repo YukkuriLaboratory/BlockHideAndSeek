@@ -22,16 +22,17 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ItemDetector extends LoreItem implements ServerSideItem {
+public class ItemDetectorJava extends LoreItem implements JavaServerSideItem {
 
     private final static String DETECT_MESSAGE = "detectMessage";
 
     private final static Settings SETTINGS = new Settings();
 
-    public ItemDetector() {
+    public ItemDetectorJava() {
         super(SETTINGS);
     }
 
@@ -51,7 +52,7 @@ public class ItemDetector extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    public Item getVisualItem() {
+    public @NotNull Item getVisualItem() {
         return Items.CLOCK;
     }
 
@@ -84,7 +85,7 @@ public class ItemDetector extends LoreItem implements ServerSideItem {
                 var source = new SeekerDamageSource(seeker);
                 HideController.cancelHiding(player);
                 player.damage(source, getDamageAmount());
-                ItemFakeSummoner.removeHighlight(player.getUuid());
+                ItemFakeSummonerJava.removeHighlight(player.getUuid());
                 var message = new LiteralText("").setStyle(Style.EMPTY.withColor(Formatting.GREEN))
                         .append(player.getDisplayName())
                         .append(Text.of("を発見しました"));
@@ -94,12 +95,12 @@ public class ItemDetector extends LoreItem implements ServerSideItem {
             }
         }
 
-        var decoyMap = ItemFakeSummoner.getFakeEntities();
+        var decoyMap = ItemFakeSummonerJava.getFakeEntities();
 
         var decoy = decoyMap.get(pos);
         if (decoy != null) {
-            ItemFakeSummoner.removeHighlight(pos);
-            ItemFakeSummoner.setCoolTime(pos);
+            ItemFakeSummonerJava.removeHighlight(pos);
+            ItemFakeSummonerJava.setCoolTime(pos);
             var message = new LiteralText("").setStyle(Style.EMPTY.withColor(Formatting.GREEN))
                     .append(Text.of("デコイ"))
                     .append(Text.of("を発見しました"));

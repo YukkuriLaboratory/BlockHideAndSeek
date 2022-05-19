@@ -1,6 +1,6 @@
 package com.github.yukulab.blockhideandseekmod.command
 
-import dev.uten2c.cmdlib.registerCommand
+import dev.uten2c.strobo.command.registerCommand
 import net.minecraft.text.LiteralText
 import net.minecraft.text.MutableText
 import net.minecraft.text.Text

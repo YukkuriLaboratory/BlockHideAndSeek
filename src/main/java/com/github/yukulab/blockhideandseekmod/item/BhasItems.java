@@ -10,23 +10,23 @@ import java.util.Objects;
 
 public class BhasItems {
     // 共通
-    public static ItemFlyer FLYER = register("flyer", new ItemFlyer());
-    public static ItemRuleBook RuleBook = register("rulebook", new ItemRuleBook());
+    public static ItemFlyerJava FLYER = register("flyer", new ItemFlyerJava());
+    public static ItemRuleBookJava RuleBook = register("rulebook", new ItemRuleBookJava());
 
     // 鬼用
-    public static ItemDetector DETECTOR = register("detector", new ItemDetector());
-    public static ItemScanner SCANNER = register("scanner", new ItemScanner());
-    public static ItemHidingBlockViewer BLOCK_VIEWER = register("block_viewer", new ItemHidingBlockViewer());
+    public static ItemDetectorJava DETECTOR = register("detector", new ItemDetectorJava());
+    public static ItemScannerJava SCANNER = register("scanner", new ItemScannerJava());
+    public static ItemHidingBlockViewerJava BLOCK_VIEWER = register("block_viewer", new ItemHidingBlockViewerJava());
 
     // ミミック用
-    public static ItemBlockSelector SELECTOR = register("selector", new ItemBlockSelector());
+    public static ItemBlockSelectorJava SELECTOR = register("selector", new ItemBlockSelectorJava());
     public static ItemBlink BLINK = register("blink", new ItemBlink());
-    public static ItemJammer JAMMER = register("jammer", new ItemJammer());
-    public static ItemSurpriseBall SURPRISEBALL = register("surpriseball", new ItemSurpriseBall());
-    public static ItemFakeSummoner FAKESUMMONER = register("fakesummoner", new ItemFakeSummoner());
+    public static ItemJammerJava JAMMER = register("jammer", new ItemJammerJava());
+    public static ItemSurpriseBallJava SURPRISEBALL = register("surpriseball", new ItemSurpriseBallJava());
+    public static ItemFakeSummonerJava FAKESUMMONER = register("fakesummoner", new ItemFakeSummonerJava());
 
     //使用不可
-    public static ItemSurprisePumpkin SURPRISEPUMPKIN = register("surprisepumpkin", new ItemSurprisePumpkin());
+    public static ItemSurprisePumpkinJava SURPRISEPUMPKIN = register("surprisepumpkin", new ItemSurprisePumpkinJava());
 
     private static <T extends Item> T register(String id, T item) {
         return Registry.register(Registry.ITEM, new Identifier(BlockHideAndSeekMod.MOD_ID, id), item);

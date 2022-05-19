@@ -15,13 +15,14 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
+public class ItemSurpriseBallJava extends LoreItem implements JavaServerSideItem {
     private static final Item.Settings SETTINGS = new Item.Settings();
 
-    public ItemSurpriseBall() {
+    public ItemSurpriseBallJava() {
         super(SETTINGS);
     }
 
@@ -39,7 +40,7 @@ public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    public Item getVisualItem() {
+    public @NotNull Item getVisualItem() {
         return Items.FIREWORK_STAR;
     }
 
@@ -49,7 +50,7 @@ public class ItemSurpriseBall extends LoreItem implements ServerSideItem {
         user.playSound(SoundEvents.ENTITY_ENDER_PEARL_THROW, SoundCategory.PLAYERS,1.0f,1.0f);
         SurpriseBallEntity ball = new SurpriseBallEntity(world,user);
         ball.setItem(stack);
-        ball.setProperties(user, user.prevPitch, user.prevYaw, 0F, 3F, 0F);
+        ball.setVelocity(user, user.prevPitch, user.prevYaw, 0F, 3F, 0F);
         world.spawnEntity(ball);
 
         var coolTime = getCoolTime() + getDuration();

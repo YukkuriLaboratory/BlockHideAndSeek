@@ -33,16 +33,17 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 import static net.minecraft.util.Formatting.YELLOW;
 
-public class ItemFakeSummoner extends LoreItem implements ServerSideItem {
+public class ItemFakeSummonerJava extends LoreItem implements JavaServerSideItem {
     private static final Item.Settings SETTINGS = new Item.Settings();
 
-    public ItemFakeSummoner() {
+    public ItemFakeSummonerJava() {
         super(SETTINGS);
     }
 
@@ -69,7 +70,7 @@ public class ItemFakeSummoner extends LoreItem implements ServerSideItem {
     }
 
     @Override
-    public Item getVisualItem() {
+    public @NotNull Item getVisualItem() {
         return Items.SHULKER_SHELL;
     }
 

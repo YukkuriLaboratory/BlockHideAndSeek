@@ -100,7 +100,7 @@ public class Prepare implements GameStatus {
      */
     public void lockPlayerMovement(ServerPlayerEntity player) {
         var uuid = player.getUuid();
-        var fakeEntity = lockerEntities.containsKey(uuid) ? lockerEntities.get(uuid) : EntityType.VILLAGER.create(player.getServerWorld());
+        var fakeEntity = lockerEntities.containsKey(uuid) ? lockerEntities.get(uuid) : EntityType.VILLAGER.create(player.getWorld());
         if (fakeEntity != null) {
             var blockPos = player.getBlockPos();
             fakeEntity.setPosition(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);

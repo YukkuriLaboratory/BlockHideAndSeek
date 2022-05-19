@@ -3,7 +3,7 @@ package com.github.yukulab.blockhideandseekmod.command
 import com.github.yukulab.blockhideandseekmod.command.BHASCommands.GAME_IS_RUNNING
 import com.github.yukulab.blockhideandseekmod.command.BHASCommands.infoMessage
 import com.github.yukulab.blockhideandseekmod.game.GameController
-import dev.uten2c.cmdlib.CommandBuilder
+import dev.uten2c.strobo.command.CommandBuilder
 import net.minecraft.text.Text
 import net.minecraft.world.GameRules
 

@@ -2,7 +2,7 @@ package com.github.yukulab.blockhideandseekmod.command
 
 import com.github.yukulab.blockhideandseekmod.command.BHASCommands.bhasMessage
 import com.github.yukulab.blockhideandseekmod.game.GameController
-import dev.uten2c.cmdlib.CommandBuilder
+import dev.uten2c.strobo.command.CommandBuilder
 import net.minecraft.network.MessageType
 import net.minecraft.text.Text
 import java.util.*
@@ -13,7 +13,7 @@ object Stop : BHASCommand {
             requires { it.hasPermissionLevel(it.server.opPermissionLevel) }
             executes {
                 if (GameController.suspend()) {
-                    source.server.playerManager.broadcastChatMessage(
+                    source.server.playerManager.broadcast(
                         bhasMessage(Text.of(" ゲームが中断されました")),
                         MessageType.CHAT,
                         UUID.randomUUID()

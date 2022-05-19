@@ -3,12 +3,12 @@ package com.github.yukulab.blockhideandseekmod.game;
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
-import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner;
-import com.github.yukulab.blockhideandseekmod.item.ServerSideItem;
+import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummonerJava;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.PlayerUtil;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import com.github.yukulab.blockhideandseekmod.util.TeamPlayerListHeader;
+import dev.uten2c.strobo.serversideitem.ServerSideItem;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -174,7 +174,7 @@ public class MainGame implements GameStatus {
                     // 擬態解除(事故ることはないのでここで呼んじゃう)
                     HideController.cancelHiding(player);
                     //デコイ削除
-                    ItemFakeSummoner.clearHighlight();
+                    ItemFakeSummonerJava.clearHighlight();
                     // Modアイテムの削除
                     player.getInventory()
                             .remove(

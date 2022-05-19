@@ -1,7 +1,7 @@
 package com.github.yukulab.blockhideandseekmod.entity;
 
 import com.github.yukulab.blockhideandseekmod.config.Config;
-import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummoner;
+import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummonerJava;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.world.World;
@@ -17,7 +17,7 @@ public class DecoyEntity extends BlockHighlightEntity {
     public void tick() {
         time = time + 1;
         if (time >= getDeleteTime() * 20) {
-            ItemFakeSummoner.removeHighlight(this.getBlockPos());
+            ItemFakeSummonerJava.removeHighlight(this.getBlockPos());
             time = 0;
         }
     }
