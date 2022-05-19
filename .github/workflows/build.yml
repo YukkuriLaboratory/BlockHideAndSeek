@@ -67,5 +67,11 @@ jobs:
         if: ${{ runner.os == 'Windows'}}
         # これらのファイルをGitHub Actionsのキャッシュからリストアすると、将来のビルドで問題が生じるかもしれないので削除。
         run: |
+          get-process | foreach{
+          $pName = $_
+            if ( $pName.Path -like ( '~/.gradle/caches/modules-2/' + '*') ) {
+              Stop-Process $pName.id -Force -ErrorAction SilentlyContinue
+            }
+          }
           rm -Force ~/.gradle/caches/modules-2/modules-2.lock
           rm -Force ~/.gradle/caches/modules-2/gc.properties
