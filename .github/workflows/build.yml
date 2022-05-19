@@ -57,9 +57,15 @@ jobs:
           name: Artifacts
           path: build/libs/
 
-      - name: Cleanup Gradle Cache
-        # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
-        # これらのファイルをGitHub Actionsのキャッシュからリストアすると、将来のビルドで問題が生じるかもしれない。
+      - name: Cleanup Gradle Cache on Linux
+        if: ${{ runner.os == 'Linux'}}
+        # これらのファイルをGitHub Actionsのキャッシュからリストアすると、将来のビルドで問題が生じるかもしれないので削除。
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
+      - name: Cleanup Gradle Cache on Windows
+        if: ${{ runner.os == 'Windows'}}
+        # これらのファイルをGitHub Actionsのキャッシュからリストアすると、将来のビルドで問題が生じるかもしれないので削除。
+        run: |
+          rm -Force ~/.gradle/caches/modules-2/modules-2.lock
+          rm -Force ~/.gradle/caches/modules-2/gc.properties
