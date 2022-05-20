@@ -60,6 +60,11 @@ public class SelectTeam implements GameStatus {
     private final ArrayList<UUID> hiders = Lists.newArrayList();
 
     /**
+     * 投票済み集計用
+     */
+    private final HashSet<UUID> votedList = Sets.newHashSet();
+
+    /**
      * 時間計測用
      * 変数をセットしたときのシステム時間を記録します
      */
@@ -93,7 +98,9 @@ public class SelectTeam implements GameStatus {
             .append(Text.of("\n"))
             .append(new LiteralText("鬼陣営に参加する").setStyle(Style.EMPTY.withColor(Formatting.RED).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bhas team seeker")).withHoverEvent(hoverEvent)))
             .append(Text.of(" / "))
-            .append(new LiteralText("ミミック陣営に参加する").setStyle(Style.EMPTY.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bhas team hider")).withHoverEvent(hoverEvent)));
+            .append(new LiteralText("ミミック陣営に参加する").setStyle(Style.EMPTY.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bhas team hider")).withHoverEvent(hoverEvent)))
+            .append("/")
+            .append(new LiteralText("観戦する").setStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bhas team observer")).withHoverEvent(hoverEvent)));
 
 
     public SelectTeam() {
@@ -117,6 +124,7 @@ public class SelectTeam implements GameStatus {
      */
     public void addSeeker(ServerPlayerEntity player) {
         var uuid = player.getUuid();
+        markVoted(player);
         if (!seekers.contains(uuid)) {
             hiders.remove(uuid);
             seekers.add(uuid);
@@ -131,10 +139,15 @@ public class SelectTeam implements GameStatus {
      */
     public void addHider(ServerPlayerEntity player) {
         var uuid = player.getUuid();
+        markVoted(player);
         if (!hiders.contains(uuid)) {
             seekers.remove(uuid);
             hiders.add(uuid);
         }
+    }
+
+    public void markVoted(ServerPlayerEntity player) {
+        votedList.add(player.getUuid());
     }
 
     @Override
@@ -147,7 +160,7 @@ public class SelectTeam implements GameStatus {
         var now = Instant.now();
 
         //全プレイヤーが投票を終えているか
-        var isAllPlayerVoted = seekers.size() + hiders.size() == playerManager.getPlayerList().size();
+        var isAllPlayerVoted = votedList.size() == playerManager.getPlayerList().size();
 
         if (isAllPlayerVoted && (lastAllVotedTime == null || Duration.between(lastAllVotedTime, now).toSeconds() > 5)) {
             lastAllVotedTime = now;
