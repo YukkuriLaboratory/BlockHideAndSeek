@@ -15,7 +15,8 @@ object Team : BHASCommand {
             }
             val seeker = "seeker"
             val hider = "hider"
-            val teams = listOf(seeker, hider)
+            val observer = "observer"
+            val teams = listOf(seeker, hider, observer)
             teams.forEach {
                 literal(it) {
                     executes {
@@ -29,6 +30,10 @@ object Team : BHASCommand {
                                 hider -> {
                                     current.addHider(player)
                                     source.sendFeedback(bhasMessage(LiteralText(" ミミック陣営に投票しました")), false)
+                                }
+                                observer -> {
+                                    current.markVoted(player)
+                                    source.sendFeedback(bhasMessage(LiteralText(" 観戦者に投票しました")), false)
                                 }
                                 else -> source.sendError(bhasMessage(Text.of(" 不正な文字列です")))
                             }
