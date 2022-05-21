@@ -211,6 +211,7 @@ public class Prepare implements GameStatus {
                     .filter(Objects::nonNull)
                     .forEach(player -> {
                         unlockPlayerMovement(player);
+                        PlayerUtil.escapeFromBlock(player);
                         player.changeGameMode(GameMode.ADVENTURE);
                         player.interactionManager.changeGameMode(GameMode.SURVIVAL);
                         player.getAbilities().allowFlying = true;

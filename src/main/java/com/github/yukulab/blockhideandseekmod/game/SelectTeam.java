@@ -6,6 +6,7 @@ import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.item.ItemJammerJava;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
 import com.github.yukulab.blockhideandseekmod.util.HudDisplay;
+import com.github.yukulab.blockhideandseekmod.util.PlayerUtil;
 import com.github.yukulab.blockhideandseekmod.util.TeamCreateAndDelete;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -325,6 +326,7 @@ public class SelectTeam implements GameStatus {
         //ゲームモードをサバイバルに
         Stream.concat(playerHiders.stream(), playerSeekers.stream())
                 .forEach(player -> {
+                    PlayerUtil.escapeFromBlock(player);
                     //こうすることでクライアントサイドではアドベンチャーモードとして扱われるが，実際はサバイバルモードとなる
                     player.changeGameMode(GameMode.ADVENTURE);
                     player.interactionManager.changeGameMode(GameMode.SURVIVAL);
