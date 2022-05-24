@@ -21,6 +21,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
@@ -92,8 +93,6 @@ public class ItemScannerJava extends LoreItem implements JavaServerSideItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        var stack = player.getStackInHand(hand);
-
         var jammedPlayer = new ArrayList<PlayerEntity>();
         var nearestPlayer = player.world
                 .getPlayers()
@@ -142,55 +141,15 @@ public class ItemScannerJava extends LoreItem implements JavaServerSideItem {
         HudDisplay.setActionBarText(player.getUuid(), SCAN_RESULT, message, 30L);
 
         if (jammedPlayer.isEmpty()) {
-
-            if(!nearestDecoys.isEmpty()){
-                var nearestTarget = nearestDecoys.stream().min(Comparator.comparing(p -> player.getBlockPos().getSquaredDistance(p.getBlockPos())));
-                var nbt = stack.getOrCreateNbt();
-                Random rand = new Random();
-                int numX = rand.nextInt(getPrecision() * 2) - getPrecision();
-                int numZ = rand.nextInt(getPrecision() * 2) - getPrecision();
-                nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(nearestTarget.get().getBlockPos().add(numX, 0, numZ)));
-                var var10000 = World.CODEC.encodeStart(NbtOps.INSTANCE, player.world.getRegistryKey());
-                Logger var10001 = LOGGER;
-                Objects.requireNonNull(var10001);
-                var10000.resultOrPartial(var10001::error).ifPresent((nbtElement) -> nbt.put(LODESTONE_DIMENSION_KEY, nbtElement));
-                nbt.putBoolean(LODESTONE_TRACKED_KEY, true);
-                if (!player.isSneaking()) {
-                    player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 0.5f);
-                } else {
-                    player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 3.0f);
-                }
-
-
-                var tickId = getTickId(nbt);
-                currentTime.put(tickId, (long) getDuration());
+            if (!nearestDecoys.isEmpty()) {
+                var nearestTarget = nearestDecoys.stream()
+                        .min(Comparator.comparing(p -> player.getBlockPos().getSquaredDistance(p.getBlockPos())));
+                displayTarget(nearestTarget.get().getBlockPos(), player, hand);
+            } else {
+                var nearestTarget = nearestPlayer.stream()
+                        .min(Comparator.comparing(p -> player.getBlockPos().getSquaredDistance(p.getBlockPos())));
+                nearestTarget.ifPresent(playerEntity -> displayTarget(playerEntity.getBlockPos(), player, hand));
             }
-            else {
-                var nearestTarget = nearestPlayer.stream().min(Comparator.comparing(p -> player.getBlockPos().getSquaredDistance(p.getBlockPos())));
-                var nbt = stack.getOrCreateNbt();
-
-                if (nearestTarget.isPresent()) {
-                    Random rand = new Random();
-                    int numX = rand.nextInt(getPrecision() * 2) - getPrecision();
-                    int numZ = rand.nextInt(getPrecision() * 2) - getPrecision();
-                    nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(nearestTarget.get().getBlockPos().add(numX, 0, numZ)));
-                    var var10000 = World.CODEC.encodeStart(NbtOps.INSTANCE, player.world.getRegistryKey());
-                    Logger var10001 = LOGGER;
-                    Objects.requireNonNull(var10001);
-                    var10000.resultOrPartial(var10001::error).ifPresent((nbtElement) -> nbt.put(LODESTONE_DIMENSION_KEY, nbtElement));
-                    nbt.putBoolean(LODESTONE_TRACKED_KEY, true);
-                }
-                if (!player.isSneaking()) {
-                    player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 0.5f);
-                } else {
-                    player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 3.0f);
-                }
-
-
-                var tickId = getTickId(nbt);
-                currentTime.put(tickId, (long) getDuration());
-            }
-
         }
 
         var coolTime = getCoolTime() + getDuration();
@@ -198,8 +157,32 @@ public class ItemScannerJava extends LoreItem implements JavaServerSideItem {
         //クライアントサイドではコンパスに見えてるのでコンパスにクールダウンを表示する
         ((ServerPlayerEntity) player).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
 
+        return TypedActionResult.success(player.getStackInHand(hand));
+    }
 
-        return TypedActionResult.success(stack);
+    private void displayTarget(BlockPos targetPos, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        var nbt = stack.getOrCreateNbt();
+        var precision = getPrecision();
+        if (precision >= 1) {
+            Random rand = new Random();
+            var bound = precision * 2 + 1;
+            int numX = rand.nextInt(bound) - precision;
+            int numZ = rand.nextInt(bound) - precision;
+            targetPos = targetPos.add(numX, 0, numZ);
+        }
+        nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(targetPos));
+        var nbtDimensionKey = World.CODEC.encodeStart(NbtOps.INSTANCE, player.world.getRegistryKey());
+        nbtDimensionKey.resultOrPartial(LOGGER::error).ifPresent((nbtElement) -> nbt.put(LODESTONE_DIMENSION_KEY, nbtElement));
+        nbt.putBoolean(LODESTONE_TRACKED_KEY, true);
+        if (!player.isSneaking()) {
+            player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 0.5f);
+        } else {
+            player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.0f, 3.0f);
+        }
+
+        var tickId = getTickId(nbt);
+        currentTime.put(tickId, (long) getDuration());
     }
 
     private static UUID getTickId(NbtCompound nbt) {
