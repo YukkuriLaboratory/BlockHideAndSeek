@@ -41,8 +41,8 @@ public class ItemBlockSelectorJava extends LoreItem implements JavaServerSideIte
     @Override
     public List<Text> getLore() {
         return List.of(
-                new LiteralText("右クリック: 擬態するブロックを変更します"),
-                new LiteralText("シフト右クリック: 擬態するブロックをリセットします")
+                LoreText.clickText(ACTION.RCLICK, "擬態するブロックを変更します"),
+                LoreText.clickText(ACTION.SRCLICK, "擬態するブロックをリセットします")
         );
     }
 

@@ -51,9 +51,9 @@ public class ItemBlink extends LoreItem implements JavaServerSideItem {
     @Override
     public List<Text> getLore() {
         return List.of(
-                new LiteralText("右クリック: 一定時間透明になります"),
-                Text.of("効果時間: " + getDuration()),
-                Text.of("クールタイム: " + getCoolTime())
+                LoreText.clickText(ACTION.RCLICK, "一定時間透明になります"),
+                LoreText.unitText("効果時間", getDuration(), UNIT.TICK),
+                LoreText.unitText("クールタイム", getCoolTime(), UNIT.TICK)
         );
     }
 

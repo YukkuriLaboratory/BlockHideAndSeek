@@ -44,8 +44,8 @@ public class ItemDetectorJava extends LoreItem implements JavaServerSideItem {
     @Override
     public List<Text> getLore() {
         return List.of(
-                new LiteralText("右クリック: ブロックに隠れるミミックを検出します"),
-                new LiteralText("クールタイム: " + MathHelper.floor((getCoolTime() / 20.0) * 10) / 10 + "秒"),
+                LoreText.clickText(ACTION.RCLICK, "ブロックに隠れるミミックを検出します"),
+                LoreText.unitText("クールタイム", (int) (MathHelper.floor((getCoolTime() / 20.0) * 10) / 10.0), UNIT.SECONDS),
                 Text.of(""),
                 new LiteralText("※見えているミミックに対しても有効です")
         );

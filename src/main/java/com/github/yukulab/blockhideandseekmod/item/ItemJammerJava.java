@@ -54,7 +54,7 @@ public class ItemJammerJava extends LoreItem implements JavaServerSideItem {
     @Override
     public List<Text> getLore() {
         return List.of(
-                new LiteralText("右クリック: 一定時間鬼のスキャナーを無効化します")
+                LoreText.clickText(ACTION.RCLICK, "一定時間鬼のスキャナーを無効化します")
         );
     }
 

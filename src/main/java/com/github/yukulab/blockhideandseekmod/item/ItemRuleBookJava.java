@@ -7,7 +7,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -31,7 +33,7 @@ public class ItemRuleBookJava extends LoreItem implements JavaServerSideItem {
     @Override
     public List<Text> getLore() {
         return List.of(
-                new LiteralText("BlockHideAndSeekのゲームルールブック")
+                new LiteralText("BlockHideAndSeekのゲームルールブック").setStyle(Style.EMPTY.withColor(Formatting.WHITE))
         );
     }
 

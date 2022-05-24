@@ -68,10 +68,10 @@ public class ItemScannerJava extends LoreItem implements JavaServerSideItem {
     @Override
     public List<Text> getLore() {
         return List.of(
-                new LiteralText("右クリック: 近くのミミックの人数を表示します"),
-                new LiteralText("shift+右クリック: 右クリック時の半分の範囲でスキャンします"),
-                new LiteralText("捜索範囲: " + getScanLength() + "ブロック"),
-                new LiteralText("クールタイム: " + MathHelper.floor((getCoolTime() / 20.0) * 10) / 10 + "秒"),
+                LoreText.clickText(ACTION.RCLICK, "近くにいるミミックをスキャンします"),
+                LoreText.clickText(ACTION.SRCLICK, "右クリック時の半分の範囲でスキャンします"),
+                LoreText.unitText("捜索範囲", (int) getScanLength(), UNIT.BLOCK),
+                LoreText.unitText("クールタイム", MathHelper.floor((getCoolTime() / 20.0) * 10) / 10, UNIT.SECONDS),
                 new LiteralText("(一番近くのミミックの場所をコンパスに一定時間表示します)")
         );
     }

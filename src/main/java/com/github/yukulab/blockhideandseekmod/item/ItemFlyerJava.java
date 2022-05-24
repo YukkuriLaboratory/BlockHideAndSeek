@@ -40,7 +40,7 @@ public class ItemFlyerJava extends LoreItem implements JavaServerSideItem {
     @Override
     public List<Text> getLore() {
         return List.of(
-                Text.of("一定時間の飛行を可能にします"),
+                new LiteralText("一定時間の飛行を可能にします").setStyle(Style.EMPTY.withColor(Formatting.GREEN)),
                 Text.of(""),
                 new LiteralText("装備不可").setStyle(Style.EMPTY.withColor(Formatting.BLUE))
         );

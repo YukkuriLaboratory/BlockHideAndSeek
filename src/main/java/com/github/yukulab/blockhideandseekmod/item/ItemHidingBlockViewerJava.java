@@ -43,7 +43,7 @@ public class ItemHidingBlockViewerJava extends LoreItem implements JavaServerSid
     @Override
     public List<Text> getLore() {
         return List.of(
-                new LiteralText("右クリック: 現在擬態しているブロックの名前を確認することができます")
+                LoreText.clickText(ACTION.RCLICK, "現在擬態しているブロックの名前を確認することができます")
         );
     }
 

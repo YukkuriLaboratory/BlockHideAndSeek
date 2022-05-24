@@ -11,7 +11,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -34,8 +36,8 @@ public class ItemSurpriseBallJava extends LoreItem implements JavaServerSideItem
     @Override
     public List<Text> getLore() {
         return List.of(
-                new LiteralText("敵に投げて驚かせよう！"),
-                new LiteralText("当たると10%の確率で一瞬鈍足or数秒吐き気を付与します")
+                new LiteralText("敵に投げて驚かせよう！").setStyle(Style.EMPTY.withColor(Formatting.WHITE)),
+                new LiteralText("当たると10%の確率で一瞬鈍足or数秒吐き気を付与します").setStyle(Style.EMPTY.withColor(Formatting.GREEN))
         );
     }
 

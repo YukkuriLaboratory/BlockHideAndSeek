@@ -61,11 +61,11 @@ public class ItemFakeSummonerJava extends LoreItem implements JavaServerSideItem
     @Override
     public List<Text> getLore() {
         return List.of(
-                new LiteralText("右クリック: デコイブロックを設置します"),
+                LoreText.clickText(ACTION.RCLICK, "デコイブロックを設置します"),
                 Text.of("(地面に対して使用してください)"),
-                Text.of("デコイの効果:鬼のスキャンに優先的に表示されます"),
-                Text.of("デコイ消滅までの時間" + getDeleteTime() + "秒"),
-                Text.of("デコイが破壊されてからのクールタイム" + getCoolTime())
+                new LiteralText("デコイの効果:鬼のスキャンに優先的に表示されます").setStyle(Style.EMPTY.withColor(Formatting.GREEN)),
+                LoreText.unitText("デコイ消滅までの時間", getDeleteTime(), UNIT.SECONDS),
+                LoreText.unitText("デコイが破壊されてからのクールタイム", getCoolTime(), UNIT.TICK)
         );
     }
 
