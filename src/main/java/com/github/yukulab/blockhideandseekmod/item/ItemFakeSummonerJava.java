@@ -65,7 +65,7 @@ public class ItemFakeSummonerJava extends LoreItem implements JavaServerSideItem
                 Text.of("(地面に対して使用してください)"),
                 Text.of("デコイの効果:鬼のスキャンに優先的に表示されます"),
                 Text.of("デコイ消滅までの時間" + getDeleteTime() + "秒"),
-                Text.of("クールタイム" + getCoolTime())
+                Text.of("デコイが破壊されてからのクールタイム" + getCoolTime())
         );
     }
 
