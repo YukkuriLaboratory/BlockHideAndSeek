@@ -21,47 +21,47 @@ import net.minecraft.util.Hand;
 import java.util.List;
 
 public class RuleBookScreen {
-    private static final List<Text> pages = List.of(
-            new LiteralText("")
-                    .append(new LiteralText("基本ルール\n"))
-                    .append("\n")
-                    .append(new LiteralText("")
-                            .append(new LiteralText("鬼側").setStyle(Style.EMPTY.withColor(Formatting.RED)))
-                            .append("と")
-                            .append(new LiteralText("ミミック(隠れる)側").setStyle(Style.EMPTY.withColor(Formatting.DARK_GREEN)))
-                            .append("に分かれてかくれんぼを行います.")
-                            .append("\n"))
-                    .append(new LiteralText("\n"))
-                    .append(new LiteralText("- 勝利条件 -\n"))
-                    .append(new LiteralText("鬼側:\n").setStyle(Style.EMPTY.withColor(Formatting.RED)))
-                    .append(new LiteralText("ミミック全員を制限時間内に見つけて倒す\n"))
-                    .append(new LiteralText("ミミック側:\n").setStyle(Style.EMPTY.withColor(Formatting.DARK_GREEN)))
-                    .append(new LiteralText("最後まで生き残る\n")),
-            new LiteralText("")
-                    .append(new LiteralText("- 鬼 -\n").setStyle(Style.EMPTY.withColor(Formatting.RED)))
-                    .append("\n")
-                    .append("使用可能アイテム:\n")
-                    .append(parseItemList(BhasItems.seekerItems)),
-            new LiteralText("")
-                    .append(new LiteralText("- ミミック -\n").setStyle(Style.EMPTY.withColor(Formatting.DARK_GREEN)))
-                    .append("使用可能アイテム:\n")
-                    .append(parseItemList(BhasItems.hiderItems).append("\n"))
-                    .append("\n")
-                    .append("特殊スキル:「擬態」\n")
-                    .append("操作: シフト\n")
-                    .append("効果: その場でブロックとなって隠れます")
-    );
+    private final NbtList pageNbt = new NbtList();
 
-    private static final NbtList pageNbt = new NbtList();
-
-    static {
+    public RuleBookScreen() {
+        List<Text> pages = List.of(
+                new LiteralText("")
+                        .append(new LiteralText("基本ルール\n"))
+                        .append("\n")
+                        .append(new LiteralText("")
+                                .append(new LiteralText("鬼側").setStyle(Style.EMPTY.withColor(Formatting.RED)))
+                                .append("と")
+                                .append(new LiteralText("ミミック(隠れる)側").setStyle(Style.EMPTY.withColor(Formatting.DARK_GREEN)))
+                                .append("に分かれてかくれんぼを行います.")
+                                .append("\n"))
+                        .append(new LiteralText("\n"))
+                        .append(new LiteralText("- 勝利条件 -\n"))
+                        .append(new LiteralText("鬼側:\n").setStyle(Style.EMPTY.withColor(Formatting.RED)))
+                        .append(new LiteralText("ミミック全員を制限時間内に見つけて倒す\n"))
+                        .append(new LiteralText("ミミック側:\n").setStyle(Style.EMPTY.withColor(Formatting.DARK_GREEN)))
+                        .append(new LiteralText("最後まで生き残る\n")),
+                new LiteralText("")
+                        .append(new LiteralText("- 鬼 -\n").setStyle(Style.EMPTY.withColor(Formatting.RED)))
+                        .append("\n")
+                        .append("使用可能アイテム:\n")
+                        .append(parseItemList(BhasItems.seekerItems)),
+                new LiteralText("")
+                        .append(new LiteralText("- ミミック -\n").setStyle(Style.EMPTY.withColor(Formatting.DARK_GREEN)))
+                        .append("使用可能アイテム:\n")
+                        .append(parseItemList(BhasItems.hiderItems).append("\n"))
+                        .append("\n")
+                        .append("特殊スキル:「擬態」\n")
+                        .append("操作: シフト\n")
+                        .append("効果: その場でブロックとなって隠れます")
+        );
         pageNbt.addAll(pages.stream().map(page -> NbtString.of(Text.Serializer.toJson(page))).toList());
     }
 
     public static void open(ServerPlayerEntity player) {
         var item = Items.WRITTEN_BOOK.getDefaultStack();
         var nbt = item.getOrCreateNbt();
-        nbt.put(WrittenBookItem.PAGES_KEY, pageNbt);
+        var screen = new RuleBookScreen();
+        nbt.put(WrittenBookItem.PAGES_KEY, screen.pageNbt);
         nbt.put(WrittenBookItem.TITLE_KEY, NbtString.of("gamerules"));
         nbt.put(WrittenBookItem.AUTHOR_KEY, NbtString.of("bhas"));
         nbt.putBoolean(WrittenBookItem.RESOLVED_KEY, true);
