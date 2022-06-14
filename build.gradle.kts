@@ -59,7 +59,7 @@ dependencies {
 
     modImplementation("net.fabricmc:fabric-language-kotlin:1.7.4+kotlin.1.6.21")
 
-    modImplementation("dev.uten2c:strobo:70")
+    includeAndExpose("dev.uten2c:strobo:71")
     includeAndExpose("maven.modrinth:paradox-config:0.5.1-beta")
     includeAndExpose("io.github.cottonmc:Jankson-Fabric:3.0.1+j1.2.0")
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
