@@ -75,6 +75,7 @@ loom {
     accessWidenerPath.set(file("src/main/resources/blockhideandseekmod.accesswidener"))
 }
 
+@Suppress("UnstableApiUsage")
 tasks.withType<ProcessResources> {
     inputs.property("version", project.version)
 
