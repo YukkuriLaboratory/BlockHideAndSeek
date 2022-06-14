@@ -1,5 +1,4 @@
 import com.matthewprenger.cursegradle.*
-import com.modrinth.minotaur.TaskModrinthUpload
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RemapSourcesJarTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -8,7 +7,7 @@ plugins {
     id("fabric-loom") version "0.11-SNAPSHOT"
     kotlin("jvm") version "1.6.21"
     id("com.matthewprenger.cursegradle") version "1.4.0"
-    id("com.modrinth.minotaur") version "1.2.1"
+    id("com.modrinth.minotaur") version "2.+"
     `maven-publish`
 }
 
@@ -181,17 +180,16 @@ if (curseApiKey != null) {
     }
 }
 
-tasks.create<TaskModrinthUpload>("publishModrinth") {
-    val modrinthApiToken = env["MODRINTH_TOKEN"]
-    onlyIf {
-        modrinthApiToken != null
+modrinth {
+    token.set(env["MODRINTH_TOKEN"])
+    projectId.set("C3KKoSI2")
+    versionNumber.set(mod_version)
+    versionType.set("release")
+    uploadFile.set(remapJar)
+    gameVersions.add(minecraft_version)
+    loaders.add("fabric")
+    dependencies {
+        required.project("P7dR8mSH")//FabricAPI
+        required.project("Ha28R6CL")//FabricLanguageKotlin
     }
-    token = modrinthApiToken
-    projectId = "C3KKoSI2"
-    versionNumber = mod_version
-    uploadFile = file(artifactPath)
-    addGameVersion(minecraft_version)
-    addLoader("fabric")
-}.also {
-    it.dependsOn(remapJar)
 }
