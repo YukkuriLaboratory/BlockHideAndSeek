@@ -1,16 +1,22 @@
 package com.github.yukulab.blockhideandseekmod.item;
 
+import com.google.common.collect.Maps;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class ItemSurprisePumpkinJava extends LoreItem implements JavaServerSideItem {
     private static final Item.Settings SETTINGS = new Item.Settings();
@@ -19,7 +25,9 @@ public class ItemSurprisePumpkinJava extends LoreItem implements JavaServerSideI
         super(SETTINGS);
     }
 
-    private int time = 0;
+    private static final Map<UUID, Integer> timeMap = Maps.newHashMap();
+
+    private static final Map<UUID, BlockPos> blockPos = Maps.newHashMap();
 
     @Override
     public Text getName() {
@@ -41,12 +49,21 @@ public class ItemSurprisePumpkinJava extends LoreItem implements JavaServerSideI
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         if (entity instanceof ServerPlayerEntity player) {
-            time = time + 1;
+            var time = timeMap.getOrDefault(entity.getUuid(), 0) + 1;
+            if (time == 1 && player.getActiveStatusEffects().containsKey(StatusEffects.LEVITATION)) {
+                blockPos.put(player.getUuid(), player.getBlockPos());
+                world.syncWorldEvent(null, WorldEvents.MUSIC_DISC_PLAYED, blockPos.get(player.getUuid()), Item.getRawId(Items.MUSIC_DISC_PIGSTEP));
+            }
             if (time >= ItemSurpriseBallJava.getDuration()) {
                 player.getInventory().removeOne(new ItemStack(BhasItems.SURPRISEPUMPKIN));
                 player.getInventory().removeStack(39);
+                if (blockPos.containsKey(entity.getUuid())) {
+                    world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, blockPos.get(player.getUuid()), 0);
+                }
+                blockPos.clear();
                 time = 0;
             }
+            timeMap.put(entity.getUuid(), time);
         }
     }
 
