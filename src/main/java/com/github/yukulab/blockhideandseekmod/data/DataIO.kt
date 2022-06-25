@@ -18,6 +18,17 @@ object DataIO {
         File(FabricLoader.getInstance().configDir.toFile(), "${BlockHideAndSeekMod.MOD_ID}/data.json")
     private lateinit var lastUpdatedTime: Instant
 
+    @JvmStatic
+    fun updateWithResultBoolean(): Boolean {
+        update().onSuccess {
+            return true
+        }.onFailure {
+            BlockHideAndSeekMod.LOGGER.throwing(it)
+            return false
+        }
+        return false
+    }
+
     fun update(): Result<Unit> = kotlin.runCatching {
         lastUpdatedTime = Clock.System.now()
         val playersInvData = server.playerManager.playerList.associate {
