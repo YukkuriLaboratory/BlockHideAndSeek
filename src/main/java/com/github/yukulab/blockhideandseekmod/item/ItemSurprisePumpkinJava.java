@@ -29,6 +29,8 @@ public class ItemSurprisePumpkinJava extends LoreItem implements JavaServerSideI
 
     private static final Map<UUID, BlockPos> blockPos = Maps.newHashMap();
 
+    private static final int playMusicEvent = WorldEvents.MUSIC_DISC_PLAYED;
+
     @Override
     public Text getName() {
         return new LiteralText("呪いのパンプキン");
@@ -52,15 +54,15 @@ public class ItemSurprisePumpkinJava extends LoreItem implements JavaServerSideI
             var time = timeMap.getOrDefault(entity.getUuid(), 0) + 1;
             if (time == 1 && player.getActiveStatusEffects().containsKey(StatusEffects.LEVITATION)) {
                 blockPos.put(player.getUuid(), player.getBlockPos());
-                world.syncWorldEvent(null, WorldEvents.MUSIC_DISC_PLAYED, blockPos.get(player.getUuid()), Item.getRawId(Items.MUSIC_DISC_PIGSTEP));
+                world.syncWorldEvent(null, WorldEvents.MUSIC_DISC_PLAYED, player.getBlockPos(), Item.getRawId(Items.MUSIC_DISC_PIGSTEP));
             }
             if (time >= ItemSurpriseBallJava.getDuration()) {
                 player.getInventory().removeOne(new ItemStack(BhasItems.SURPRISEPUMPKIN));
                 player.getInventory().removeStack(39);
-                if (blockPos.containsKey(entity.getUuid())) {
-                    world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, blockPos.get(player.getUuid()), 0);
+                var pos = blockPos.remove(player.getUuid());
+                if (pos != null) {
+                    world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, pos, 0);
                 }
-                blockPos.clear();
                 time = 0;
             }
             timeMap.put(entity.getUuid(), time);
