@@ -38,14 +38,18 @@ Kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric-language-kotlin) が
 
 `/bhas team <seeker|hider>`  引数で指定されたチームに参加します(投票時間中のみ有効)
 
+`/bhas restore (<force>)` 最後にゲームを開始した時のインベントリとゲームモードを復元します。(`<force>`がtrueの際は強制的に実行します)※
+
 ※OP権限が必要
 
 ## Game progress
 
 ### [投票時間]
+
 陣営の選択ができます。チャットに表示されているチームをクリックして投票してください。投票していないプレイヤーは強制的に観戦モードになります。
 
-### [準備時間] 
+### [準備時間]
+
 ミミックが隠れる時間です。 鬼は視界が奪われ、動けなくなります。
 
 ### [本戦時間] 
