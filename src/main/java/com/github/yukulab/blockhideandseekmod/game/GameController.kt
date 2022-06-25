@@ -17,7 +17,6 @@ import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
-import net.minecraft.world.GameMode
 import java.time.Duration
 import java.time.Instant
 
@@ -98,7 +97,6 @@ object GameController {
         server.playerManager
             .playerList
             .forEach {
-                it.changeGameMode(GameMode.SPECTATOR)
                 // 擬態解除(事故ることはないのでここで呼んじゃう)
                 HideController.cancelHiding(it)
                 //デコイ削除
