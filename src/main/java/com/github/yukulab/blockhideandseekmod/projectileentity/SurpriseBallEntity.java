@@ -47,23 +47,26 @@ public class SurpriseBallEntity extends SnowballEntity {
 
         if (entity instanceof ServerPlayerEntity player) {
             ItemStack itemStack = new ItemStack(BhasItems.SURPRISEPUMPKIN);
-            itemStack.addEnchantment(Enchantments.BINDING_CURSE,5);
-            player.getInventory().insertStack(39,itemStack);
+            itemStack.addEnchantment(Enchantments.BINDING_CURSE, 5);
+            player.getInventory().insertStack(39, itemStack);
             player.playSound(SoundEvents.BLOCK_SLIME_BLOCK_BREAK, 2.0F, 1.0F);
 
             Random rand = new Random();
             int num = rand.nextInt(100);
-            if(num < 10){
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS,30,1,false,false,false));
+            if (num < 20) {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 60, 1, false, false, false));
             }
-            if(num >=10 && num < 20){
+            if (num >= 20 && num < 40) {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 3, false, false, false));
+            }
+            if (num >= 40 && num < 60) {
                 var message = new LiteralText("").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
                 var subMessage = new LiteralText("酔っちゃったらごめんなさい");
                 var packet = new TitleS2CPacket(message);
                 var subPacket = new SubtitleS2CPacket(subMessage);
                 player.networkHandler.sendPacket(packet);
                 player.networkHandler.sendPacket(subPacket);
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,160,1,false,false,false));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 160, 1, false, false, false));
             }
         }
     }

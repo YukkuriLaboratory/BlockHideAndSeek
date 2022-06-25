@@ -2,6 +2,8 @@ package com.github.yukulab.blockhideandseekmod.item;
 
 import com.github.yukulab.blockhideandseekmod.config.Config;
 import com.github.yukulab.blockhideandseekmod.projectileentity.SurpriseBallEntity;
+import com.github.yukulab.blockhideandseekmod.util.HideController;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,7 +29,6 @@ public class ItemSurpriseBallJava extends LoreItem implements JavaServerSideItem
     public ItemSurpriseBallJava() {
         super(SETTINGS);
     }
-
     @Override
     public Text getName() {
         return new LiteralText("サプライズ玉(ボール)");
@@ -49,13 +50,20 @@ public class ItemSurpriseBallJava extends LoreItem implements JavaServerSideItem
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         var stack = user.getStackInHand(hand);
-        user.playSound(SoundEvents.ENTITY_ENDER_PEARL_THROW, SoundCategory.PLAYERS,1.0f,1.0f);
-        SurpriseBallEntity ball = new SurpriseBallEntity(world,user);
+        double height;
+        if (HideController.isHiding(user)) {
+            height = user.getEyeY() + EntityType.SILVERFISH.getHeight() * 0.75 + user.getHeightOffset() + 0.5;
+        } else {
+            height = user.getEyeY();
+        }
+        System.out.println(height);
+        user.playSound(SoundEvents.ENTITY_ENDER_PEARL_THROW, SoundCategory.PLAYERS, 1.0f, 1.0f);
+        SurpriseBallEntity ball = new SurpriseBallEntity(world, user);
         ball.setItem(stack);
         ball.setVelocity(user, user.prevPitch, user.prevYaw, 0F, 3F, 0F);
+        ball.setPos(user.getX(), height, user.getZ());
         world.spawnEntity(ball);
-
-        var coolTime = getCoolTime() + getDuration();
+        var coolTime = getCoolTime();
         user.getItemCooldownManager().set(this, coolTime);
         ((ServerPlayerEntity) user).networkHandler.sendPacket(new CooldownUpdateS2CPacket(getVisualItem(), coolTime));
 
