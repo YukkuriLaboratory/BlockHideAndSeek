@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("fabric-loom") version "0.11-SNAPSHOT"
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.0"
     id("com.matthewprenger.cursegradle") version "1.4.0"
     id("com.modrinth.minotaur") version "2.+"
     `maven-publish`
@@ -56,7 +56,7 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_version}")
 
-    modImplementation("net.fabricmc:fabric-language-kotlin:1.7.4+kotlin.1.6.21")
+    modImplementation("net.fabricmc:fabric-language-kotlin:1.8.0+kotlin.1.7.0")
 
     includeAndExpose("dev.uten2c:strobo:71")
     includeAndExpose("maven.modrinth:paradox-config:0.5.1-beta")

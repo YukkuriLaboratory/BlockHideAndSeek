@@ -28,7 +28,7 @@
     "fabric": "*",
     "minecraft": "1.18.x",
     "java": ">=17",
-    "fabric-language-kotlin": ">=1.7.4+kotlin.1.6.21"
+    "fabric-language-kotlin": ">=1.8.0+kotlin.1.7.0"
   },
   "custom": {
     "paradoxconfig": {
