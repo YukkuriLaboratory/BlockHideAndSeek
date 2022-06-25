@@ -3,7 +3,6 @@ package com.github.yukulab.blockhideandseekmod.data
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod
 import com.github.yukulab.blockhideandseekmod.util.server
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -16,7 +15,7 @@ object DataIO {
     private val json = Json
     private val targetFile =
         File(FabricLoader.getInstance().configDir.toFile(), "${BlockHideAndSeekMod.MOD_ID}/data.json")
-    private lateinit var lastUpdatedTime: Instant
+    private var lastUpdatedTime = Clock.System.now()
 
     @JvmStatic
     fun updateWithResultBoolean(): Boolean {
@@ -40,10 +39,10 @@ object DataIO {
 
     fun readAndApply(force: Boolean = false): Result<Unit> = kotlin.runCatching {
         val decodedData = readData().getOrThrow()
-        if (decodedData.restored) {
+        if (!force && decodedData.restored) {
             throw SerializationException("既に復元済みです")
         }
-        if (!force && lastUpdatedTime < decodedData.date) {
+        if (lastUpdatedTime < decodedData.date) {
             throw SerializationException("データの保存日時が不正です")
         }
         server.playerManager.playerList.forEach {
@@ -59,7 +58,7 @@ object DataIO {
 
     private fun readData(): Result<PlayerData> = kotlin.runCatching {
         val rawString = targetFile.readText()
-        return json.decodeFromString(rawString)
+        return@runCatching json.decodeFromString(rawString)
     }
 
     private fun writeData(data: PlayerData): Result<Unit> = kotlin.runCatching {
