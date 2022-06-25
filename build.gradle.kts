@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("fabric-loom") version "0.11-SNAPSHOT"
     kotlin("jvm") version "1.7.0"
+    kotlin("plugin.serialization") version "1.7.0"
     id("com.matthewprenger.cursegradle") version "1.4.0"
     id("com.modrinth.minotaur") version "2.+"
     `maven-publish`
@@ -39,6 +40,7 @@ repositories {
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
     maven("https://uten2c.github.io/repo/")
+    maven("https://maven.lepinoid.net")
     maven("https://api.modrinth.com/maven")
     maven("https://server.bbkr.space/artifactory/libs-release")
 }
@@ -59,6 +61,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:1.8.0+kotlin.1.7.0")
 
     includeAndExpose("dev.uten2c:strobo:71")
+    implementation("net.lepinoid:uuid-serializer:1.1")
     includeAndExpose("maven.modrinth:paradox-config:0.5.1-beta")
     includeAndExpose("io.github.cottonmc:Jankson-Fabric:3.0.1+j1.2.0")
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.

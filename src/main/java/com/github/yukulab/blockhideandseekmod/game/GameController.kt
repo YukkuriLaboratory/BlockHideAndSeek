@@ -1,10 +1,13 @@
 package com.github.yukulab.blockhideandseekmod.game
 
+import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod
+import com.github.yukulab.blockhideandseekmod.data.DataIO
 import com.github.yukulab.blockhideandseekmod.entity.BlockHighlightEntity
 import com.github.yukulab.blockhideandseekmod.item.BhasItems
 import com.github.yukulab.blockhideandseekmod.item.ItemFakeSummonerJava
 import com.github.yukulab.blockhideandseekmod.item.ItemJammerJava
 import com.github.yukulab.blockhideandseekmod.util.*
+import dev.uten2c.strobo.util.text
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
@@ -13,7 +16,7 @@ import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraft.world.GameMode
+import net.minecraft.text.Text
 import java.time.Duration
 import java.time.Instant
 
@@ -94,7 +97,6 @@ object GameController {
         server.playerManager
             .playerList
             .forEach {
-                it.changeGameMode(GameMode.SPECTATOR)
                 // 擬態解除(事故ることはないのでここで呼んじゃう)
                 HideController.cancelHiding(it)
                 //デコイ削除
@@ -107,21 +109,31 @@ object GameController {
                         it.playerScreenHandler.craftingInput
                     )
                 //透明化の解除
-                if(it.hasStatusEffect(StatusEffects.INVISIBILITY)){
+                if (it.hasStatusEffect(StatusEffects.INVISIBILITY)) {
                     spawnPackets.add(PlayerSpawnS2CPacket(it))
                     it.clearStatusEffects()
                 }
             }
+
+        // プレイヤーデータの復元
+        var savingErrorMessage: Text? = null
+        DataIO.readAndApply().onFailure {
+            savingErrorMessage = text("プレイヤーデータの復元に失敗しました。詳細はコンソールをご確認ください")
+            BlockHideAndSeekMod.LOGGER.throwing(it)
+        }
         server.playerManager
             .playerList
             .forEach {
                 spawnPackets
-                    .filter{playerSpawnS2CPacket ->
+                    .filter { playerSpawnS2CPacket ->
                         playerSpawnS2CPacket.playerUuid != it.gameProfile.id
                     }
-                    .forEach{playerSpawnS2CPacket ->
+                    .forEach { playerSpawnS2CPacket ->
                         it.networkHandler.sendPacket(playerSpawnS2CPacket)
                     }
+                if (savingErrorMessage != null) {
+                    it.sendMessage(savingErrorMessage, false)
+                }
             }
         TeamCreateAndDelete.deleteTeam()
         TeamPlayerListHeader.EmptyList()

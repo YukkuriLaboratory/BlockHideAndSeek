@@ -2,6 +2,7 @@ package com.github.yukulab.blockhideandseekmod.game;
 
 import com.github.yukulab.blockhideandseekmod.BlockHideAndSeekMod;
 import com.github.yukulab.blockhideandseekmod.config.Config;
+import com.github.yukulab.blockhideandseekmod.data.DataIO;
 import com.github.yukulab.blockhideandseekmod.item.BhasItems;
 import com.github.yukulab.blockhideandseekmod.item.ItemJammerJava;
 import com.github.yukulab.blockhideandseekmod.util.HideController;
@@ -303,6 +304,13 @@ public class SelectTeam implements GameStatus {
                 .map(playerManager::getPlayer)
                 .filter(Objects::nonNull)
                 .toList();
+
+        // プレイヤーデータの保存
+        if (!DataIO.updateWithResultBoolean()) {
+            var errorMessage = new LiteralText("プレイヤーデータの保存に失敗しました").setStyle(Style.EMPTY.withColor(Formatting.RED));
+            playerManager.getPlayerList().forEach(player -> player.sendMessage(errorMessage, false));
+            return null;
+        }
 
         //アイテムの削除
         server.getPlayerManager().getPlayerList()

@@ -15,6 +15,7 @@ object BHASCommands {
             apply(Start.builder)
             apply(Stop.builder)
             apply(Team.builder)
+            apply(Restore.builder)
         }
     }
 

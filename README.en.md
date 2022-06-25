@@ -41,7 +41,11 @@ specified.*
 
 `/bhas team <seeker|hider>`  Joins the team specified in the argument.**
 
-*Operator privileges are required to execute the command, but the rules command could be ran by any players if without argument.
+`/bhas restore (<force>)` Restore players inventory and gamemode from last played, and this process runs forcibly
+if `<force>` is true**
+
+*Operator privileges are required to execute the command, but the rules command could be ran by any players if without
+argument.
 
 ** The command is only valid during voting period. The code is intended so that the players
 who logged in during the voting period could join the team without the comment display.
