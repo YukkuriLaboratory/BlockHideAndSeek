@@ -29,8 +29,6 @@ public class ItemSurprisePumpkinJava extends LoreItem implements JavaServerSideI
 
     private static final Map<UUID, BlockPos> blockPos = Maps.newHashMap();
 
-    private static final int playMusicEvent = WorldEvents.MUSIC_DISC_PLAYED;
-
     @Override
     public Text getName() {
         return new LiteralText("呪いのパンプキン");
