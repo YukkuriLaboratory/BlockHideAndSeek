@@ -58,4 +58,4 @@ Kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric-language-kotlin) が
 
 ## License
 
-このMODは[AGPL-3.0 License](https://github.com/YukkuriLaboratory/BlockHideAndSeek/blob/1.17/LICENSE)のもとで公開されています
+このMODは[LGPL-3.0 License](https://github.com/YukkuriLaboratory/BlockHideAndSeek/blob/1.18/LICENSE)のもとで公開されています
