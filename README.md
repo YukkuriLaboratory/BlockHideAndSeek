@@ -9,7 +9,7 @@
 
 <img alt="Github release download" src="https://img.shields.io/github/downloads/YukkuriLaboratory/BlockHideAndSeek/total">&nbsp;
 
-<img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/YukkuriLaboratory/BlockHideAndSeek/1.18">&nbsp;
+<img alt="GitHub branch checks state" src="https://github.com/YukkuriLaboratory/BlockHideAndSeek/actions/workflows/build.yml/badge.svg">&nbsp;
 
 
 # BlockHideandSeekMod (日本語)/([English](README.en.md))
